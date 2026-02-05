@@ -1,13 +1,30 @@
-import { Head, Link, usePage, router } from '@inertiajs/react';
-import axios from 'axios';
-import { Send, User, Bot, Sparkles, ArrowLeft, Plus, MessageSquare, History, Menu, X, LogIn, Trash2, LogOut } from 'lucide-react';
-import React, { useState, useRef, useEffect } from 'react';
 import { type SharedData } from '@/types';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import axios from 'axios';
+import {
+    ArrowLeft,
+    Globe,
+    LogIn,
+    LogOut,
+    Menu,
+    MessageSquare,
+    Plus,
+    Send,
+    Sparkles,
+    Trash2,
+    User,
+    X,
+} from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface Message {
     sender: 'user' | 'bot';
     text: string;
     options?: string[];
+    brand?: any;
+    type?: string;
+    highlight?: boolean;
+    requires_input?: boolean;
 }
 
 interface ChatSession {
@@ -17,6 +34,43 @@ interface ChatSession {
 }
 
 declare function route(name: string, params?: any): string;
+
+// Helper: Parse text and convert URLs to clickable links
+function parseTextWithLinks(text: string) {
+    // URL regex pattern to match http, https, and www URLs
+    const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
+    const parts = text.split(urlRegex);
+
+    return parts.map((part, idx) => {
+        if (urlRegex.test(part)) {
+            const url = part.startsWith('http') ? part : `https://${part}`;
+            // Shorten the display text
+            const displayText = new URL(url).hostname.replace('www.', '');
+            return (
+                <a
+                    key={idx}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                >
+                    <Globe className="h-3 w-3" />
+                    {displayText}
+                </a>
+            );
+        }
+        // Convert markdown-style bold to actual bold
+        return part
+            .replace(/\*\*(.*?)\*\*/g, '$1')
+            .split('\n')
+            .map((line, i) => (
+                <React.Fragment key={i}>
+                    {line}
+                    {i < part.split('\n').length - 1 && <br />}
+                </React.Fragment>
+            ));
+    });
+}
 
 export default function ChatApp() {
     const { auth } = usePage<SharedData>().props;
@@ -34,7 +88,7 @@ export default function ChatApp() {
 
     // Scroll to bottom helper
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
     useEffect(() => {
@@ -60,7 +114,7 @@ export default function ChatApp() {
             const res = await axios.get('/chat/history');
             setHistory(res.data);
         } catch (e) {
-            console.error("Failed to load history", e);
+            console.error('Failed to load history', e);
         }
     };
 
@@ -72,16 +126,18 @@ export default function ChatApp() {
             setSessionId(sessionData.id);
 
             // Transform messages
-            const loadedMessages: Message[] = sessionData.messages.map((m: any) => ({
-                sender: m.sender,
-                text: m.message,
-                options: m.options
-            }));
+            const loadedMessages: Message[] = sessionData.messages.map(
+                (m: any) => ({
+                    sender: m.sender,
+                    text: m.message,
+                    options: m.options,
+                }),
+            );
 
             setMessages(loadedMessages);
             if (window.innerWidth < 768) setSidebarOpen(false); // Close sidebar on mobile select
         } catch (e) {
-            console.error("Failed to load session", e);
+            console.error('Failed to load session', e);
         } finally {
             setLoading(false);
         }
@@ -94,19 +150,38 @@ export default function ChatApp() {
         if (window.innerWidth < 768) setSidebarOpen(false);
     };
 
-    const fetchBotResponse = async (msg: string, currentSessionId: string | null) => {
+    const fetchBotResponse = async (
+        msg: string,
+        currentSessionId: string | null,
+    ) => {
         setLoading(true);
         try {
             const response = await axios.post('/chat', {
                 message: msg,
-                session_id: currentSessionId
+                session_id: currentSessionId,
             });
 
-            setMessages(prev => [...prev, {
-                sender: 'bot',
-                text: response.data.reply,
-                options: response.data.options
-            }]);
+            // Only add bot message if it's different from the last message or if there are no messages yet
+            setMessages((prev) => {
+                // Check if last message is identical (prevent duplicates)
+                if (
+                    prev.length > 0 &&
+                    prev[prev.length - 1].sender === 'bot' &&
+                    prev[prev.length - 1].text === response.data.reply
+                ) {
+                    return prev; // Don't add duplicate
+                }
+                return [
+                    ...prev,
+                    {
+                        sender: 'bot',
+                        text: response.data.reply,
+                        options: response.data.options,
+                        highlight: response.data.highlight ?? false,
+                        requires_input: response.data.requires_input ?? false,
+                    },
+                ];
+            });
 
             if (response.data.session_id) {
                 setSessionId(response.data.session_id);
@@ -119,8 +194,15 @@ export default function ChatApp() {
                     window.location.href = response.data.redirect;
                 }, 2000);
             }
-        } catch (error) {
-            setMessages(prev => [...prev, { sender: 'bot', text: 'Sorry, connection error.' }]);
+        } catch (err: unknown) {
+            const status = axios.isAxiosError(err) ? err.response?.status : 0;
+            const text = status === 419
+                ? 'Session expired. Please refresh the page and try again.'
+                : 'Sorry, connection error.';
+            setMessages((prev) => [
+                ...prev,
+                { sender: 'bot', text },
+            ]);
         } finally {
             setLoading(false);
         }
@@ -139,7 +221,7 @@ export default function ChatApp() {
             }
             fetchHistory();
         } catch (e) {
-            console.error("Failed to delete session", e);
+            console.error('Failed to delete session', e);
         }
     };
 
@@ -149,7 +231,7 @@ export default function ChatApp() {
 
         if (!msgToSend.trim()) return;
 
-        setMessages(prev => [...prev, { sender: 'user', text: msgToSend }]);
+        setMessages((prev) => [...prev, { sender: 'user', text: msgToSend }]);
         setInput('');
 
         await fetchBotResponse(msgToSend, sessionId);
@@ -158,19 +240,17 @@ export default function ChatApp() {
     return (
         <>
             <Head title="Chat" />
-            <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 font-sans">
-
+            <div className="flex h-screen overflow-hidden bg-brand-surface font-sans text-brand-text dark:bg-brand-dark dark:text-zinc-50">
                 {/* Sidebar (ChatGPT Style) */}
                 <aside
-                    className={`
-                        fixed inset-y-0 left-0 z-30 w-64 transform bg-white text-zinc-600 transition-transform duration-300 ease-in-out dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800
-                        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-                        lg:relative lg:translate-x-0
-                    `}
+                    className={`fixed inset-y-0 left-0 z-30 w-64 transform border-r border-brand-border bg-brand-surface text-brand-muted transition-transform duration-300 ease-in-out dark:border-zinc-800 dark:bg-brand-primary ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0`}
                 >
                     <div className="flex h-full flex-col p-4">
                         {/* Brand Logo & Label */}
-                        <Link href="/" className="mb-6 flex items-center gap-3 px-2 transition-opacity hover:opacity-80 group">
+                        <Link
+                            href="/"
+                            className="group mb-6 flex items-center gap-3 px-2 transition-opacity hover:opacity-80"
+                        >
                             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white p-1 shadow-sm ring-1 ring-zinc-200">
                                 <img
                                     src="/image/Area 24 one logo black.png"
@@ -178,41 +258,61 @@ export default function ChatApp() {
                                     className="h-full w-full object-contain"
                                 />
                             </div>
-                            <span className="text-lg font-bold tracking-tight text-zinc-900 dark:text-white uppercase">
-                                Area 24 <span className="font-medium text-zinc-500">one</span>
+                            <span className="text-lg font-bold tracking-tight text-brand-primary uppercase dark:text-white">
+                                Area 24{' '}
+                                <span className="font-medium text-brand-muted">
+                                    one
+                                </span>
                             </span>
                         </Link>
 
                         {/* New Chat Button */}
                         <button
                             onClick={startNewChat}
-                            className="mb-4 flex w-full items-center gap-2 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors text-zinc-900 dark:text-white shadow-sm"
+                            className="mb-4 flex w-full items-center gap-2 rounded-lg border border-zinc-200 p-3 text-zinc-900 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-white dark:hover:bg-zinc-800"
                         >
                             <Plus className="h-4 w-4" />
-                            <span className="text-sm font-medium">New chat</span>
+                            <span className="text-sm font-medium">
+                                New chat
+                            </span>
                         </button>
 
                         {/* History List */}
-                        <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                        <div className="custom-scrollbar flex-1 overflow-y-auto pr-2">
                             {auth.user ? (
                                 <>
-                                    <h3 className="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">History</h3>
+                                    <h3 className="mb-2 px-2 text-xs font-semibold tracking-wider text-zinc-500 uppercase">
+                                        History
+                                    </h3>
                                     {history.length > 0 ? (
                                         <div className="space-y-1">
                                             {history.map((session) => (
-                                                <div key={session.id} className="group relative">
+                                                <div
+                                                    key={session.id}
+                                                    className="group relative"
+                                                >
                                                     <button
-                                                        onClick={() => loadSession(session.id)}
-                                                        className={`flex w-full items-center gap-2 rounded-lg px-2 py-3 text-sm transition-colors pr-10
-                                                            ${sessionId === session.id ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white' : 'hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50'}
-                                                        `}
+                                                        onClick={() =>
+                                                            loadSession(
+                                                                session.id,
+                                                            )
+                                                        }
+                                                        className={`flex w-full items-center gap-2 rounded-lg px-2 py-3 pr-10 text-sm transition-colors ${sessionId === session.id ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white' : 'hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50'} `}
                                                     >
                                                         <MessageSquare className="h-4 w-4 shrink-0" />
-                                                        <span className="truncate text-left">{session.title || 'Untitled Chat'}</span>
+                                                        <span className="truncate text-left">
+                                                            {session.title ||
+                                                                'Untitled Chat'}
+                                                        </span>
                                                     </button>
                                                     <button
-                                                        onClick={(e) => deleteSession(e, session.id)}
-                                                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-zinc-500 hover:bg-zinc-700 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        onClick={(e) =>
+                                                            deleteSession(
+                                                                e,
+                                                                session.id,
+                                                            )
+                                                        }
+                                                        className="absolute top-1/2 right-2 -translate-y-1/2 rounded-md p-1.5 text-zinc-500 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-zinc-700 hover:text-red-400"
                                                     >
                                                         <Trash2 className="h-3.5 w-3.5" />
                                                     </button>
@@ -220,24 +320,31 @@ export default function ChatApp() {
                                             ))}
                                         </div>
                                     ) : (
-                                        <p className="px-2 text-xs text-zinc-600">No previous chats.</p>
+                                        <p className="px-2 text-xs text-zinc-600">
+                                            No previous chats.
+                                        </p>
                                     )}
                                 </>
                             ) : (
-                                <div className="rounded-lg bg-zinc-50 dark:bg-zinc-800/50 p-4 text-center ring-1 ring-zinc-200 dark:ring-zinc-700">
-                                    <p className="mb-3 text-sm text-zinc-500">Log in to save your chat history.</p>
-                                    <Link href="/login" className="inline-flex items-center gap-2 rounded bg-zinc-900 px-3 py-1.5 text-xs font-bold text-white hover:bg-zinc-800 dark:bg-white dark:text-black">
+                                <div className="rounded-lg bg-zinc-50 p-4 text-center ring-1 ring-zinc-200 dark:bg-zinc-800/50 dark:ring-zinc-700">
+                                    <p className="mb-3 text-sm text-zinc-500">
+                                        Log in to save your chat history.
+                                    </p>
+                                    <Link
+                                        href="/login"
+                                        className="inline-flex items-center gap-2 rounded bg-brand-primary px-3 py-1.5 text-xs font-bold text-white hover:bg-zinc-800 dark:bg-white dark:text-black"
+                                    >
                                         <LogIn className="h-3 w-3" /> Login
                                     </Link>
                                 </div>
                             )}
                         </div>
 
-                        <div className="mt-auto border-t border-zinc-200 dark:border-zinc-700 pt-4">
+                        <div className="mt-auto border-t border-zinc-200 pt-4 dark:border-zinc-700">
                             {auth.user ? (
-                                <div className="flex items-center justify-between gap-3 rounded-lg p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 group">
+                                <div className="group flex items-center justify-between gap-3 rounded-lg p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800">
                                     <div className="flex items-center gap-3 truncate">
-                                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-zinc-900 text-white font-bold dark:bg-white dark:text-black">
+                                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-brand-primary font-bold text-white dark:bg-white dark:text-black">
                                             {auth.user.name.charAt(0)}
                                         </div>
                                         <div className="truncate text-sm font-medium text-zinc-900 dark:text-white">
@@ -246,15 +353,19 @@ export default function ChatApp() {
                                     </div>
                                     <button
                                         onClick={() => router.post('/logout')}
-                                        className="p-1.5 text-zinc-500 hover:text-white hover:bg-zinc-700 rounded-md transition-all lg:opacity-0 group-hover:opacity-100"
+                                        className="rounded-md p-1.5 text-zinc-500 transition-all group-hover:opacity-100 hover:bg-zinc-700 hover:text-white lg:opacity-0"
                                         title="Log out"
                                     >
                                         <LogOut className="h-4 w-4" />
                                     </button>
                                 </div>
                             ) : (
-                                <Link href="/" className="flex items-center gap-2 p-2 text-sm hover:text-white">
-                                    <ArrowLeft className="h-4 w-4" /> Back to Home
+                                <Link
+                                    href="/"
+                                    className="flex items-center gap-2 p-2 text-sm hover:text-white"
+                                >
+                                    <ArrowLeft className="h-4 w-4" /> Back to
+                                    Home
                                 </Link>
                             )}
                         </div>
@@ -262,66 +373,113 @@ export default function ChatApp() {
                 </aside>
 
                 {/* Main Content */}
-                <div className="flex flex-1 flex-col h-full relative">
+                <div className="relative flex h-full flex-1 flex-col">
                     {/* Header (Mobile Toggle) */}
-                    <header className="sticky top-0 z-20 flex items-center justify-between border-b border-zinc-200 bg-white/80 p-4 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80 lg:hidden">
-                        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1 hover:bg-zinc-100 rounded dark:hover:bg-zinc-800">
-                            {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                    <header className="sticky top-0 z-20 flex items-center justify-between border-b border-zinc-200 bg-white/80 p-4 backdrop-blur lg:hidden dark:border-zinc-800 dark:bg-zinc-950/80">
+                        <button
+                            onClick={() => setSidebarOpen(!sidebarOpen)}
+                            className="rounded p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                        >
+                            {sidebarOpen ? (
+                                <X className="h-6 w-6" />
+                            ) : (
+                                <Menu className="h-6 w-6" />
+                            )}
                         </button>
                         <div className="flex items-center gap-2">
                             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-white p-0.5 shadow-sm ring-1 ring-zinc-200">
-                                <img src="/image/Area 24 one logo black.png" alt="" className="h-full w-full object-contain" />
+                                <img
+                                    src="/image/Area 24 one logo black.png"
+                                    alt=""
+                                    className="h-full w-full object-contain"
+                                />
                             </div>
-                            <span className="font-bold tracking-tighter uppercase text-sm">Area 24 <span className="font-medium text-zinc-500">one</span></span>
+                            <span className="text-sm font-bold tracking-tighter uppercase">
+                                Area 24{' '}
+                                <span className="font-medium text-zinc-500">
+                                    one
+                                </span>
+                            </span>
                         </div>
                         <div className="w-8" />
                     </header>
 
-                    {/* Chat Area */}
-                    <main className="flex-1 overflow-y-auto p-4 md:p-8">
-                        <div className="mx-auto max-w-3xl space-y-8 pb-20">
+                    {/* Chat Area - mobile first */}
+                    <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-8 overscroll-contain">
+                        <div className="mx-auto max-w-3xl space-y-6 sm:space-y-8 pb-24 sm:pb-20">
                             {/* Empty State / Welcome */}
                             {messages.length === 0 && !loading && (
-                                <div className="flex flex-col items-center justify-center h-[50vh] text-center opacity-50">
+                                <div className="flex h-[50vh] flex-col items-center justify-center text-center opacity-50">
                                     <div className="mb-4 rounded-full bg-zinc-100 p-4 dark:bg-zinc-900">
                                         <Sparkles className="h-8 w-8 text-zinc-400" />
                                     </div>
-                                    <h2 className="text-2xl font-semibold">How can I help you today?</h2>
+                                    <h2 className="text-2xl font-semibold">
+                                        How can I help you today?
+                                    </h2>
                                 </div>
                             )}
 
                             {messages.map((msg, idx) => (
-                                <div key={idx} className={`flex flex-col gap-2 ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}>
-                                    <div className={`flex gap-4 ${msg.sender === 'user' ? 'flex-row-reverse' : ''}`}>
-                                        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border ${msg.sender === 'user' ? 'bg-white dark:bg-zinc-800 dark:border-zinc-700' : 'bg-zinc-900 text-white border-transparent dark:bg-white dark:text-black'}`}>
-                                            {msg.sender === 'user' ? <User className="h-5 w-5 text-zinc-500" /> : <Sparkles className="h-4 w-4" />}
+                                <div
+                                    key={idx}
+                                    className={`flex flex-col gap-2 ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
+                                >
+                                    <div
+                                        className={`flex gap-4 ${msg.sender === 'user' ? 'flex-row-reverse' : ''}`}
+                                    >
+                                        <div
+                                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border ${msg.sender === 'user' ? 'bg-white dark:border-zinc-700 dark:bg-zinc-800' : 'border-transparent bg-brand-primary text-white dark:bg-white dark:text-black'}`}
+                                        >
+                                            {msg.sender === 'user' ? (
+                                                <User className="h-5 w-5 text-brand-muted" />
+                                            ) : (
+                                                <Sparkles className="h-4 w-4" />
+                                            )}
                                         </div>
 
-                                        <div className={`flex flex-col gap-2 max-w-[85%] lg:max-w-[75%]`}>
-                                            <div className={`
-                                                prose prose-zinc dark:prose-invert break-words text-base leading-7 rounded-2xl px-4 py-2
-                                                ${msg.sender === 'user' ? 'bg-white dark:bg-zinc-800/80 ring-1 ring-zinc-200 dark:ring-zinc-700' : ''}
-                                            `}>
-                                                {msg.text}
+                                        <div
+                                            className={`flex max-w-[85%] flex-col gap-2 lg:max-w-[75%]`}
+                                        >
+                                            <div
+                                                className={`prose prose-zinc dark:prose-invert rounded-2xl px-4 py-2 text-base leading-7 break-words whitespace-pre-wrap ${
+                                                    msg.sender === 'user' 
+                                                        ? 'bg-white ring-1 ring-zinc-200 dark:bg-zinc-800/80 dark:ring-zinc-700' 
+                                                        : msg.highlight
+                                                        ? 'bg-red-50 ring-2 ring-red-500 dark:bg-red-900/20 dark:ring-red-500 font-semibold animate-pulse'
+                                                        : ''
+                                                } `}
+                                            >
+                                                {parseTextWithLinks(msg.text)}
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Quick Reply Options */}
+                                    {/* Quick Reply Options - touch friendly on mobile */}
                                     {msg.sender === 'bot' && msg.options && (
-                                        <div className="ml-12 flex flex-wrap gap-2">
-                                            {msg.options.map((option, optIdx) => (
-                                                <button
-                                                    key={optIdx}
-                                                    onClick={() => handleSend(undefined, option)}
-                                                    disabled={loading || idx !== messages.length - 1}
-                                                    className={`rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm font-medium hover:bg-zinc-50 hover:border-zinc-300 transition-all dark:bg-zinc-900 dark:border-zinc-800 dark:hover:bg-zinc-800 shadow-sm
-                                                        ${idx !== messages.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}
-                                                    `}
-                                                >
-                                                    {option}
-                                                </button>
-                                            ))}
+                                        <div className="ml-10 flex flex-wrap gap-2 sm:ml-12">
+                                            {msg.options.map(
+                                                (option, optIdx) => (
+                                                    <button
+                                                        key={optIdx}
+                                                        type="button"
+                                                        onClick={() =>
+                                                            handleSend(
+                                                                undefined,
+                                                                option,
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            loading ||
+                                                            idx !==
+                                                                messages.length -
+                                                                    1
+                                                        }
+                                                        className={`touch-manipulation rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium shadow-sm transition-all hover:border-zinc-300 hover:bg-zinc-50 active:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:active:bg-zinc-700 min-h-[44px] sm:min-h-0 ${idx !== messages.length - 1 ? 'cursor-not-allowed opacity-50' : ''} `}
+                                                    >
+                                                        {option}
+                                                    </button>
+                                                ),
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -329,7 +487,7 @@ export default function ChatApp() {
 
                             {loading && (
                                 <div className="flex gap-4">
-                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-white dark:bg-white dark:text-black">
+                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-primary text-white dark:bg-white dark:text-black">
                                         <Sparkles className="h-4 w-4" />
                                     </div>
                                     <div className="flex items-center gap-1">
@@ -343,26 +501,31 @@ export default function ChatApp() {
                         </div>
                     </main>
 
-                    <footer className="p-4 bg-transparent absolute bottom-0 w-full">
+                    <footer className="absolute bottom-0 left-0 right-0 w-full bg-transparent p-3 sm:p-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
                         <div className="mx-auto max-w-3xl">
-                            <form onSubmit={(e) => handleSend(e)} className="relative flex items-end gap-2 rounded-3xl border border-zinc-200 bg-white p-3 shadow-xl shadow-zinc-200/50 focus-within:ring-2 focus-within:ring-zinc-900/10 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-none">
+                            <form
+                                onSubmit={(e) => handleSend(e)}
+                                className="relative flex items-end gap-2 rounded-2xl sm:rounded-3xl border border-zinc-200 bg-white p-2.5 sm:p-3 shadow-xl shadow-zinc-200/50 focus-within:ring-2 focus-within:ring-brand-primary/50 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-none"
+                            >
                                 <input
-                                    className="flex-1 resize-none border-0 bg-transparent px-3 py-3 text-base placeholder:text-zinc-400 focus:ring-0 focus:outline-none dark:text-white"
+                                    className="flex-1 min-w-0 resize-none border-0 bg-transparent px-3 py-3 text-base placeholder:text-zinc-400 focus:ring-0 focus:outline-none dark:text-white sm:py-3 [touch-action:manipulation]"
                                     placeholder="Message Area24One..."
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
-                                    autoFocus
+                                    autoComplete="off"
                                 />
                                 <button
                                     type="submit"
                                     disabled={!input.trim() || loading}
-                                    className="mb-1 rounded-2xl bg-black p-2 text-white hover:bg-zinc-800 disabled:opacity-30 dark:bg-white dark:text-black dark:hover:bg-zinc-200 transition-all"
+                                    className="touch-manipulation shrink-0 rounded-xl sm:rounded-2xl bg-brand-primary p-3 text-white transition-all hover:bg-zinc-800 disabled:opacity-30 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-zinc-200 sm:p-2 sm:mb-1"
+                                    aria-label="Send"
                                 >
                                     <Send className="h-5 w-5" />
                                 </button>
                             </form>
                             <p className="mt-2 text-center text-[10px] text-zinc-400">
-                                AI can make mistakes. Consider checking important information.
+                                AI can make mistakes. Consider checking
+                                important information.
                             </p>
                         </div>
                     </footer>

@@ -43,3 +43,7 @@ Route::get('/debug-db', function () {
         return "Error: " . $e->getMessage() . " | File: " . $e->getFile() . " | Line: " . $e->getLine();
     }
 });
+
+Route::get('/test', function () {
+    return view('test');
+});

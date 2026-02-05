@@ -29,7 +29,7 @@ export default function Login({
         >
             <Head title="Log in" />
 
-            <div className="grid gap-6">
+            {/* <div className="grid gap-6">
                 <Button variant="outline" className="w-full" asChild>
                     <a href="/auth/google">
                         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -64,7 +64,7 @@ export default function Login({
                         </span>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             <Form
                 {...store.form()}

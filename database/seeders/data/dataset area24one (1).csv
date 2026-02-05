@@ -1,0 +1,800 @@
+service_vertical,intent_slug,keywords,response_text,redirect_url
+General,greet_hello,"hi, hello, hey, good morning, good evening","""Hello! Welcome to Area24. I’m here to help you with construction, interiors, real estate, development, and events across Bangalore, Mysore, and Ballari. Tell me what you’re planning, and I’ll guide you step by step.""",/
+General,who_are_you,"who are you, are you a bot, what is this","""I’m the Area24 Assistant. My role is to understand your requirement, give you clear cost and process guidance, and connect you with the right Area24 expert when needed.""",/about
+General,what_is_area24,"what is area24, about area24, area 24 company","""Area24 is a multi-domain consultancy group offering construction, interiors, real estate advisory, land development, and event management services. We operate primarily in Bangalore, Mysore, and Ballari.""",/about
+General,services_overview,"services, what do you do, offerings, solutions","""We help with building homes, designing interiors, buying or investing in property, land development through joint ventures, and planning events. I can guide you to the right service based on your need.""",/services
+General,cities_of_operation,"locations, which cities, service area","""We currently operate in Karnataka, mainly across Bangalore, Mysore, and Ballari. Costs and processes may vary slightly by city, and I’ll factor that in while guiding you.""",/locations
+service_vertical,intent_slug,keywords,response_text,redirect_url
+General,discovery_planning_type,"what are you planning, need help, planning project","""To guide you properly, I need to understand what you’re planning. Is it construction, interior design, property investment, land development, or are you just exploring options?""",/
+General,discovery_project_location,"project location, where is site, city location","""Thanks. Could you tell me where your project is located? For example, Bangalore, Mysore, or Ballari. Location impacts cost, approvals, and timelines.""",/
+General,discovery_project_purpose,"self use, rental, investment, commercial use","""What is the main purpose of this project — self-use, rental income, commercial use, or long-term investment? This helps in recommending the right approach.""",/
+General,discovery_budget_range,"budget range, how much budget, cost limit","""Do you have a rough budget range in mind? You can choose a broad range like under ₹50L, ₹50L–₹1Cr, ₹1Cr–₹2Cr, or above ₹2Cr. This helps me avoid unrealistic suggestions.""",/
+General,discovery_timeline,"project timeline, when to start, how soon","""What is your expected timeline? Immediate, within 3–6 months, or just planning for now? Timelines affect feasibility and cost planning.""",/
+General,discovery_first_time,"first time project, new to construction","""Is this your first time handling a project like this? If yes, I’ll explain things in a simpler and more detailed way.""",/
+General,discovery_confusion_area,"confused about cost, confused process, need clarity","""No problem. What are you most confused about right now — budget, process, approvals, or feasibility? I’ll start from there.""",/
+service_vertical,intent_slug,keywords,response_text,redirect_url
+General,greet_simple,"hi, hello, hey, hii, hlo","""Hello! I’m the Area24 Assistant. I can help you with construction, interiors, real estate, development, and events in Bangalore, Mysore, and Ballari. What are you planning?""",/
+General,greet_formal,"good morning, good afternoon, good evening","""Good day! Welcome to Area24. Let me know what you’re planning, and I’ll guide you with clear cost and process details.""",/
+General,greet_casual,"anyone there, are you there, help me","""Yes, I’m here 🙂 Tell me what you need help with, and I’ll take it step by step.""",/
+General,assistant_identity,"are you human, are you ai, who is talking","""I’m a smart assistant built by Area24 to guide you through construction, interiors, property, and events with real-world clarity.""",/about
+General,company_legitimacy,"is this a company, real company, genuine","""Yes, Area24 is a professional consultancy group operating across Karnataka with dedicated teams for each service vertical.""",/about
+General,services_short,"what services, what help, what can you do","""We assist with building homes, designing interiors, buying or investing in property, land development, and event planning.""",/services
+General,services_detailed,"explain services, full services list","""Our services include turnkey construction, premium interiors, real estate advisory, joint venture development, and curated events. I’ll help you choose what fits best.""",/services
+General,service_selection_help,"which service should i choose, confused service","""That’s common. I’ll ask a few simple questions to understand your plan and suggest the right service.""",/
+General,operating_cities,"bangalore mysore ballari, service locations","""We currently operate in Bangalore, Mysore, and Ballari. Costs, approvals, and timelines vary slightly by city.""",/locations
+General,other_city_query,"other cities, outside karnataka","""At the moment, our active operations are focused on Karnataka. If you’re planning elsewhere, I can still give general guidance.""",/locations
+General,contact_general,"contact, phone number, call you","""You can contact us via phone, WhatsApp, or request a callback. I can arrange that once we understand your requirement.""",/contact
+General,office_visit,"office address, visit office","""Yes, you can visit our office by appointment. I can share the nearest office details based on your city.""",/contact
+General,working_hours,"office timing, working hours","""Our teams are available during standard business hours. Online assistance is available anytime for guidance.""",/contact
+General,language_support,"kannada support, english, language","""We assist in English and Kannada, depending on your comfort.""",/
+General,privacy_concern,"is my data safe, privacy","""Your details are used only to assist with your request and are handled confidentially.""",/privacy
+General,no_sales_pressure,"will you force sales, sales call","""No. My role is to give clarity first. You decide the next step only if you’re comfortable.""",/
+General,help_navigation,"how to start, guide me","""No worries. Just tell me what you’re planning, even if it’s unclear. I’ll guide you from there.""",/
+General,trust_signal,"why trust area24, can i trust you","""We focus on transparent guidance, realistic numbers, and documented processes. Trust is built through clarity, not pressure.""",/about
+General,user_thanks,"thanks, ok thanks, got it","""You’re welcome! Let me know if you want to go deeper or need estimates.""",/
+General,exit_polite,"bye, exit, later","""Sure. Whenever you’re ready, I’ll be here to help.""",/
+service_vertical,intent_slug,keywords,response_text,redirect_url
+General,discovery_start,"need guidance, not sure, help decide","""No problem. I’ll ask a few simple questions to understand your requirement and guide you correctly.""",/
+General,discovery_plan_type,"build house, interior work, buy property, event","""What best describes what you’re planning right now — construction, interiors, property investment, development, or events?""",/
+General,discovery_location_city,"project city, site city, location city","""Which city is your project in — Bangalore, Mysore, or Ballari?""",/
+General,discovery_location_area,"which area, locality, zone","""Do you know the locality or area? This helps refine cost and feasibility.""",/
+General,discovery_property_status,"land available, already have site, no land","""Do you already own land/property, or are you still exploring options?""",/
+General,discovery_purpose_use,"self living, rent, resale, business","""Is this for self-use, rental income, commercial use, or investment?""",/
+General,discovery_budget_broad,"low budget, medium budget, high budget","""Do you have a rough budget band in mind? Even an approximate range is enough.""",/
+General,discovery_budget_comfort,"budget flexible, fixed budget","""Is your budget fixed, or can it be adjusted based on feasibility?""",/
+General,discovery_timeline_start,"when to start, project start","""When are you planning to start — immediately, in a few months, or just exploring?""",/
+General,discovery_timeline_pressure,"urgent, fast project, no hurry","""Is there any urgency, or are timelines flexible?""",/
+General,discovery_experience,"first time, experienced","""Have you handled similar projects before, or is this your first time?""",/
+General,discovery_decision_role,"decision maker, family decision","""Are you the main decision-maker, or will others be involved?""",/
+General,discovery_information_level,"need full explanation, brief info","""Would you prefer a detailed explanation or a quick summary?""",/
+General,discovery_cost_focus,"cost first, process later","""Would you like to understand costs first, or the process and options?""",/
+General,discovery_quality_preference,"budget vs premium, quality focus","""Do you prefer cost-optimized solutions or premium-quality execution?""",/
+General,discovery_risk_appetite,"low risk, open to risk","""Are you more comfortable with safe options or open to calculated risks?""",/
+General,discovery_confusion_cost,"confused about cost, cost clarity","""That’s common. I’ll explain costs clearly and what affects them.""",/
+General,discovery_confusion_process,"confused process, how it works","""I’ll walk you through the process step by step so there’s no confusion.""",/
+General,discovery_confusion_approvals,"approvals confusion, legal doubts","""Approvals can be confusing. I’ll explain what’s required for your city.""",/
+General,discovery_ready_next_step,"what next, next step","""Based on what you’ve shared, I’ll suggest the best next step.""",/
+service_vertical,intent_slug,keywords,response_text,redirect_url
+General,user_not_ready,"not ready now, later maybe, just checking","""That’s completely fine. You can explore at your pace. I’ll just share helpful clarity so you’re better prepared when you’re ready.""",/
+General,user_overwhelmed,"too many things, confused overall","""It can feel overwhelming. Let’s slow it down and tackle one thing at a time. I’ll simplify it for you.""",/
+General,user_anxiety_cost,"scared of cost, budget tension","""That’s a common concern. I’ll explain realistic ranges and where costs can be controlled so there are no surprises.""",/
+General,user_anxiety_cheating,"afraid of cheating, fraud fear","""Your concern is valid. Transparency and documentation are critical. I’ll explain how to stay protected at each stage.""",/
+General,user_comparison_mode,"comparing builders, many options","""Comparing options is smart. I can help you understand what actually matters so comparisons are meaningful.""",/
+General,user_family_pressure,"family pressure, parents involved","""Understood. I’ll keep explanations practical and family-friendly so decisions are easier to align.""",/
+General,user_time_constraint,"very busy, short time","""No problem. I’ll keep things crisp and focus only on what’s essential.""",/
+General,user_budget_sensitive,"tight budget, limited funds","""Got it. I’ll focus on cost-efficient options without compromising essentials.""",/
+General,user_quality_sensitive,"quality matters, long term","""That’s a good mindset. I’ll highlight long-term value and durability in options.""",/
+General,user_trust_building,"need confidence, reassurance","""I’ll focus on clarity, realistic expectations, and transparent logic so you can decide confidently.""",/
+service_vertical,intent_slug,keywords,response_text,redirect_url
+General,info_need_basic,"simple explanation, basic info","""Sure. I’ll explain this in a simple, non-technical way.""",/
+General,info_need_detailed,"detailed explanation, explain deeply","""Alright. I’ll break this down step by step with all key details.""",/
+General,info_need_examples,"give example, sample explanation","""I’ll explain using a real-world example so it’s easier to understand.""",/
+General,info_need_numbers,"show numbers, cost figures","""I’ll share realistic ranges and explain what affects those numbers.""",/
+General,info_need_process,explain process flow,"""I’ll walk you through the process from start to finish.""",/
+General,info_need_risks,"risks involved, what can go wrong","""I’ll clearly point out risks and how they’re usually managed.""",/
+General,info_need_options,"what options available, choices","""I’ll outline the main options and help you compare them logically.""",/
+General,info_need_pros_cons,advantages disadvantages,"""I’ll explain both pros and cons so you get a balanced view.""",/
+General,info_need_recommendation,"what do you suggest, your advice","""Based on what you’ve shared, I’ll recommend the most sensible option.""",/
+General,info_need_summary,"summarize, short version","""Here’s a short summary highlighting only the key points.""",/
+service_vertical,intent_slug,keywords,response_text,redirect_url
+General,convo_reset,"start over, reset chat","""Sure. Let’s start fresh. Tell me what you’re planning.""",/
+General,convo_change_topic,"change topic, different question","""No problem. What would you like to discuss now?""",/
+General,convo_repeat,"repeat that, say again","""Sure. I’ll explain that again clearly.""",/
+General,convo_confirmation,"okay understood, makes sense","""Great. Let me know when you want to move to the next step.""",/
+General,convo_pause,"wait, hold on","""No worries. Take your time. I’ll be here.""",/
+General,convo_resume,"continue, go ahead","""Alright, continuing from where we left off.""",/
+General,convo_redirect_service,take me to right service,"""Based on your inputs, I’ll guide you to the most relevant service.""",/
+General,convo_lead_soft,"talk to expert, human call","""If you’d like, I can arrange a discussion with our expert for deeper clarity.""",/
+General,convo_end_positive,"all good, done","""Glad I could help. Reach out anytime if you need guidance.""",/
+General,convo_feedback,"feedback, suggestion","""Thank you. Your feedback helps us improve this guidance system.""",/
+service_vertical,intent_slug,keywords,response_text,redirect_url
+Construction,const_intro,"construction service, build house, home construction","""I see you’re packages to build a house. At Atha Construction, we provide end-to-end construction services so you don’t have to coordinate with multiple vendors. I’ll guide you step by step.""",/
+Construction,const_company_identity,"atha construction, who will build","""Atha Construction is the construction arm of Area24, focused on residential and small commercial projects across Bangalore, Mysore, and Ballari.""",/about
+Construction,const_where_to_cost-estimation,"where to cost-estimation building, first step construction","""The first step is understanding your land status, location, and budget. Once that’s clear, we can plan services, services, and construction logically.""",/cost-estimation
+Construction,const__basic," construction meaning, end to end build",""" construction means we handle everything — services, services, construction, and handover. You get a finished home without managing daily site work.""",/
+Construction,const_partial_services,"partial construction, only build packages","""Yes, we also offer partial services like packages-only or finishing-only, depending on your requirement and stage of the project.""",/services
+Construction,const_land_required,"need land to build, no land yet","""If you already own land, we can cost-estimation immediately. If not, we can guide you through land options via Area24 Realty before construction.""",/
+Construction,const_services_of_buildings,house villa apartment construction,"""We handle independent houses, villas, duplex homes, and small commercial buildings. The approach and cost vary by type.""",/services
+Construction,const_city_specific,"bangalore construction, mysore builder, ballari","""Construction costs and approval cost-estimationes vary between Bangalore, Mysore, and Ballari. I’ll factor your city into all guidance.""",/
+Construction,const_cost_basic,"construction cost, how much to build house","""Construction cost depends on services, packages, and location. In Karnataka, basic ranges cost-estimation around ₹1,600 per sq.ft and go upward based on quality.""",/packages
+Construction,const_budget_confusion,"don’t know budget, cost confusion","""That’s common. I’ll help you understand realistic cost bands so you can plan without stress.""",/packages
+Construction,const_time_basic,"how long construction takes, duration","""A standard independent house usually takes 10–14 months from packages to handover, depending on size and complexity.""",/services
+Construction,const_services_included,"services included, architect included","""Yes. Our  projects include architectural packages and coordination with structural consultants.""",/services
+Construction,const_services_basic,"services needed, permission for building","""Building services depend on city and plot type. We assist with required permissions as part of the cost-estimation.""",/services
+Construction,const_material_quality,"quality of packages, good packages","""We use standardized, branded packages based on the package selected. Specifications are shared transparently before execution.""",/packages
+Construction,const_packagesization,"packages house services, changes allowed","""Yes, servicess are packagesized based on your lifestyle and budget. packagesization impacts cost and services, which I’ll explain clearly.""",/packages
+Construction,const_packages,"who manages site, daily packages","""Our project team manages site execution, quality checks, and coordination so you don’t have to visit daily.""",/cost-estimation
+Construction,const_payment_basic,"payment method, how to pay builder","""terms are usually milestone-based, linked to construction progress. This keeps things transparent and controlled.""",/ 
+Construction,const_risk_fear,"fear of cheating, builder ","""That concern is valid. Clear specifications, staged terms, and documentation are key to avoiding issues. I’ll explain how we handle this.""",/
+Construction,const_packages_local,local contractor vs builder,"""Local contractors may seem cheaper initially, but organized construction offers better control, documentation, and long-term quality.""",/packages
+Construction,const_next_step,"what next, how to proceed","""The next step is understanding your land, location, and budget. From there, I can suggest the best construction approach.""",/cost-estimation
+service_vertical,intent_slug,keywords,response_text,redirect_url
+Construction,const_l2_land_status,"do you have land, land available, site ready","""To understand feasibility, do you already own the land, or are you still looking for a site?""",/
+Construction,const_l2_land_location,"site location, plot location, area of land","""Where is the land located? City and locality affect services, cost, and services feasibility.""",/
+Construction,const_l2_plot_size,"plot size, site dimensions, land measurement","""What is the plot size or dimensions? Even an approximate size helps assess what can be built.""",/
+Construction,const_l2_plot_orientation,"east facing, west facing, north facing","""Do you know the plot orientation (east/west/north/south facing)? This can influence packages and layout.""",/
+Construction,const_l2_road_width,"road width, access road","""Do you know the road width in front of the plot? This impacts setbacks and approval limits.""",/
+Construction,const_l2_plot_type,"bda site, panchayat land, gramathana","""Is the plot BDA-approved, panchayat-approved, or gramathana? Approval type affects permissions.""",/
+Construction,const_l2_floor_requirement,"number of floors, g+1 g+2","""How many floors are you packages — ground only, G+1, or more? This affects packages and cost.""",/
+Construction,const_l2_usage_type,"residential, rental, commercial","""Will this be for self-living, rental income, or mixed use? services and budget packages depend on this.""",/
+Construction,const_l2_budget_band,"budget range construction, how much can spend","""Do you have a broad construction budget range in mind? Even an estimate helps avoid unrealistic packages.""",/
+Construction,const_l2_budget_flex,"fixed budget, flexible budget","""Is your budget fixed, or can it be adjusted based on feasibility and services options?""",/
+Construction,const_l2_quality_expectation,"basic or premium, quality level","""Are you aiming for a cost-optimized build or a premium-quality finish? This impacts material selection.""",/
+Construction,const_l2_services_expectation,"simple services, luxury services","""Do you prefer a simple functional services or something more premium or unique?""",/
+Construction,const_l2_services_expectation,"how soon to cost-estimation, cost-estimation services","""When are you packages to cost-estimation construction — immediately, in a few months, or just packages?""",/
+Construction,const_l2_approval_status,"services done, permission status","""Have any building services been obtained yet, or will they need to be applied for?""",/
+Construction,const_l2_bank_loan,"bank loan, construction loan","""Will you be using a bank loan for construction? This affects documentation and payment structuring.""",/
+Construction,const_l2_family_size,"family members, house size need","""How many people will be using the house? This helps plan room count and layout.""",/
+Construction,const_l2_future_expansion,"future floors, expansion later","""Do you want to plan for future expansion, like adding floors later?""",/
+Construction,const_l2_parking_need,"car parking, vehicle space","""How many vehicles do you need parking for? This impacts ground-floor packages.""",/
+Construction,const_l2_vastu_preference,"vastu required, vastu compliant","""Is Vastu compliance important for you? If yes, we’ll factor that into packages.""",/
+Construction,const_l2_risk_concern,"fear of delay, cost overrun","""Are you more concerned about cost overruns, delays, or quality issues? I’ll address those first.""",/
+Construction,const_l2_decision_maker,"who decides, family decision","""Are you the primary decision-maker, or will others be involved in services?""",/
+Construction,const_l2_site_visit,site inspection needed,"""A site visit helps assess feasibility accurately. Would you like to plan one later?""",/
+Construction,const_l2_estimation_ready,"want estimate, cost calculation","""Once these basics are clear, I can share a realistic cost and services estimate.""",/
+Construction,const_l2_next_step,what happens next,"""Based on your answers, the next step is feasibility packages and budget alignment.""",/
+Construction,const_l2_city_variation,"bangalore vs mysore cost, city difference","""Construction costs and approval servicess vary between Bangalore, Mysore, and Ballari. I’ll adjust estimates accordingly.""",/
+service_vertical,intent_slug,keywords,response_text,redirect_url
+Construction,const_l3a_packages_list,"construction packages, price packages, building packages","""We offer five construction packages — ₹1849, ₹2025, ₹2399, ₹2799, and ₹4400 per sq.ft. Each package differs mainly in services depth, packages level, and professional involvement.""",/packages
+Construction,const_l3a_package_difference,"difference between packages, packages packages","""The main differences between packages are the level of services detailing, site packages, architect involvement, and project monitoring. Higher packages offer more hands-on management and packagesization.""",/packages
+Construction,const_l3a_basic_package,"1849 package, basic construction","""The ₹1849 package is suitable for cost-focused construction with standard packages and basic packages. It works well for simple homes with limited packagesization.""",/packages
+Construction,const_l3a_standard_package,"2025 package, standard construction","""The ₹2025 package offers improved services detailing and better coordination packagesd to the basic package. It’s ideal for families looking for balance between cost and packages clarity.""",/packages
+Construction,const_l3a_value_package,"2399 package, value package","""The ₹2399 package is a popular choice as it includes dedicated architectural involvement and better site monitoring, offering stronger quality control.""",/packages
+Construction,const_l3a_premium_package,"2799 package, premium construction","""The ₹2799 package is servicesed for clients who want higher involvement from engineers and architects, along with regular site monitoring and material guidance.""",/packages
+Construction,const_l3a_luxury_package,"4400 package, luxury construction","""The ₹4400 package is our top-tier offering with full-time site packages, extensive services support, and premium-level project coordination.""",/packages
+Construction,const_l3a_which_package,"which package is best, choose package","""The best package depends on your budget, services expectations, and how much involvement you want in daily site decisions. I can help narrow it down based on your priorities.""",/packages
+Construction,const_l3a_services_included,"services included in package, drawings included","""All packages include services services, but the depth varies. Higher packages offer more detailed drawings and stronger architectural involvement.""",/services
+Construction,const_l3a_engineer_support,"site engineer, packages level","""Site packages increases as you move up the packages. Premium and luxury packages include more frequent site presence and monitoring.""",/packages
+Construction,const_l3a_architect_role,"architect included, services architect","""Architect involvement cost-estimations at a basic level and becomes more dedicated in higher packages, including material and stage-wise guidance.""",/services
+Construction,const_l3a_project_management,project management included,"""Project management improves with higher packages, offering better coordination, tracking, and communication throughout construction.""",/cost-estimation
+Construction,const_l3a_packagesization_scope,"packagesization allowed, services changes","""packagesization is possible in all packages, but higher packages handle changes more smoothly due to better packages and documentation.""",/packages
+Construction,const_l3a_site_visits,"site visits included, monitoring","""Higher packages include more frequent site visits and reporting, helping maintain quality and servicess.""",/packages
+Construction,const_l3a_daily_monitoring,"daily site monitoring, full time engineer","""Daily site monitoring is included only in higher-tier packages, especially the ₹2799 and ₹4400 options.""",/packages
+Construction,const_l3a_material_guidance,material selection help,"""Material selection support improves with package level. Premium packages include packagesd guidance during execution.""",/packages
+Construction,const_l3a_interior_coordination,interior coordination support,"""Higher packages provide better coordination support for services and home décor packages, though execution is separate.""",/services
+Construction,const_l3a_budget_safety,"cost control package, avoid overruns","""Higher packages reduce cost surprises by offering better packages, monitoring, and documentation from the cost-estimation.""",/packages
+Construction,const_l3a_services_control,services control package,"""Packages with stronger packages and packages generally experience smoother servicess and fewer delays.""",/services
+Construction,const_l3a_city_applicability,package valid bangalore mysore ballari,"""All packages are applicable across Bangalore, Mysore, and Ballari. City-specific factors affect services, not package scope.""",/
+Construction,const_l3a_upgrade_possible,upgrade package later,"""Yes, package upgrades are possible early in the project, before services and execution are locked.""",/packages
+Construction,const_l3a_first_time_user,first time builder package,"""First-time builders usually benefit from mid or higher packages due to better guidance and reduced stress.""",/packages
+Construction,const_l3a_cost_vs_support,why higher package cost more,"""Higher packages cost more because they include stronger professional involvement, tighter packages, and better coordination.""",/packages
+Construction,const_l3a_next_step,next step after choosing package,"""Once a package is shortlisted, the next step is aligning it with your plot size, budget, and services.""",/cost-estimation
+service_vertical,intent_slug,keywords,response_text,redirect_url
+Construction,const_l3b_packages_overview,"packages quality, strong house, building strength","""All our packages follow RCC-framed construction with structural services based on site requirements. Strength and safety are non-negotiable across all packages.""",/packages
+Construction,const_l3b_foundation_depth,"foundation depth, basement depth","""Foundation and basement depth are servicesed based on soil conditions and load requirements. Higher packages allow deeper basements where feasible.""",/packages
+Construction,const_l3b_concrete_grade,"concrete grade, m20 m25 concrete","""Concrete grades vary by package. Entry packages use M20 grade, while higher packages use M25 grade RCC for improved strength and durability.""",/packages
+Construction,const_l3b_steel_quality,"steel used, steel brand quality","""We use TMT steel conforming to IS standards across all packages. Higher packages specify premium-grade steel for enhanced performance.""",/packages
+Construction,const_l3b_wall_thickness,"wall thickness, brick thickness","""Wall thickness increases in higher packages, with thicker exterior and partition walls for better structural stability and insulation.""",/packages
+Construction,const_l3b_brick_type,"brick type, solid block, wire cut bricks","""Brick services vary by package, ranging from solid blocks to wire-cut bricks in higher packages, improving finish and durability.""",/packages
+Construction,const_l3b_ceiling_height,"ceiling height, floor height","""Ceiling heights range from around 10 feet in basic packages to higher clear heights in premium packages, improving ventilation and space feel.""",/services
+Construction,const_l3b_parapet_wall,parapet wall height,"""Parapet wall height and thickness improve with package level, enhancing safety and terrace usability.""",/packages
+Construction,const_l3b_plastering,"plastering quality, wall plaster","""All packages include full plastering, with higher packages offering improved thickness and finish consistency.""",/packages
+Construction,const_l3b_sump_capacity,"water sump size, underground tank","""Water sump capacity increases by package, ranging from basic residential needs to higher capacities in premium packages.""",/services
+Construction,const_l3b_overhead_tank,overhead tank size,"""Overhead water tank capacity varies by package, with higher packages supporting larger storage and better pressure stability.""",/services
+Construction,const_l3b_services_pipes,"services pipes quality, pipe brand","""services uses CPVC or UPVC pipes across packages, with higher tiers allowing premium brands and better jointing systems.""",/services
+Construction,const_l3b_bathroom_core,"bathroom services, concealed services","""Concealed services is standard across packages, with higher tiers offering better routing and pressure packages.""",/services
+Construction,const_l3b_waterproofing,"waterproofing packages, leakage protection","""Waterproofing is included in wet areas and terraces. Higher packages apply more advanced waterproofing systems.""",/packages
+Construction,const_l3b_staircase_type,"staircase packages, concrete stairs","""All staircases are RCC-based. Premium packages offer improved services detailing and structural finishing.""",/packages
+Construction,const_l3b_lift_provision,"lift provision, future lift","""Lift pit and shaft provisions are included in higher packages where required, allowing future lift installation.""",/packages
+Construction,const_l3b_basement_support,"basement construction, parking basement","""Basement construction feasibility depends on soil and package selection. Higher packages support deeper and reinforced basements.""",/packages
+Construction,const_l3b_load_services,"load calculation, structural services","""Structural load calculations are done by qualified engineers for all projects, ensuring safety and compliance.""",/services
+Construction,const_l3b_soil_test,"soil test included, soil bearing","""Soil testing is included in higher packages to ensure foundation safety and long-term stability.""",/services
+Construction,const_l3b_crack_prevention,"crack control, durability","""Crack control is addressed through proper RCC services, curing practices, and material selection.""",/packages
+Construction,const_l3b_long_life,"building lifespan, durability","""With proper maintenance, homes built under these structural standards are servicesed for long-term durability.""",/packages
+Construction,const_l3b_city_variation,packages bangalore mysore ballari,"""Structural services is adjusted based on city-specific soil conditions in Bangalore, Mysore, and Ballari.""",/
+Construction,const_l3b_package_comparison,packages difference packages,"""Structural robustness improves with package level through higher concrete grades, thicker walls, and better services input.""",/packages
+Construction,const_l3b_first_time_builder,first time builder safety,"""For first-time builders, mid to higher packages offer better structural assurance and peace of mind.""",/packages
+Construction,const_l3b_quality_checks,quality checks packages,"""Regular quality checks are part of execution, with frequency increasing in higher packages.""",/cost-estimation
+Construction,const_l3b_engineer_presence,engineer packages packages,"""Engineer involvement increases with package level, ensuring closer monitoring of structural work.""",/packages
+Construction,const_l3b_strength_vs_cost,packages cost vs safety,"""Structural safety is never compromised. Higher packages enhance durability and comfort, not basic safety.""",/packages
+Construction,const_l3b_next_layer,what next after packages,"""Once packages clarity is done, the next step is understanding services and lifestyle elements.""",/services
+service_vertical,intent_slug,keywords,response_text,redirect_url
+Construction,const_l3c_services_overview,"house services, interior finish quality","""services define how your home looks and feels daily. Package levels mainly differ in services type, door quality, window systems, and paint finish.""",/services
+Construction,const_l3c_services_general,"services included, floor tiles","""services quality improves by package — from standard vitrified tiles in entry packages to granite, quartz, or marble services in premium tiers.""",/services
+Construction,const_l3c_services_basic,"1849 services, basic tiles","""The ₹1849 package includes standard vitrified tiles suitable for durable, cost-effective homes.""",/services
+Construction,const_l3c_services_standard,2025 services,"""The ₹2025 package upgrades tile quality and anti-skid options, improving durability and finish consistency.""",/services
+Construction,const_l3c_services_value,2399 services,"""The ₹2399 package introduces granite or higher-grade vitrified tiles in key living areas for a more premium look.""",/services
+Construction,const_l3c_services_premium,2799 services,"""The ₹2799 package offers quartz, premium vitrified, or Italian marble-style services depending on area usage.""",/services
+Construction,const_l3c_services_luxury,4400 services,"""The ₹4400 package includes luxury-grade marble or quartz services for an elegant, long-lasting aesthetic.""",/services
+Construction,const_l3c_services_scope,"services included, services services","""services scope improves with package level, including better countertops, sink quality, and layout detailing.""",/services
+Construction,const_l3c_services_basic,basic services finish,"""Entry packages include functional services services focused on durability rather than luxury.""",/services
+Construction,const_l3c_services_premium,premium services finish,"""Higher packages offer premium countertops, serviceser sinks, and better wash basin integration.""",/services
+Construction,const_l3c_door_quality,"door quality, main door type","""Door quality upgrades across packages — from functional flush services to serviceser wooden services in premium tiers.""",/services
+Construction,const_l3c_main_door,main door quality,"""Main services evolve from teak-frame based services to serviceser wooden services with enhanced thickness and finish in higher packages.""",/services
+Construction,const_l3c_internal_services,room services quality,"""Internal services improve in finish, thickness, and durability as package level increases.""",/services
+Construction,const_l3c_services,"window type, upvc services","""Window systems upgrade from standard sliding services to UPVC or aluminium systems with better insulation in higher packages.""",/services
+Construction,const_l3c_window_glass,window glass quality,"""Higher packages include thicker glass and improved sealing, enhancing noise reduction and thermal comfort.""",/services
+Construction,const_l3c_services,"staircase railing, services railing","""Railing quality improves from MS services to glass and stainless steel combinations in premium packages.""",/services
+Construction,const_l3c_services_finish,services services,"""services services includes anti-skid tiles, with quality and size improving by package level.""",/services
+Construction,const_l3c_services_scope,"services included, paint quality","""services scope includes internal and external services, with higher packages offering more coats and premium services.""",/services
+Construction,const_l3c_services_basic,basic paint,"""Basic packages use standard emulsion paints suitable for regular residential use.""",/services
+Construction,const_l3c_services_premium,premium paint finish,"""Premium packages include higher-grade emulsion paints for smoother finish and better longevity.""",/services
+Construction,const_l3c_weather_resistance,exterior durability,"""Exterior services improve in weather resistance with higher packages, reducing long-term maintenance.""",/services
+Construction,const_l3c_maintenance,finish maintenance,"""Higher-quality services generally require less frequent maintenance and retain appearance longer.""",/services
+Construction,const_l3c_lifestyle_fit,lifestyle finish choice,"""Finish selection can be aligned with lifestyle — rental-friendly, family-use, or luxury living.""",/services
+Construction,const_l3c_child_safe,child friendly services,"""Anti-skid services and smooth-edge services improve safety, especially for families with children.""",/services
+Construction,const_l3c_elder_friendly,senior friendly services,"""Anti-slip tiles and easy-maintenance surfaces are better suited for senior-friendly homes.""",/services
+Construction,const_l3c_visual_difference,visible difference packages,"""Visual difference between packages becomes noticeable in services, services, services, and paint finish.""",/packages
+Construction,const_l3c_upgrade_possible,upgrade services later,"""Some services can be upgraded later, but selecting the right package early reduces rework and cost.""",/services
+Construction,const_l3c_cost_vs_look,cost vs aesthetics,"""Higher finish cost reflects better aesthetics, comfort, and longer lifespan — not just appearance.""",/services
+Construction,const_l3c_next_layer,what after services,"""Once services are clear, the next layer is services systems and packages features.""",/services
+service_vertical,intent_slug,keywords,response_text,redirect_url
+Construction,const_l3d_services_overview,"services system house, wiring quality","""services systems are servicesed for safety, load handling, and future upgrades. Package levels mainly differ in wiring brand, switch quality, and point flexibility.""",/services
+Construction,const_l3d_wiring_quality,"wire quality, fireproof wiring","""All packages use fire-retardant, low-smoke (FRLS) grade wiring. Higher packages specify premium wire brands for added reliability.""",/services
+Construction,const_l3d_switch_brands,"switches brand, switch quality","""Switch quality improves by package — from standard branded switches to premium modular systems in higher tiers.""",/services
+Construction,const_l3d_points_basic,services points count,"""Entry packages include standard services points for daily residential needs, planned efficiently to avoid overload.""",/services
+Construction,const_l3d_points_flexibility,"add services points, extra points","""Higher packages allow greater flexibility in adding services points for appliances, workspaces, and future needs.""",/services
+Construction,const_l3d_ac_points,"ac points provided, ac wiring","""AC points are provided for bedrooms and key living spaces. Higher packages support better load packages.""",/services
+Construction,const_l3d_services_points,services services points,"""services services packages improves with package level, supporting modern appliances and safer load distribution.""",/services
+Construction,const_l3d_bathroom_points,bathroom services safety,"""Bathroom services points are planned with safety in mind, including concealed wiring and protected fittings.""",/services
+Construction,const_l3d_inverter_ready,"inverter provision, backup power","""Inverter or backup power readiness improves with higher packages, making future integration easier.""",/services
+Construction,const_l3d_panel_quality,"services panel, distribution board","""services panels are servicesed to handle residential loads safely, with higher packages offering better segregation and protection.""",/services
+Construction,const_l3d_outdoor_points,"outdoor lights, exterior services","""Exterior and utility services points are included, with higher packages supporting automation and landscape lighting.""",/services
+Construction,const_l3d_safety_features,"services safety, shock protection","""Safety features such as proper earthing and protection devices are part of the services services.""",/services
+Construction,const_l3d_packages_ready,"packages home ready, automation","""Higher packages are packages-ready, allowing integration of automation systems without major rewiring.""",/packages
+Construction,const_l3d_automation_scope,home automation features,"""Premium packages support automation for lighting, services, and access control as per requirement.""",/packages
+Construction,const_l3d_sensor_features,"sensors included, motion sensors","""Top-tier packages include provisions for sensors such as motion, gas leakage, and access alerts.""",/packages
+Construction,const_l3d_services_system,"services wiring, cctv provision","""services packages supports CCTV and services systems, with packagesd wiring in higher packages.""",/services
+Construction,const_l3d_solar_ready,"solar provision, future solar","""services layouts allow future solar integration. Premium packages include better preparedness for renewable energy systems.""",/services
+Construction,const_l3d_lift_power,lift services provision,"""Where applicable, higher packages include services provisions for lift systems.""",/services
+Construction,const_l3d_load_capacity,services load capacity,"""Load capacity packages improves with package level, supporting modern appliances without frequent tripping.""",/services
+Construction,const_l3d_upgrade_later,upgrade services later,"""services upgrades are easier when higher packages are chosen early, reducing rework later.""",/services
+Construction,const_l3d_city_variation,services rules bangalore mysore,"""services execution follows city-specific safety norms in Bangalore, Mysore, and Ballari.""",/
+Construction,const_l3d_family_usage,services packages family size,"""services layouts can be aligned with family size, usage habits, and lifestyle needs.""",/services
+Construction,const_l3d_rental_use,rental services packages,"""For rental homes, services packages focuses on durability, safety, and ease of maintenance.""",/services
+Construction,const_l3d_cost_vs_features,services cost difference,"""Higher services cost reflects better safety, flexibility, and future readiness — not just brand upgrades.""",/services
+Construction,const_l3d_next_layer,what after services,"""Once services systems are clear, the final layer is exclusions, terms, and scope boundaries.""",/terms
+service_vertical,intent_slug,keywords,response_text,redirect_url
+Construction,const_l3e_scope_overview,"what is included, what is excluded","""To avoid confusion, construction packages clearly define what is included and what falls outside scope. This ensures transparency and smooth execution.""",/terms
+Construction,const_l3e_gst_excluded,"gst included, gst extra","""GST is not included in the package rates and is charged as applicable. This is standard practice across construction projects.""",/terms
+Construction,const_l3e_approval_charges,"approval cost included, plan sanction","""Statutory services and related government charges are not included, as they vary by city and plot type.""",/services
+Construction,const_l3e_plan_changes,"changes after approval, services changes","""services changes after final approval may affect cost and services. Early clarity helps avoid rework.""",/cost-estimation
+Construction,const_l3e_extra_work,"extra work cost, additional items","""Any work beyond the agreed scope is treated as additional and charged separately after client approval.""",/terms
+Construction,const_l3e_material_variation,material upgrade downgrade,"""Material upgrades or changes outside the selected package are billed separately to maintain packages transparency.""",/packages
+Construction,const_l3e_minimum_area,minimum built up area,"""Package packages assumes a minimum built-up area. Smaller projects may have adjusted rates due to fixed overheads.""",/packages
+Construction,const_l3e_site_conditions,"site issues, uneven land","""Unforeseen site conditions like soil variation or access issues may impact scope and cost.""",/packages
+Construction,const_l3e_borewell_water,"borewell included, water source","""Borewell drilling and external water sourcing are not included, as availability varies by location.""",/terms
+Construction,const_l3e_electric_connection,"eb connection, bescom","""Permanent electricity connection charges are excluded and depend on local authority norms.""",/terms
+Construction,const_l3e_water_connection,"water connection, municipal water","""Municipal water connection charges are excluded and handled separately based on local availability.""",/terms
+Construction,const_l3e_compound_wall,compound wall included,"""Compound walls, gates, and external landscaping are not included unless specified separately.""",/cost-estimation
+Construction,const_l3e_lift_supply,lift included or not,"""Lift supply is not included by default. services and structural provisions may be provided in higher packages.""",/terms
+Construction,const_l3e_loose_furniture,"furniture included, wardrobes","""Loose furniture, wardrobes, and movable services are not part of construction scope unless agreed separately.""",/services
+Construction,const_l3e_appliance_exclusion,"appliances included, fittings","""services appliances such as fans, lights, and AC units are excluded unless specified.""",/terms
+Construction,const_l3e_external_development,"road work, drainage","""External development works outside the plot boundary are not included.""",/terms
+Construction,const_l3e_services_variation,"delay reasons, services changes","""servicess may vary due to services, weather, or scope changes. Regular updates help manage expectations.""",/services
+Construction,const_l3e_payment_terms,"payment terms, milestone payment","""terms are milestone-based. Delays in payment can impact work progress and servicess.""",/terms
+Construction,const_l3e_client_responsibility,client responsibility,"""Timely decisions, services, and terms from the client are essential for smooth execution.""",/cost-estimation
+Construction,const_l3e_warranty_limits,warranty scope,"""Warranty applies to workmanship as defined in the agreement and excludes wear-and-tear or misuse.""",/terms
+Construction,const_l3e_force_majeure,"force majeure, uncontrollable","""Uncontrollable events like natural conditions or regulatory changes are handled as per standard contract terms.""",/terms
+Construction,const_l3e_dispute_prevention,dispute avoidance,"""Clear scope definition, written services, and regular communication help prevent disputes.""",/cost-estimation
+Construction,const_l3e_city_variation,rules vary by city,"""Rules and charges vary between Bangalore, Mysore, and Ballari. Scope clarity avoids city-specific surprises.""",/
+Construction,const_l3e_read_before_sign,before signing agreement,"""Understanding inclusions and exclusions before signing ensures a smooth and stress-free construction journey.""",/terms
+Construction,const_l3e_next_step,what to do next,"""Once scope and terms are clear, the next step is final estimation and agreement alignment.""",/cost-estimation
+service_vertical,intent_slug,keywords,response_text,redirect_url
+Construction,const_l4_concrete_choice,"m20 vs m25, concrete grade","""M25 concrete offers higher strength and durability packagesd to M20, especially for multi-floor homes. The choice impacts long-term performance more than initial cost.""",/services
+Construction,const_l4_steel_logic,"tmt steel grade, steel quality","""Higher-grade TMT steel improves load handling and crack resistance. This becomes important for taller packagess and future expansion.""",/services
+Construction,const_l4_soil_impact,"soil type impact, soil bearing","""Soil condition directly affects foundation services, depth, and cost. That’s why soil testing improves safety and avoids over- or under-servicesing.""",/services
+Construction,const_l4_wall_thickness_logic,wall thickness importance,"""Thicker walls improve thermal comfort, sound insulation, and crack resistance, not just strength.""",/packages
+Construction,const_l4_ceiling_height_logic,ceiling height benefit,"""Higher ceiling heights improve ventilation and perceived space but also increase construction and cooling costs slightly.""",/services
+Construction,const_l4_waterproofing_logic,waterproofing importance,"""Most structural complaints arise from poor waterproofing. Investing here reduces long-term repair costs significantly.""",/packages
+Construction,const_l4_services_quality,services failure reasons,"""services failures usually come from poor jointing and pressure packages, not just pipe quality.""",/services
+Construction,const_l4_services_load,services load packages,"""Modern homes require higher services load packages due to appliances, EVs, and automation.""",/services
+Construction,const_l4_future_expansion_services,future floor packages,"""packages foundations and columns for future floors early avoids costly structural retrofits later.""",/packages
+Construction,const_l4_city_services_diff,bangalore mysore soil difference,"""Bangalore, Mysore, and Ballari have different soil profiles, which is why structural services cannot be copied city-to-city.""",/
+service_vertical,intent_slug,keywords,response_text,redirect_url
+Construction,const_l4_cost_breakup_logic,cost breakup logic,"""packages usually consumes 45–50% of total cost, services 25–30%, and services the rest. This helps prioritize spending.""",/packages
+Construction,const_l4_low_cost_risk,cheap construction risk,"""Very low-cost construction often compromises packages, curing, or material handling rather than visible items.""",/packages
+Construction,const_l4_where_to_save,where can i save cost,"""Cost savings are safer in services and layout efficiency than in packages or waterproofing.""",/packages
+Construction,const_l4_where_not_to_save,where not to save,"""packages, waterproofing, and services safety are areas where cost-cutting leads to long-term issues.""",/services
+Construction,const_l4_package_value,package value logic,"""Mid-tier packages often provide the best balance between cost control and execution reliability.""",/packages
+Construction,const_l4_long_term_cost,maintenance cost logic,"""Higher-quality construction typically reduces reservices, leakage repair, and services fixes over 10–15 years.""",/
+Construction,const_l4_rental_roi,rental roi construction,"""Rental ROI depends more on layout efficiency and durability than luxury services.""",/investment
+Construction,const_l4_resale_value,resale value factors,"""Resale value improves with structural quality, documentation, and neutral services.""",/investment
+Construction,const_l4_budget_overrun_reason,budget overrun reasons,"""Most overruns occur due to late services changes, unclear scope, or delayed decisions.""",/cost-estimation
+Construction,const_l4_cost_vs_quality,cost vs quality decision,"""Quality-driven decisions usually cost slightly more upfront but reduce lifetime ownership cost.""",/packages
+service_vertical,intent_slug,keywords,response_text,redirect_url
+Construction,const_l4_delay_causes,construction delays reasons,"""Common delay causes include services, weather, material availability, and scope changes.""",/services
+Construction,const_l4_delay_prevention,how to avoid delay,"""Clear drawings, timely decisions, and milestone terms reduce delay risk.""",/cost-estimation
+Construction,const_l4_quality_checks,quality control methods,"""Quality control relies on stage-wise inspections rather than final-stage fixes.""",/cost-estimation
+Construction,const_l4_packages_value,packages importance,"""Frequent packages prevents small errors from becoming expensive corrections.""",/packages
+Construction,const_l4_documentation,documentation importance,"""Documentation protects both client and builder by fixing scope, packages, and servicess.""",/cost-estimation
+Construction,const_l4_change_management,handling changes,"""Change management works best when changes are documented and priced before execution.""",/cost-estimation
+Construction,const_l4_weather_risk,monsoon construction risk,"""Monsoon affects curing, excavation, and finishing servicess but can be managed with packages.""",/services
+Construction,const_l4_vendor_coordination,vendor coordination risk,"""Multiple vendors increase coordination risk packagesd to  execution.""",/
+Construction,const_l4_client_role,client role in success,"""Timely decisions and clarity from the client directly influence project success.""",/cost-estimation
+Construction,const_l4_dispute_avoidance,dispute avoidance,"""Most disputes are avoided through clear scope, written services, and realistic expectations.""",/terms
+service_vertical,intent_slug,keywords,response_text,redirect_url
+Construction,const_l4_builder_vs_contractor,builder vs contractor,"""Builders offer packagesd cost-estimationes, while contractors rely heavily on individual skill and availability.""",/packages
+Construction,const_l4__vs_partial, vs partial,""" reduces coordination risk, while partial works only if the client actively manages execution.""",/
+Construction,const_l4_package_upgrade_logic,when to upgrade package,"""Upgrading packages early avoids reservices and execution conflicts later.""",/packages
+Construction,const_l4_first_time_builder_advice,first time builder advice,"""First-time builders benefit from stronger guidance and documentation support.""",/
+Construction,const_l4_local_builder_packages,local builder comparison,"""Local builders may offer lower quotes but often lack documentation and cost-estimation transparency.""",/packages
+Construction,const_l4_services_first_logic,services first or build first,"""services-first approaches reduce cost surprises and execution conflicts.""",/services
+Construction,const_l4_engineer_role_value,engineer role value,"""Engineers ensure safety, load management, and execution discipline beyond aesthetics.""",/services
+Construction,const_l4_architect_value,architect value,"""Architects balance functionality, aesthetics, and compliance within budget constraints.""",/services
+Construction,const_l4__indicators,how to judge builder,"""Clear specs, staged terms, and site access are strong  indicators.""",/
+Construction,const_l4_ready_for_next_step,ready to proceed,"""If these aspects are clear, the next step is detailed estimation and agreement alignment.""",/cost-estimation
+service_vertical,intent_slug,keywords,response_text,redirect_url
+interiors,int_intro,"interior services,  for home","""I see you’re contact . Nesthetix servicess handles residential and commercial  with clear services, costing, and contact support.""",/
+interiors,int_company_identity,"nesthetix servicess, interior company","""Nesthetix servicess is the interior services vertical of Area24, focusing on functional, modern, and premium  across Karnataka.""",/about
+interiors,int_where_to_contact,"where to contact , first step","""The first step is understanding your space type, size, and whether you need services-only or full contact.""",/services
+interiors,int_space_type,"apartment , villa ","""We handle apartment , villa , offices, and small commercial spaces. The approach differs by space type.""",/services
+interiors,int_services_only,"services only service, only services","""Yes, we offer services-only services that include layout contact, 3D views, and working drawings without contact.""",/services
+interiors,int_services_contact,"services and contact,  ","""We also provide services + contact, where we manage contact, vendors, and site contact end to end.""",/
+interiors,int_contact_only,contact only ,"""contact-only services are possible if drawings and specifications are clear and compatible.""",/services
+interiors,int_cost_basic,"interior cost, how much  cost","""Interior costs depend on space size, scope, and finishes. I’ll help you understand realistic budget ranges.""",/contact
+interiors,int_budget_confusion,don’t know interior budget,"""That’s common. I’ll break  into modules so costs feel manageable and transparent.""",/contact
+interiors,int_contact_basic,"interior contact, how long  take","""Apartment  usually take 6–10 weeks, while villas may take longer depending on scope.""",/contact
+interiors,int_city_variation,bangalore mysore ballari ,"""Interior costs and contacts vary slightly between Bangalore, Mysore, and Ballari due to labor and logistics.""",/
+interiors,int_contactization,contact interior services,"""servicess are contactized to your lifestyle, storage needs, and budget. contactization affects cost and contacts.""",/contact
+interiors,int_material_quality,interior material quality,"""We use standardized, moisture-resistant contact. Detailed specs are shared before contact.""",/contact
+interiors,int_modular_contact,modular contact ,"""Modular contacts are one of the most common interior modules. Scope and cost depend on layout and finishes.""",/contact
+interiors,int_contact,"wardrobe , storage","""contact and storage units are servicesed based on room size, usage, and finish preference.""",/contact
+interiors,int_contact_room,contact room ,"""contact room  focus on layout, lighting, and focal elements like TV units or wall treatments.""",/contact
+interiors,int_false_contact,"false contact, gypsum contact","""False contacts improve lighting and aesthetics. Scope depends on room count and services complexity.""",/contact
+interiors,int_first_time_user,first time ,"""If this is your first interior project, I’ll explain everything step by step to avoid confusion.""",/
+interiors,int_contact_local,local carpenter vs interior company,"""Local carpenters may cost less initially, but organized  offer better contact, finish consistency, and contacts.""",/contact
+interiors,int_next_step,next step ,"""The next step is understanding your space size, scope, and budget so I can guide you accurately.""",/contact
+interiors,intent_slug,keywords,response_text,redirect_url
+interiors,int_l2_space_type,"apartment or villa, space type","""To guide you properly, is this an apartment, villa, office, or commercial space?""",/
+interiors,int_l2_city,interior city location,"""Which city is the project in — Bangalore, Mysore, or Ballari? This affects cost and contacts.""",/
+interiors,int_l2_area_size,"carpet area, square feet","""What is the approximate carpet area or BHK size? Even a rough number helps assess scope.""",/
+interiors,int_l2_scope_modules,what all  needed,"""Which areas need  — contact, contact, contact room, contacts, false contact, or full home?""",/
+interiors,int_l2_services_or_contact,services only or contact,"""Do you need services-only services or full services + contact?""",/
+interiors,int_l2_budget_range,interior budget range,"""Do you have a rough interior budget range in mind? This helps align scope realistically.""",/
+interiors,int_l2_budget_below_threshold,"low budget , small budget","""For very limited scopes, interior work is usually handled by modular or carpentry vendors. We typically handle projects where multiple modules are involved.""",/
+interiors,int_l2_budget_validation,"is budget enough, feasible budget","""Interior feasibility depends on scope. Full-home  usually contact making sense from ₹5 lakhs onward.""",/
+interiors,int_l2_contact_only,only contact ,"""Standalone contacts can be servicesed, but contact feasibility depends on size, finish, and overall budget.""",/contact
+interiors,int_l2_wardrobe_only,only contact,"""Wardrobe-only projects may not justify full interior contact, but services guidance is possible.""",/contact
+interiors,int_l2_full_home,full home ,"""Full-home  allow better services consistency and cost optimization across spaces.""",/
+interiors,int_l2_new_home,new home ,"""Is this a new home handover or a renovation? New homes allow smoother contact.""",/
+interiors,int_l2_renovation,renovation ,"""Renovation projects need careful assessment of existing conditions before contact.""",/
+interiors,int_l2_contact_expectation,interior contact contact,"""When are you contact to contact  — immediately, in a few weeks, or just contact?""",/
+interiors,int_l2_possession_status,"possession received, handover date","""Have you already received possession, or is the handover scheduled?""",/
+interiors,int_l2_family_size,family members ,"""How many people will use the space? Storage and layout depend on this.""",/
+interiors,int_l2_usage_type,self use or rental ,"""Is this for self-use or rental? services priorities differ for each.""",/
+interiors,int_l2_services_preference,modern or luxury ,"""Do you prefer modern, minimal, luxury, or traditional ?""",/
+interiors,int_l2_quality_expectation,budget vs premium ,"""Are you looking for cost-optimized  or premium long-term quality?""",/
+interiors,int_l2_first_time_user,first time interior project,"""If this is your first interior project, I’ll explain costs and services more clearly to avoid surprises.""",/
+interiors,int_l2_decision_maker,decision maker ,"""Are you the primary decision-maker, or will others be involved?""",/
+interiors,int_l2_site_visit,interior site visit,"""A site visit helps assess contact feasibility accurately. Would you like to plan one later?""",/
+interiors,int_l2_estimation_ready,interior estimate,"""Once scope and budget are clear, I can give you a realistic estimate.""",/
+interiors,int_l2_feasibility_gate,interior feasibility check,"""Based on scope and budget, I’ll let you know whether full interior contact makes sense.""",/
+interiors,int_l2_next_step,next step ,"""The next step is aligning scope and budget so  can be planned efficiently.""",/contact
+interiors,intent_slug,keywords,response_text,redirect_url
+interiors,int_l3_cost_overview,"interior cost breakup, interior contact","""Interior cost depends on scope modules, material choices, and finish level. Full-home  generally contact making sense from ₹5 lakhs onward.""",/contact
+interiors,int_l3_module_logic,"interior modules, cost modules",""" are planned in modules like contact, contact, contact area, contacts, and false contact. Combining modules improves cost efficiency.""",/
+interiors,int_l3_contact_cost,modular contact cost,"""Modular contact costs typically range from ₹1.5L to ₹5L+, depending on size, layout, and finish quality.""",/contact
+interiors,int_l3_wardrobe_cost,wardrobe cost per room,"""contact usually range from ₹1L to ₹3L per contact based on size, shutter finish, and internal accessories.""",/contact
+interiors,int_l3_contact_room_cost,contact room interior cost,"""contact room  generally range from ₹1L to ₹4L depending on TV unit services, wall treatments, and lighting.""",/contact
+interiors,int_l3_contact_cost,contact  cost,"""contact  cost depends on wardrobe size, bed-back services, and lighting, usually ₹1.5L–₹4L per room.""",/contact
+interiors,int_l3_false_contact_cost,false contact cost,"""False contact costs range from ₹120–₹250 per sq.ft depending on services complexity and lighting integration.""",/contact
+interiors,int_l3_services_only_cost,services only  cost,"""services-only services are typically priced per sq.ft or per room, depending on scope and detailing required.""",/services
+interiors,int_l3_contact_cost_logic,contact cost logic,"""contact costs reflect material quality, carpentry precision, hardware, and installation quality.""",/contact
+interiors,int_l3_material_cost_driver,material cost impact,"""Material finish choice is the biggest cost driver — laminate, acrylic, veneer, or PU all vary significantly.""",/contact
+interiors,int_l3_hardware_cost,hardware cost ,"""Hardware like hinges, channels, and fittings impact durability more than appearance and affect long-term value.""",/contact
+interiors,int_l3_budget_5l_scope, in 5 lakhs,"""Around ₹5L works well for a compact apartment covering contact and contact with functional finishes.""",/contact
+interiors,int_l3_budget_8l_scope, in 8 lakhs,"""₹8L allows a balanced full-home interior for a 2–3 BHK with better finishes and storage contact.""",/contact
+interiors,int_l3_budget_12l_scope, in 12 lakhs,"""₹12L+ supports premium finishes, enhanced lighting, and stronger services detailing across spaces.""",/contact
+interiors,int_l3_apartment_vs_villa,apartment vs villa interior cost,"""Villa  generally cost more due to larger spaces, higher contacts, and contact detailing.""",/
+interiors,int_l3_rental_vs_self,rental  cost,"""Rental  focus on durability and easy maintenance, keeping costs controlled without heavy contactization.""",/
+interiors,int_l3_contact_services_cost,contact services cost impact,"""Highly contactized servicess increase cost and contact time due to detailing and precision work.""",/contact
+interiors,int_l3_standardization_saving,standard servicess saving,"""Standardized modules reduce cost and contact time without major compromise in quality.""",/
+interiors,int_l3_contact_cost_link,cost vs contact ,"""Faster contacts may increase cost due to parallel contact and labor intensity.""",/contact
+interiors,int_l3_cost_overrun_reason,interior cost overrun,"""Cost overruns usually happen due to late scope additions or material upgrades after contact contacts.""",/services
+interiors,int_l3_payment_structure,interior payment structure,"""Interior contact are usually milestone-based, linked to services finalization and contact stages.""",/contact
+interiors,int_l3_city_variation_cost,bangalore mysore ballari cost,"""Interior costs vary slightly across Bangalore, Mysore, and Ballari due to labor and logistics.""",/
+interiors,int_l3_quality_vs_cost,quality vs cost ,"""Higher cost often reflects better durability, smoother finishes, and longer life — not just looks.""",/
+interiors,int_l3_scope_reduction,reduce interior cost,"""Costs can be reduced by limiting scope, simplifying servicess, or phasing contact.""",/contact
+interiors,int_l3_partial_contact,partial  contact,"""Partial  are possible, but full-home contact usually gives better finish consistency.""",/
+interiors,int_l3_bundle_logic,interior bundles,"""Bundled interior contact helps optimize material procurement and labor efficiency.""",/
+interiors,int_l3_estimate_accuracy,estimate accuracy ,"""Accurate estimates depend on finalized scope and finishes. Early clarity avoids surprises later.""",/contact
+interiors,int_l3_value_decision,is  worth it,"""Well-planned  improve daily usability and reduce long-term maintenance issues.""",/
+interiors,int_l3_ready_for_next,next step after cost,"""Once costs and scope are clear, the next step is detailed services and material finalization.""",/contact
+interiors,intent_slug,keywords,response_text,redirect_url
+interiors,int_l4_plywood_choice,bwp plywood vs normal,"""BWP plywood resists moisture and warping, making it suitable for contacts and contact in Indian conditions.""",/contact
+interiors,int_l4_board_vs_plywood,mdf vs plywood ,"""MDF gives smoother finishes but plywood performs better in strength and moisture resistance.""",/contact
+interiors,int_l4_finish_choice,laminate acrylic veneer pu,"""Finish choice affects durability, maintenance, and cost. PU and veneer need more care than laminates.""",/contact
+interiors,int_l4_hardware_logic,soft close hardware value,"""Good hardware impacts daily usability more than appearance and reduces long-term repair needs.""",/contact
+interiors,int_l4_carpentry_precision,carpenter finish quality,"""Precision carpentry ensures alignment, smooth operation, and longer life of modules.""",/contact
+interiors,int_l4_factory_vs_site,factory made vs site carpentry,"""Factory-made modules offer better consistency, while site carpentry allows contactization but needs supervision.""",/contact
+interiors,int_l4_modular_contact_logic,modular vs carpenter contact,"""Modular contacts offer better finish consistency and faster contact, while carpenter contacts allow more flexibility.""",/contact
+interiors,int_l4_edge_banding,edge banding importance,"""Proper edge banding prevents moisture ingress and chipping, extending furniture life.""",/contact
+interiors,int_l4_finish_lifespan,finish durability,"""Laminate finishes typically outlast high-gloss finishes in daily-use homes.""",/contact
+interiors,int_l4_installation_quality,installation quality impact,"""Even premium contact fail if installation quality is poor. contact discipline is critical.""",/contact
+interiors,intent_slug,keywords,response_text,redirect_url
+interiors,int_l4_cost_driver,what increases interior cost,"""Scope expansion and finish upgrades are the primary cost drivers, more than space size alone.""",/contact
+interiors,int_l4_low_cost_risk,cheap  risk,"""Very low-cost  often compromise on material thickness, hardware, or finishing accuracy.""",/contact
+interiors,int_l4_where_to_save,where to save ,"""Cost savings are safer in décor elements than in core carpentry or hardware.""",/contact
+interiors,int_l4_where_not_save,where not to save ,"""Avoid cost-cutting in contacts, contact, and moisture-prone areas.""",/contact
+interiors,int_l4_value_5l,is 5 lakhs enough,"""₹5L works for compact scopes but requires controlled finish selection.""",/contact
+interiors,int_l4_cost_vs_life,cost vs lifespan ,"""Higher upfront cost often reduces repair and replacement expenses over 8–10 years.""",/
+interiors,int_l4_rental_logic,rental interior value,"""Rental  benefit more from durability than visual uniqueness.""",/
+interiors,int_l4_resale_logic,resale value ,"""Neutral servicess and good storage improve resale appeal more than bold styling.""",/
+interiors,int_l4_upgrade_timing,when to upgrade ,"""Upgrading finishes later is costlier due to dismantling and rework.""",/contact
+interiors,int_l4_cost_predictability,predictable interior cost,"""Clear scope and finish locking early improves cost predictability.""",/contact
+interiors,intent_slug,keywords,response_text,redirect_url
+interiors,int_l4_delay_causes,interior delay reasons,"""Interior delays usually arise from late services changes or material unavailability.""",/contact
+interiors,int_l4_delay_prevention,avoid interior delays,"""Finalizing servicess and finishes before contact reduces delays significantly.""",/services
+interiors,int_l4_quality_checks,quality checks ,"""Stage-wise quality checks are more effective than end-stage corrections.""",/services
+interiors,int_l4_vendor_coordination,vendor coordination ,"""Multiple vendors increase coordination risk contactd to single-point contact.""",/
+interiors,int_l4_services_lock,services freeze importance,"""services freeze helps control cost, contact, and contact accuracy.""",/services
+interiors,int_l4_site_readiness,site readiness ,"""contact proceeds smoothly when civil work and services are ready.""",/
+interiors,int_l4_client_role,client role ,"""Timely decisions from clients directly impact interior contacts.""",/services
+interiors,int_l4_weather_impact,monsoon  impact,"""Monsoon affects on-site carpentry and finishing contacts.""",/contact
+interiors,int_l4_installation_risk,installation mistakes,"""Most interior failures occur during installation rather than material selection.""",/contact
+interiors,int_l4_dispute_avoidance,interior dispute avoidance,"""Clear scope, drawings, and approvals prevent most disputes.""",/terms
+interiors,intent_slug,keywords,response_text,redirect_url
+interiors,int_l4_carpenter_vs_company,carpenter vs interior company,"""Interior companies offer contact, coordination, and accountability beyond carpentry work.""",/contact
+interiors,int_l4_modular_vs_contact,modular vs contact ,"""Modular  suit speed and consistency; contact suits personalization.""",/
+interiors,int_l4_services_only_vs_contact,services only vs contact,"""services-only works if contact supervision is strong; otherwise, contact support reduces risk.""",/services
+interiors,int_l4_local_vs_branded,local vs branded ,"""Branded  offer documentation and predictability, while local vendors rely on individual skill.""",/contact
+interiors,int_l4_first_time_advice,first time  advice,"""First-time clients benefit from bundled contact due to fewer coordination challenges.""",/
+interiors,int_l4_scope_validation,is my scope right,"""Validating scope early ensures budget and expectations stay aligned.""",/contact
+interiors,int_l4_value_validation,is this worth the cost,"""Well-executed  improve daily contact quality and reduce future modifications.""",/
+interiors,int_l4_trust_indicators,how to trust interior firm,"""Clear drawings, material specs, and milestone contact indicate reliability.""",/trust
+interiors,int_l4_when_to_proceed,when to proceed ,"""Proceed when scope, budget, and services clarity are aligned.""",/contact
+interiors,int_l4_next_step,next step expert ,"""The next step is detailed services discussion and feasibility confirmation.""",/contact
+service_vertical,intent_slug,keywords,response_text,redirect_url
+Realty,realty_intro,"real estate help, property assistance","""I see you’re exploring real estate. Area24 Realty helps with buying, selling, and investing in property with location and ROI clarity.""",/
+Realty,realty_company_identity,"area24 realty, realty division","""Area24 Realty is the real estate advisory arm of Area24, focusing on verified properties and investment logic across Karnataka.""",/
+Realty,realty_where_to_start,where to start property search,"""The first step is understanding whether you’re buying for self-use, rental income, or investment. I’ll guide you accordingly.""",/
+Realty,realty_property_types,plot apartment villa,"""We deal with plots, apartments, villas, and select commercial properties. Each has different risk and return profiles.""",/
+Realty,realty_buying,"buy property, purchase house","""If you’re planning to buy property, I can help shortlist options based on location, budget, and usage.""",/
+Realty,realty_investment,"property investment, invest in real estate","""For investments, we focus on appreciation potential, rental yield, and exit clarity rather than just price.""",/
+Realty,realty_plot_search,"buy plot, land purchase","""Plot buying depends heavily on approvals, road access, and future development plans.""",/
+Realty,realty_apartment_search,"buy apartment, flat search","""Apartment selection depends on builder credibility, location, and long-term livability.""",/
+Realty,realty_villa_search,"villa purchase, independent house","""Villas offer privacy and land value but come with higher entry cost and maintenance.""",/
+Realty,realty_city_scope,bangalore mysore ballari property,"""We currently focus on Bangalore, Mysore, and Ballari, where we track local market dynamics closely.""",/
+Realty,realty_budget_basic,"property budget, how much to spend","""Property budgets vary widely by city and location. I’ll help you set a realistic range before shortlisting.""",/
+Realty,realty_price_confusion,property price confusion,"""That’s common. I’ll explain what drives property prices so comparisons make sense.""",/
+Realty,realty_timeline_basic,when to buy property,"""Timing matters. Whether you’re buying now or later affects negotiation and availability.""",/
+Realty,realty_first_time_buyer,first time property buyer,"""If this is your first property purchase, I’ll explain things step by step to avoid common mistakes.""",/
+Realty,realty_legal_basics,"property legality, approvals","""Property legality and approvals are critical. I’ll help you understand what to check before committing.""",/
+Realty,realty_resale,"resale property, second hand","""Resale properties can offer better locations but need careful legal and condition checks.""",/
+Realty,realty_rental,"rental property, rental income","""Rental-focused purchases prioritize location demand and maintenance ease over luxury.""",/
+Realty,realty_trust_factor,can i trust this property,"""Trust comes from verified documents, clear titles, and realistic pricing — not just brochures.""",/
+Realty,realty_compare_options,"compare properties, which is better","""Comparisons work best when based on usage, ROI, and long-term plans rather than price alone.""",/
+Realty,realty_next_step,next step realty,"""The next step is understanding your purpose, budget, and preferred location.""",/
+service_vertical,intent_slug,keywords,response_text,/
+Realty,realty_l2_purchase_purpose,self use or investment,"""To guide you correctly, is this purchase for self-use, rental income, or long-term investment?""",/
+Realty,realty_l2_city,property city,"""Which city are you considering — Bangalore, Mysore, or Ballari?""",/
+Realty,realty_l2_locality,"preferred area, locality","""Do you have a preferred locality or zone in mind? Location drives both price and future value.""",/
+Realty,realty_l2_budget_band,property budget range,"""What budget range are you comfortable with? Even a broad range helps shortlist realistically.""",/
+Realty,realty_l2_budget_flex,budget flexibility,"""Is your budget fixed, or can it stretch slightly for better location or asset quality?""",/
+Realty,realty_l2_property_type,plot apartment villa,"""Are you looking at plots, apartments, villas, or open to options?""",/
+Realty,realty_l2_new_or_resale,new vs resale property,"""Do you prefer a new property or are you open to resale options?""",/
+Realty,realty_l2_timeline,when to buy,"""When are you planning to buy — immediately, within a few months, or just exploring?""",/
+Realty,realty_l2_risk_appetite,low risk high return,"""How comfortable are you with risk — low, medium, or high?""",/
+Realty,realty_l2_holding_period,holding period,"""How long do you plan to hold this property — short term, 5–7 years, or long term?""",/
+Realty,realty_l2_rental_expectation,rental income expectation,"""If rental income is important, do you have a target monthly range in mind?""",/
+Realty,realty_l2_appreciation_expectation,appreciation expectation,"""Are you primarily focused on appreciation, rental yield, or a balance of both?""",/
+Realty,realty_l2_first_time_buyer,first time buyer,"""Is this your first property purchase? If yes, I’ll explain things more step by step.""",/
+Realty,realty_l2_loan_usage,home loan required,"""Will you be using a bank loan? This affects eligibility and property selection.""",/
+Realty,realty_l2_emi_comfort,emi comfort level,"""Do you have a comfortable EMI range in mind?""",/
+Realty,realty_l2_family_needs,family needs property,"""If this is for self-use, how many people will use the property? This impacts size and layout.""",/
+Realty,realty_l2_future_plan,future plans,"""Do you plan to upgrade, rent, or sell this property in the future?""",/
+Realty,realty_l2_builder_preference,preferred builder,"""Do you have any builder preferences, or are you open to suggestions?""",/
+Realty,realty_l2_legal_priority,legal safety importance,"""How important is legal safety and documentation clarity for you?""",/
+Realty,realty_l2_ready_to_view,ready for site visits,"""Would you be open to site visits once options are shortlisted?""",/
+Realty,realty_l2_confusion_area,confused about what,"""What are you most confused about right now — price, location, legality, or returns?""",/
+Realty,realty_l2_decision_role,decision maker,"""Are you the primary decision-maker, or will family members be involved?""",/
+Realty,realty_l2_filter_logic,feasibility filter,"""Based on your inputs, I’ll filter out unsuitable options before suggesting anything.""",/
+Realty,realty_l2_estimation_ready,ready for numbers,"""Once these basics are clear, I can share realistic price and return ranges.""",/
+Realty,realty_l2_next_step,next step realty,"""The next step is shortlisting locations and property types that fit your goals.""",/
+,,,,/
+service_vertical,intent_slug,keywords,response_text,/
+Realty,realty_l3_price_overview,property price overview,"""Property prices vary based on city, locality, access roads, and approvals. Understanding price logic prevents overpaying.""",/
+Realty,realty_l3_bangalore_price,bangalore property price,"""In Bangalore, residential prices typically range from ₹4,000 to ₹15,000+ per sq.ft depending on zone and connectivity.""",/
+Realty,realty_l3_mysore_price,mysore property price,"""Mysore offers more affordable options, generally ranging from ₹3,000 to ₹7,000 per sq.ft in developing areas.""",/
+Realty,realty_l3_ballari_price,ballari property price,"""Ballari property prices are lower compared to metros, with residential rates typically between ₹2,000 and ₹5,000 per sq.ft.""",/
+Realty,realty_l3_plot_price,plot price per sqft,"""Plot prices vary sharply by approval type, road width, and future infrastructure plans.""",/
+Realty,realty_l3_apartment_price,apartment price per sqft,"""Apartment prices depend on builder reputation, amenities, and maintenance outlook.""",/
+Realty,realty_l3_villa_price,villa price range,"""Villas command higher prices due to land component, privacy, and independent access.""",/
+Realty,realty_l3_price_driver,what drives property price,"""Connectivity, job hubs, infrastructure plans, and legal clarity are major price drivers.""",/
+Realty,realty_l3_micro_location,micro location importance,"""Micro-location within the same area can change prices and livability significantly.""",/
+Realty,realty_l3_appreciation_logic,appreciation rate logic,"""Appreciation depends on infrastructure delivery, not announcements alone.""",/
+Realty,realty_l3_north_bangalore,north bangalore appreciation,"""North Bangalore has shown steady appreciation due to airport access and commercial growth, but timing and entry price matter.""",/
+Realty,realty_l3_mysore_growth,mysore growth areas,"""Mysore growth is driven by planned layouts, education hubs, and steady end-user demand.""",/
+Realty,realty_l3_ballari_growth,ballari growth logic,"""Ballari growth is slower but stable, often driven by self-use and regional business activity.""",/
+Realty,realty_l3_rental_yield,rental yield property,"""Residential rental yields typically range between 3–5%, while select commercial assets may reach higher.""",/
+Realty,realty_l3_plot_roi,plot investment roi,"""Plots generally offer better long-term appreciation but limited rental income.""",/
+Realty,realty_l3_apartment_roi,apartment roi,"""Apartments provide rental income but may have slower appreciation compared to land.""",/
+Realty,realty_l3_villa_roi,villa roi,"""Villas balance self-use comfort with moderate appreciation, depending on location.""",/
+Realty,realty_l3_budget_fit,budget vs location fit,"""Matching budget to the right micro-location is more important than stretching for a bigger asset.""",/
+Realty,realty_l3_overpriced_risk,overpriced property risk,"""Overpriced properties usually lack clear demand drivers or have legal limitations.""",/
+Realty,realty_l3_undervalued_logic,undervalued property,"""Undervalued opportunities often exist where infrastructure is functional but not yet fully commercialized.""",/
+Realty,realty_l3_new_vs_resale,new vs resale price,"""Resale properties may offer better locations, while new projects offer payment flexibility.""",/
+Realty,realty_l3_amenity_premium,amenity premium,"""Amenities add lifestyle value but don’t always translate to proportional resale value.""",/
+Realty,realty_l3_holding_period_effect,holding period impact,"""Longer holding periods reduce market timing risk and smooth appreciation cycles.""",/
+Realty,realty_l3_exit_clarity,exit strategy property,"""Exit clarity depends on demand depth, not just headline growth numbers.""",/
+Realty,realty_l3_price_negotiation,negotiation scope,"""Negotiation scope depends on demand, project stage, and seller motivation.""",/
+Realty,realty_l3_roi_expectation,realistic roi expectation,"""Realistic ROI expectations protect you from speculative decisions.""",/
+Realty,realty_l3_risk_alignment,risk alignment property,"""The best property aligns with your risk appetite, not market hype.""",/
+Realty,realty_l3_ready_for_validation,ready for expert validation,"""Once price and ROI logic are clear, the next step is legal and risk validation.""",/
+Realty,realty_l3_next_step,next step realty l3,"""The next step is validating shortlisted options for legal safety and risk.""",/
+service_vertical,intent_slug,keywords,response_text,/
+Realty,realty_l4_title_clarity,clear title meaning,"""A clear title means uninterrupted ownership history with no disputes. This is the first legal check before considering price.""",/
+Realty,realty_l4_approved_layout,approved layout meaning,"""Approved layouts ensure roads, amenities, and usage comply with local authority norms.""",/
+Realty,realty_l4_bda_panchayat,bda vs panchayat approval,"""BDA-approved properties offer higher legal certainty than panchayat-approved ones, especially in Bangalore.""",/
+Realty,realty_l4_ec_check,encumbrance certificate,"""Encumbrance Certificate (EC) confirms the property has no registered financial or legal liabilities.""",/
+Realty,realty_l4_khata_type,a khata b khata,"""A-Khata indicates tax compliance and legality, while B-Khata properties have limited permissions.""",/
+Realty,realty_l4_conversion,land conversion check,"""Converted land ensures agricultural land is legally approved for residential use.""",/
+Realty,realty_l4_rera,rera registration,"""RERA registration improves transparency and buyer protection for new projects.""",/
+Realty,realty_l4_completion_certificate,cc oc importance,"""Completion and Occupancy Certificates confirm the building meets approved plans.""",/
+Realty,realty_l4_resale_docs,resale property documents,"""Resale purchases require additional checks like past sale deeds and possession history.""",/
+Realty,realty_l4_legal_summary,legal checklist summary,"""A legal checklist helps ensure safety before emotional or financial commitment.""",/
+service_vertical,intent_slug,keywords,response_text,/
+Realty,realty_l4_red_flags,property red flags,"""Unclear titles, missing approvals, and unusually low prices are common red flags.""",/
+Realty,realty_l4_price_too_good,price too good to be true,"""Prices significantly below market often indicate legal or access issues.""",/
+Realty,realty_l4_road_access,road access risk,"""Lack of proper road access can limit approvals and resale potential.""",/
+Realty,realty_l4_civic_amenities,water power availability,"""Water, sewage, and power availability directly affect livability and rental demand.""",/
+Realty,realty_l4_future_infra,future infrastructure risk,"""Proposed infrastructure carries risk until execution actually starts.""",/
+Realty,realty_l4_builder_risk,builder credibility risk,"""Builder track record matters more than marketing claims.""",/
+Realty,realty_l4_density_risk,overdevelopment risk,"""High-density projects may impact long-term livability and maintenance.""",/
+Realty,realty_l4_exit_liquidity,exit liquidity risk,"""Liquidity depends on buyer demand depth, not just appreciation potential.""",/
+Realty,realty_l4_market_cycle,market cycle risk,"""Real estate cycles impact short-term resale more than long-term holding.""",/
+Realty,realty_l4_walk_away,when to walk away,"""Walking away is wise when legal clarity or exit visibility is weak.""",/
+service_vertical,intent_slug,keywords,response_text,/
+Realty,realty_l4_is_this_good,is this a good deal,"""A good deal aligns with your goal, budget, and risk tolerance — not just price.""",/
+Realty,realty_l4_self_use_validation,self use validation,"""For self-use, livability and daily convenience matter more than short-term appreciation.""",/
+Realty,realty_l4_investment_validation,investment validation,"""For investment, entry price discipline and exit clarity matter most.""",/
+Realty,realty_l4_compare_shortlist,compare shortlisted properties,"""Comparisons should weigh legality, location, and exit potential together.""",/
+Realty,realty_l4_emotional_buying,emotional buying risk,"""Emotional decisions often overlook legal and financial risks.""",/
+Realty,realty_l4_wait_or_buy,wait or buy now,"""Waiting makes sense if pricing or clarity is uncertain; buying makes sense when fundamentals align.""",/
+Realty,realty_l4_negotiation_logic,negotiation logic,"""Negotiation works best when backed by data, not urgency.""",/
+Realty,realty_l4_final_check,final validation checklist,"""A final checklist helps avoid last-minute surprises.""",/
+Realty,realty_l4_confidence_check,decision confidence,"""Confidence comes from clarity, not pressure.""",/
+Realty,realty_l4_ready_to_proceed,ready to proceed,"""If legality, price, and purpose align, proceeding becomes a logical next step.""",/
+service_vertical,intent_slug,keywords,response_text,/
+Realty,realty_l4_site_visit,site visit planning,"""Site visits help validate access, surroundings, and livability.""",/
+Realty,realty_l4_document_review,document review,"""Document review ensures legal clarity before commitment.""",/
+Realty,realty_l4_shortlisting,shortlist properties,"""Shortlisting narrows focus and improves decision quality.""",/
+Realty,realty_l4_market_opinion,market opinion,"""Independent market perspective helps avoid biased decisions.""",/
+Realty,realty_l4_expert_call,talk to expert,"""A discussion with a realty expert can clarify remaining doubts.""",/
+Realty,realty_l4_family_alignment,family alignment,"""Aligning family expectations reduces future regret.""",/
+Realty,realty_l4_offer_stage,making an offer,"""Offer decisions should be backed by comparables and legal comfort.""",/
+Realty,realty_l4_booking_stage,booking decision,"""Booking should happen only after legal and financial comfort.""",/
+Realty,realty_l4_lead_capture,proceed with assistance,"""I can assist you further with site visits, checks, and next steps.""",/
+Realty,realty_l4_close_loop,close discussion,"""Let me know when you’d like to move forward or explore alternatives.""",/
+service_vertical,intent_slug,keywords,response_text,redirect_url
+DevelopersJV,jv_intro,"joint venture, land development help","""I see you’re exploring land development options. Area24 Developers helps landowners evaluate joint ventures and development feasibility with clarity.""",/
+DevelopersJV,jv_company_identity,"area24 developers, developer division","""Area24 Developers is the development arm of Area24, focusing on joint ventures and land-led projects across Karnataka.""",/
+DevelopersJV,jv_what_is_jv,what is joint venture,"""A joint venture is where the landowner contributes land and the developer manages approvals, construction, and sales, with returns shared transparently.""",/
+DevelopersJV,jv_where_to_start,where to start jv,"""The first step is understanding land size, location, and ownership clarity. Everything else flows from that.""",/
+DevelopersJV,jv_land_required,minimum land size,"""Joint ventures usually work best for lands above a certain size, depending on location and zoning. I can help assess feasibility.""",/
+DevelopersJV,jv_city_scope,bangalore mysore ballari jv,"""We evaluate joint ventures in Bangalore, Mysore, and Ballari, where approval and market dynamics differ.""",/
+DevelopersJV,jv_land_types,land type jv,"""JV feasibility depends on land type — residential, commercial, converted land, or layout-approved plots.""",/
+DevelopersJV,jv_self_develop_vs_jv,self develop or jv,"""A JV reduces financial and execution risk compared to self-developing, especially for first-time landowners.""",/
+DevelopersJV,jv_profit_basic,profit sharing basics,"""Profit sharing depends on land value, project cost, and market potential. Ratios vary case by case.""",/
+DevelopersJV,jv_builtup_share,built-up share meaning,"""Instead of cash profit, some landowners prefer built-up area as their return.""",/
+DevelopersJV,jv_risk_basic,risk in joint venture,"""Risks exist in any development, but structured agreements and realistic planning reduce them.""",/
+DevelopersJV,jv_timeline_basic,development timeline,"""Development timelines vary based on approvals, scale, and market conditions.""",/
+DevelopersJV,jv_first_time_landowner,first time landowner,"""If this is your first time exploring development, I’ll explain things step by step.""",/
+DevelopersJV,jv_trust_factor,how to trust developer,"""Trust comes from feasibility studies, clear agreements, and transparent communication — not promises.""",/
+DevelopersJV,jv_legal_basics,legal aspects jv,"""Legal clarity around title, zoning, and agreements is critical before considering a JV.""",/
+DevelopersJV,jv_no_money_needed,need money for jv,"""In most JVs, landowners don’t invest construction capital; the developer handles funding.""",/
+DevelopersJV,jv_small_land,small land jv possible,"""Smaller lands may still be developed, but JV feasibility depends on zoning and access.""",/
+DevelopersJV,jv_exit_options,exit options jv,"""Exit options are defined in agreements, ensuring clarity for both landowner and developer.""",/
+DevelopersJV,jv_compare_builder,compare developers,"""Comparing developers should focus on feasibility logic, past execution, and transparency.""",/
+DevelopersJV,jv_next_step,next step jv,"""The next step is sharing basic land details so feasibility can be evaluated.""",/
+service_vertical,intent_slug,keywords,response_text,/
+DevelopersJV,jv_l2_land_location,land location jv,"""To assess feasibility, where is the land located — city and locality?""",/
+DevelopersJV,jv_l2_land_city,bangalore mysore ballari land,"""Which city is the land in — Bangalore, Mysore, or Ballari?""",/
+DevelopersJV,jv_l2_land_size,land size sq ft acre,"""What is the approximate land size or dimensions? Even a rough size helps evaluate development potential.""",/
+DevelopersJV,jv_l2_land_frontage,"road frontage, access road","""What is the road width and frontage? This impacts approvals and design.""",/
+DevelopersJV,jv_l2_land_shape,land shape regular,"""Is the land regular-shaped or irregular? Shape affects planning efficiency.""",/
+DevelopersJV,jv_l2_land_type,"residential land, commercial land","""What is the land zoning — residential, commercial, or mixed-use?""",/
+DevelopersJV,jv_l2_conversion_status,land converted or not,"""Is the land converted for residential/commercial use?""",/
+DevelopersJV,jv_l2_layout_approval,approved layout,"""Is the land part of an approved layout or an individual parcel?""",/
+DevelopersJV,jv_l2_title_clarity,clear title land,"""Is the title clear and in a single owner’s name?""",/
+DevelopersJV,jv_l2_family_ownership,multiple owners land,"""Are there multiple owners or family members involved?""",/
+DevelopersJV,jv_l2_encumbrance,loan or encumbrance,"""Is the land free from loans or legal encumbrances?""",/
+DevelopersJV,jv_l2_possession,physical possession,"""Is physical possession clear and uncontested?""",/
+DevelopersJV,jv_l2_expectation_type,cash or built up,"""Are you expecting cash returns, built-up area, or a combination?""",/
+DevelopersJV,jv_l2_return_expectation,profit expectation,"""Do you have a rough expectation, or are you open to feasibility-based structuring?""",/
+DevelopersJV,jv_l2_timeline_expectation,development timeline expectation,"""Are you flexible with timelines, or do you have a specific time horizon?""",/
+DevelopersJV,jv_l2_hold_vs_sell,hold or sell units,"""Do you plan to hold units for rental or sell them after completion?""",/
+DevelopersJV,jv_l2_first_time,first time jv,"""Is this your first time exploring a joint venture?""",/
+DevelopersJV,jv_l2_self_development_attempt,tried self development,"""Have you previously explored self-development or other developers?""",/
+DevelopersJV,jv_l2_risk_comfort,risk comfort level,"""How comfortable are you with market and approval risks?""",/
+DevelopersJV,jv_l2_small_land_feasibility,small land feasibility,"""Smaller lands can work, but feasibility depends on zoning, access, and market demand.""",/
+DevelopersJV,jv_l2_city_variation,city jv feasibility,"""JV feasibility differs between Bangalore, Mysore, and Ballari due to regulations and demand.""",/
+DevelopersJV,jv_l2_preliminary_filter,preliminary feasibility,"""Based on initial inputs, I’ll indicate whether a JV is worth evaluating further.""",/
+DevelopersJV,jv_l2_site_visit,site visit jv,"""A site visit helps validate feasibility more accurately.""",/
+DevelopersJV,jv_l2_document_check,document review,"""Document review is essential before any ratio or structure discussion.""",/
+DevelopersJV,jv_l2_next_step,next step jv l2,"""The next step is preparing a basic feasibility outline based on your land.""",/
+service_vertical,intent_slug,keywords,response_text,/
+DevelopersJV,jv_l3_structure_overview,"jv structure, how jv works","""A JV structure defines who contributes land, who invests capital, and how returns are shared. Structure depends on land value, project cost, and market potential.""",/
+DevelopersJV,jv_l3_profit_sharing_logic,profit sharing logic,"""Profit sharing is calculated after estimating project revenue, construction cost, approvals, and risk margins. It’s never fixed upfront without feasibility.""",/
+DevelopersJV,jv_l3_builtup_vs_cash,built up vs cash return,"""Landowners can choose returns as built-up area, cash share, or a mix. Each has different risk and liquidity profiles.""",/
+DevelopersJV,jv_l3_ratio_variation,jv ratio variation,"""JV ratios vary based on location, land size, zoning, and saleability. Similar-looking lands can have very different outcomes.""",/
+DevelopersJV,jv_l3_land_value_role,land value in jv,"""Higher land value usually increases landowner share, but excessive expectations can make projects unviable.""",/
+DevelopersJV,jv_l3_project_cost_role,project cost impact,"""Construction and approval costs directly affect the distributable value in a JV.""",/
+DevelopersJV,jv_l3_market_saleability,saleability impact,"""Projects in high-demand locations allow healthier JV structures than slow-moving markets.""",/
+DevelopersJV,jv_l3_small_vs_large_land,small vs large land jv,"""Larger land parcels generally allow better design efficiency and stronger JV outcomes.""",/
+DevelopersJV,jv_l3_city_difference,jv bangalore mysore ballari,"""JV dynamics differ across Bangalore, Mysore, and Ballari due to approval rules and buyer demand.""",/
+DevelopersJV,jv_l3_floor_potential,fsr far impact,"""FSR/FAR and permissible floors significantly impact revenue potential and JV returns.""",/
+DevelopersJV,jv_l3_time_value,time value of project,"""JV returns are spread over time. Longer projects require patience and realistic planning.""",/
+DevelopersJV,jv_l3_phased_development,phased development jv,"""Phased development can reduce risk and improve cash flow in larger projects.""",/
+DevelopersJV,jv_l3_exit_options,exit options jv,"""Exit options include selling built-up units, revenue sharing, or early buyout clauses.""",/
+DevelopersJV,jv_l3_landowner_role,landowner involvement,"""Landowners can choose passive or participative roles depending on agreement structure.""",/
+DevelopersJV,jv_l3_developer_role,developer responsibilities,"""The developer handles approvals, funding, construction, and sales execution.""",/
+DevelopersJV,jv_l3_return_timeline,return timeline jv,"""Returns are typically realized post-approvals and during sales phases, not upfront.""",/
+DevelopersJV,jv_l3_expectation_mismatch,expectation mismatch,"""Most JV failures occur due to expectation mismatch rather than execution issues.""",/
+DevelopersJV,jv_l3_risk_allocation,risk allocation jv,"""Risk allocation should be clearly defined so responsibilities and rewards align.""",/
+DevelopersJV,jv_l3_transparency_need,transparency in jv,"""Transparent cost sheets and sales tracking are critical for trust in JV projects.""",/
+DevelopersJV,jv_l3_cashflow_logic,cash flow jv,"""Cash flow planning ensures the project doesn’t stall mid-way due to funding gaps.""",/
+DevelopersJV,jv_l3_profit_vs_control,profit vs control,"""Higher control often comes with higher responsibility and risk, not just profit.""",/
+DevelopersJV,jv_l3_tax_consideration,tax considerations jv,"""Tax implications differ for cash returns and built-up area and should be planned early.""",/
+DevelopersJV,jv_l3_comparable_projects,comparable jv projects,"""Comparables help set realistic expectations but must match land and market conditions.""",/
+DevelopersJV,jv_l3_overpromising_risk,overpromising risk,"""Be cautious of fixed ratios promised without feasibility — they often indicate hidden risks.""",/
+DevelopersJV,jv_l3_success_factors,jv success factors,"""Successful JVs balance land value, market demand, execution capability, and patience.""",/
+DevelopersJV,jv_l3_when_jv_not_suitable,when jv not suitable,"""JV may not be suitable if land size, zoning, or expectations don’t align with market realities.""",/
+DevelopersJV,jv_l3_ready_for_validation,ready for validation,"""Once structure logic is understood, legal safeguards become the priority.""",/
+DevelopersJV,jv_l3_next_step,next step jv l3,"""The next step is validating agreements and legal protections before proceeding.""",/
+service_vertical,intent_slug,keywords,response_text,/
+DevelopersJV,jv_l4_jda_meaning,jda meaning,"""A Joint Development Agreement (JDA) defines roles, responsibilities, timelines, and sharing logic between landowner and developer.""",/
+DevelopersJV,jv_l4_gpa_scope,gpa in jv,"""GPA should be limited to project execution purposes and clearly time-bound.""",/
+DevelopersJV,jv_l4_registration,jda registration,"""Registering the JDA protects landowner interests and ensures enforceability.""",/
+DevelopersJV,jv_l4_landowner_rights,landowner rights,"""Landowner rights must include visibility into approvals, costs, and sales progress.""",/
+DevelopersJV,jv_l4_developer_obligations,developer obligations,"""Developer obligations should clearly cover approvals, funding, construction, and marketing.""",/
+DevelopersJV,jv_l4_exit_clauses,exit clause jv,"""Exit clauses protect landowners if approvals or timelines are not met.""",/
+DevelopersJV,jv_l4_profit_definition,profit definition,"""Profit must be clearly defined after costs, not assumed as gross revenue.""",/
+DevelopersJV,jv_l4_dispute_resolution,dispute resolution,"""Dispute resolution mechanisms reduce long legal battles if disagreements arise.""",/
+DevelopersJV,jv_l4_timeline_commitments,timeline commitments,"""Timelines should include buffer clauses for approvals and market conditions.""",/
+DevelopersJV,jv_l4_power_of_termination,termination rights,"""Termination rights protect landowners if key obligations are breached.""",/
+service_vertical,intent_slug,keywords,response_text,/
+DevelopersJV,jv_l4_red_flags,jv red flags,"""Fixed profit promises, unclear costs, or pressure to sign quickly are major red flags.""",/
+DevelopersJV,jv_l4_overpromising,overpromising developer,"""Guaranteed ratios without feasibility usually indicate hidden risks.""",/
+DevelopersJV,jv_l4_unregistered_agreement,unregistered jda,"""Unregistered agreements expose landowners to legal and financial risk.""",/
+DevelopersJV,jv_l4_blank_gpa,blank gpa risk,"""Blank or unlimited GPAs are extremely risky for landowners.""",/
+DevelopersJV,jv_l4_no_exit,no exit clause,"""Lack of exit clauses can trap landowners in stalled projects.""",/
+DevelopersJV,jv_l4_approval_dependency,approval risk,"""JV feasibility depends heavily on approvals; delays must be planned for.""",/
+DevelopersJV,jv_l4_market_risk,market slowdown risk,"""Market slowdowns affect sales timelines and cash flow, not land ownership.""",/
+DevelopersJV,jv_l4_financing_risk,funding risk,"""Developer funding capability directly impacts project continuity.""",/
+DevelopersJV,jv_l4_partner_mismatch,partner mismatch,"""Mismatch in expectations between landowner and developer causes most JV failures.""",/
+DevelopersJV,jv_l4_walk_away,when to walk away jv,"""Walking away is wise when legal clarity or developer credibility is weak.""",/
+service_vertical,intent_slug,keywords,response_text,/
+DevelopersJV,jv_l4_is_this_good,is this jv good,"""A good JV aligns land value, market demand, legal clarity, and realistic timelines.""",/
+DevelopersJV,jv_l4_landowner_priority,landowner priority,"""Protecting land ownership and downside risk is more important than chasing higher ratios.""",/
+DevelopersJV,jv_l4_compare_jv_options,compare jv offers,"""Comparing JV offers should focus on feasibility logic, not headline ratios.""",/
+DevelopersJV,jv_l4_emotional_decision,emotional jv decisions,"""Emotional decisions often overlook legal and execution risks.""",/
+DevelopersJV,jv_l4_wait_or_proceed,wait or proceed jv,"""Waiting makes sense if approvals or market clarity are uncertain.""",/
+DevelopersJV,jv_l4_land_lock_risk,land locked risk,"""JV agreements should avoid locking land indefinitely without progress milestones.""",/
+DevelopersJV,jv_l4_family_alignment,family alignment jv,"""Family consensus reduces disputes during long development cycles.""",/
+DevelopersJV,jv_l4_final_checklist,final jv checklist,"""A final checklist ensures legal, financial, and execution readiness.""",/
+DevelopersJV,jv_l4_confidence_check,jv confidence,"""Confidence comes from clarity, not urgency.""",/
+DevelopersJV,jv_l4_ready_to_proceed,ready to proceed jv,"""Proceed only when structure, legal safeguards, and expectations align.""",/
+service_vertical,intent_slug,keywords,response_text,/
+DevelopersJV,jv_l4_document_review,jv document review,"""Document review helps validate legal safety before commitment.""",/
+DevelopersJV,jv_l4_feasibility_study,feasibility study jv,"""A feasibility study clarifies approval potential, costs, and returns.""",/
+DevelopersJV,jv_l4_site_visit,site visit jv,"""Site visits help assess access, surroundings, and development constraints.""",/
+DevelopersJV,jv_l4_expert_call,talk to jv expert,"""A discussion with our development team can clarify feasibility and safeguards.""",/
+DevelopersJV,jv_l4_shortlisting,shortlist developers,"""Shortlisting helps compare developer capability and transparency.""",/
+DevelopersJV,jv_l4_agreement_drafting,draft jv agreement,"""Proper agreement drafting protects both landowner and developer interests.""",/
+DevelopersJV,jv_l4_next_action,next action jv,"""The next step is aligning documents and feasibility before formal discussions.""",/
+DevelopersJV,jv_l4_lead_capture,proceed with evaluation,"""I can help arrange a structured evaluation with our team.""",/
+DevelopersJV,jv_l4_follow_up,follow up later,"""You can revisit this anytime once you’re comfortable.""",/
+DevelopersJV,jv_l4_close_loop,close jv discussion,"""Let me know when you’d like to proceed or explore alternatives.""",/
+service_vertical,intent_slug,keywords,response_text,redirect_url
+Events,event_intro,"event planning, manage event","""I see you’re planning an event. The Stage 365 manages weddings, corporate events, and private celebrations end to end.""",/
+Events,event_company_identity,"the stage 365, event company","""The Stage 365 is the event management vertical of Area24, handling curated events across Karnataka.""",/
+Events,event_where_to_start,where to start event planning,"""The first step is identifying the event type, guest count, city, and tentative date.""",/
+Events,event_types,wedding corporate birthday,"""We handle weddings, corporate events, birthdays, private parties, and curated experiences.""",/
+Events,event_wedding,wedding planning service,"""Wedding planning involves venue coordination, décor, catering, and timeline management.""",/
+Events,event_corporate,corporate event planning,"""Corporate events focus on professionalism, logistics, and experience flow rather than décor alone.""",/
+Events,event_private_party,private party planning,"""Private events are designed around guest experience, theme, and smooth execution.""",/
+Events,event_end_to_end,end to end event management,"""Yes, we offer end-to-end event management so you don’t coordinate multiple vendors.""",/
+Events,event_partial_services,partial event services,"""Partial services like décor-only or coordination-only are also possible depending on scope.""",/
+Events,event_city_scope,bangalore mysore ballari events,"""Event logistics and costs vary between Bangalore, Mysore, and Ballari due to venue and vendor availability.""",/
+Events,event_guest_count,number of guests event,"""Guest count impacts venue size, catering, staffing, and overall budget.""",/
+Events,event_date_timeline,event date planning,"""Event timelines depend on date availability and preparation complexity.""",/
+Events,event_budget_basic,"event cost, budget","""Event costs vary widely based on scale and expectations. I’ll help you understand realistic ranges.""",/
+Events,event_budget_confusion,don’t know event budget,"""That’s normal. We break events into components so costs feel manageable.""",/
+Events,event_venue_help,venue selection help,"""Venue selection is one of the most important decisions and drives many other costs.""",/
+Events,event_theme,event theme ideas,"""Themes help define décor, lighting, and experience flow.""",/
+Events,event_first_time,first time event planning,"""If this is your first event, I’ll guide you step by step to reduce stress.""",/
+Events,event_trust,can i trust event planner,"""Trust comes from clear scope, timelines, and vendor coordination — not just visuals.""",/
+Events,event_compare_local,local decorator vs planner,"""Event planners manage coordination and risk, not just decoration.""",/
+Events,event_next_step,next step events,"""The next step is understanding your event type, guest count, and city.""",/
+service_vertical,intent_slug,keywords,response_text,/
+Events,event_l2_event_type,type of event,"""To plan this properly, what type of event is it — wedding, corporate, birthday, or private celebration?""",/
+Events,event_l2_city,event city,"""Which city will the event be held in — Bangalore, Mysore, or Ballari?""",/
+Events,event_l2_guest_count,number of guests,"""Approximately how many guests are you expecting? This impacts venue size and logistics.""",/
+Events,event_l2_event_date,event date,"""Do you have a fixed event date or a flexible window?""",/
+Events,event_l2_venue_status,venue booked or not,"""Have you already booked a venue, or are you looking for venue options?""",/
+Events,event_l2_event_duration,event duration,"""Is this a single-day event or spread across multiple days?""",/
+Events,event_l2_budget_range,event budget range,"""Do you have a tentative budget range in mind? This helps align expectations realistically.""",/
+Events,event_l2_budget_flex,budget flexibility,"""Is the budget fixed, or can it adjust slightly for better experience or logistics?""",/
+Events,event_l2_formality,formal or casual event,"""Should the event feel formal, semi-formal, or relaxed?""",/
+Events,event_l2_theme_preference,theme preference,"""Do you have a theme or mood in mind, or should we suggest options?""",/
+Events,event_l2_food_priority,catering importance,"""How important is food quality and variety for this event?""",/
+Events,event_l2_entertainment,entertainment needs,"""Are you considering entertainment like music, performers, or speakers?""",/
+Events,event_l2_branding,branding requirement,"""For corporate events, do you need branding elements like stage backdrops or displays?""",/
+Events,event_l2_guest_profile,guest profile,"""Are guests mostly family, professionals, or a mixed group?""",/
+Events,event_l2_logistics,logistics complexity,"""Will guests be traveling from other cities, requiring accommodation or transport support?""",/
+Events,event_l2_permission,permissions required,"""Some venues or event types need permissions. I’ll factor this into planning.""",/
+Events,event_l2_weather,weather consideration,"""Is this an indoor or outdoor event? Weather planning affects logistics.""",/
+Events,event_l2_first_time,first time planning event,"""If this is your first event, I’ll keep the planning process simple and guided.""",/
+Events,event_l2_decision_maker,decision maker,"""Are you the main decision-maker, or will others be involved?""",/
+Events,event_l2_timeline_pressure,planning timeline pressure,"""How soon does planning need to start?""",/
+Events,event_l2_quality_expectation,quality expectation,"""Are you aiming for a simple, elegant, or premium experience?""",/
+Events,event_l2_scope_feasibility,feasibility check,"""Based on your inputs, I’ll let you know what’s feasible within the timeline and budget.""",/
+Events,event_l2_site_visit,venue visit,"""A venue visit helps finalize layout and logistics. Would you like to plan one later?""",/
+Events,event_l2_estimation_ready,ready for estimate,"""Once these details are clear, I can outline realistic cost ranges.""",/
+Events,event_l2_next_step,next step events l2,"""The next step is aligning scope and expectations before cost breakdown.""",/
+service_vertical,intent_slug,keywords,response_text,/
+Events,event_l3_cost_overview,event cost breakup,"""Event cost depends on venue, décor, catering, entertainment, logistics, and manpower. Scale and expectations matter more than event type alone.""",/
+Events,event_l3_budget_small,small event budget,"""Smaller private events can start from a few lakhs depending on guest count, venue, and décor expectations.""",/
+Events,event_l3_budget_mid,mid range event budget,"""Mid-scale weddings or corporate events usually fall in a balanced budget range with curated décor and structured logistics.""",/
+Events,event_l3_budget_premium,premium event budget,"""Premium events focus on experience design, detailed décor, and professional coordination, requiring higher budgets.""",/
+Events,event_l3_venue_cost,venue cost impact,"""Venue cost often forms a significant portion of the budget and influences catering, décor, and logistics.""",/
+Events,event_l3_decor_cost,décor cost,"""Décor cost varies based on theme complexity, floral usage, and stage design.""",/
+Events,event_l3_catering_cost,catering cost per plate,"""Catering cost depends on menu variety, service style, and guest count.""",/
+Events,event_l3_entertainment_cost,entertainment cost,"""Entertainment costs vary widely based on type, duration, and technical setup.""",/
+Events,event_l3_logistics_cost,logistics cost,"""Logistics include transport, power backup, crew movement, and coordination support.""",/
+Events,event_l3_manpower_cost,event manpower,"""Manpower covers planners, coordinators, technicians, and on-ground support.""",/
+Events,event_l3_package_logic,event packages,"""Packages bundle common services together to simplify planning and control cost.""",/
+Events,event_l3_basic_package,basic event package,"""Basic packages focus on coordination, essential décor, and smooth execution.""",/
+Events,event_l3_standard_package,standard event package,"""Standard packages include themed décor, structured catering coordination, and dedicated planning support.""",/
+Events,event_l3_premium_package,premium event package,"""Premium packages deliver immersive themes, experience design, and full-scale event management.""",/
+Events,event_l3_custom_package,custom event planning,"""Custom planning is ideal for unique concepts or mixed-format events.""",/
+Events,event_l3_wedding_cost,wedding event cost,"""Wedding costs depend heavily on guest count, number of days, and décor scale.""",/
+Events,event_l3_corporate_cost,corporate event cost,"""Corporate events prioritize branding, AV setup, and logistics over decorative elements.""",/
+Events,event_l3_private_cost,private party cost,"""Private party costs depend on theme, venue type, and entertainment preferences.""",/
+Events,event_l3_city_variation,bangalore mysore ballari event cost,"""Event costs vary slightly between Bangalore, Mysore, and Ballari due to vendor availability and venue pricing.""",/
+Events,event_l3_peak_date,peak date pricing,"""Peak dates usually increase venue and vendor costs due to high demand.""",/
+Events,event_l3_cost_control,control event budget,"""Budgets can be controlled by prioritizing key experiences and simplifying secondary elements.""",/
+Events,event_l3_scope_reduction,reduce event cost,"""Reducing guest count or simplifying décor is more effective than cutting coordination support.""",/
+Events,event_l3_cost_overrun,cost overrun reasons,"""Cost overruns usually occur due to last-minute additions or scope changes.""",/
+Events,event_l3_payment_structure,event payment structure,"""Event payments are typically milestone-based aligned with booking and execution stages.""",/
+Events,event_l3_estimate_accuracy,estimate accuracy,"""Accurate estimates require locked guest count, venue, and theme direction.""",/
+Events,event_l3_value_vs_cost,value vs cost event,"""Higher cost often reflects better experience flow and stress-free execution.""",/
+Events,event_l3_is_it_worth,is event worth cost,"""Well-planned events reduce stress and create smoother guest experiences.""",/
+Events,event_l3_ready_for_expert,ready for expert review,"""Once cost logic is clear, expert validation helps avoid execution risks.""",/
+Events,event_l3_next_step,next step events l3,"""The next step is validating feasibility and risks before finalizing.""",/
+service_vertical,intent_slug,keywords,response_text,/
+Events,event_l4_common_mistakes,event planning mistakes,"""Most event issues come from late decisions, unclear scope, and unrealistic timelines.""",/
+Events,event_l4_last_minute_changes,last minute changes,"""Last-minute changes increase cost and execution risk significantly.""",/
+Events,event_l4_underestimating_guests,guest count mismatch,"""Underestimating guest count impacts seating, catering, and comfort.""",/
+Events,event_l4_vendor_coordination,vendor coordination risk,"""Multiple vendors without coordination often lead to delays and confusion.""",/
+Events,event_l4_weather_risk,outdoor event weather,"""Weather risk must be planned for with backups, especially for outdoor events.""",/
+Events,event_l4_venue_constraints,venue limitations,"""Venue rules and space constraints often affect décor and timelines.""",/
+Events,event_l4_sound_light_issues,sound lighting problems,"""Technical issues usually arise when testing and rehearsals are skipped.""",/
+Events,event_l4_timeline_slip,event timeline slip,"""Tight timelines need buffer planning to avoid rushed execution.""",/
+Events,event_l4_guest_experience,guest experience risk,"""Guest experience suffers when flow, signage, or seating isn’t planned.""",/
+Events,event_l4_overambitious,overambitious event plan,"""Simpler, well-executed plans often outperform complex, rushed ones.""",/
+service_vertical,intent_slug,keywords,response_text,/
+Events,event_l4_planner_vs_decorator,planner vs decorator,"""Decorators focus on visuals; planners manage flow, logistics, vendors, and risk.""",/
+Events,event_l4_value_of_planner,why planner needed,"""Planners reduce stress by handling coordination and contingencies.""",/
+Events,event_l4_single_point,single point coordination,"""Single-point coordination reduces confusion and delays.""",/
+Events,event_l4_vendor_dependency,vendor dependency,"""Managing vendors individually increases execution risk.""",/
+Events,event_l4_experience_design,experience design,"""Experience design ensures guests enjoy the event, not just see décor.""",/
+Events,event_l4_timeline_management,timeline management,"""Timeline management ensures every element happens at the right moment.""",/
+Events,event_l4_budget_protection,budget protection,"""Planners help control costs by preventing last-minute surprises.""",/
+Events,event_l4_decision_simplification,simplify decisions,"""Structured planning simplifies decisions and reduces overwhelm.""",/
+Events,event_l4_quality_control,quality control events,"""Quality checks during setup prevent visible issues during the event.""",/
+Events,event_l4_stress_reduction,stress free event,"""A planner’s job is to absorb stress so hosts can enjoy the event.""",/
+service_vertical,intent_slug,keywords,response_text,/
+Events,event_l4_is_this_enough,is this plan enough,"""A good plan balances ambition, budget, and execution comfort.""",/
+Events,event_l4_budget_validation,budget validation,"""If budget and scope align, execution becomes smoother.""",/
+Events,event_l4_wait_or_proceed,wait or proceed event,"""Waiting helps if clarity or availability is uncertain.""",/
+Events,event_l4_scale_down,scale down event,"""Scaling down scope often improves execution quality.""",/
+Events,event_l4_priority_setting,event priorities,"""Clear priorities help allocate budget effectively.""",/
+Events,event_l4_family_alignment,family alignment event,"""Aligning family expectations reduces friction during planning.""",/
+Events,event_l4_corporate_alignment,corporate alignment,"""Clear internal alignment avoids last-minute changes.""",/
+Events,event_l4_guest_first,guest first planning,"""Planning from a guest perspective improves experience.""",/
+Events,event_l4_confidence_check,confidence check event,"""Confidence comes from preparation, not perfection.""",/
+Events,event_l4_ready_to_lock,ready to lock event,"""Proceed when date, venue, and scope are aligned.""",/
+service_vertical,intent_slug,keywords,response_text,/
+Events,event_l4_site_visit,venue site visit,"""Site visits help finalize layout and logistics.""",/
+Events,event_l4_vendor_lock,vendor locking,"""Early vendor locking reduces availability risk.""",/
+Events,event_l4_dry_run,event rehearsal,"""Rehearsals reduce execution surprises.""",/
+Events,event_l4_timeline_freeze,freeze timeline,"""Freezing timelines helps vendors coordinate smoothly.""",/
+Events,event_l4_final_brief,final event brief,"""A final brief ensures everyone is aligned.""",/
+Events,event_l4_expert_call,talk to event expert,"""A discussion with our planning team can clarify feasibility.""",/
+Events,event_l4_lead_capture,proceed with planning,"""I can help you take the next steps toward execution.""",/
+Events,event_l4_follow_up,follow up later,"""You can revisit planning when timing feels right.""",/
+Events,event_l4_close_loop,close event discussion,"""Let me know how you’d like to proceed.""",/
+Events,event_l4_handover,handover to planner,"""I’ll connect you with our planning team for next steps.""",/
