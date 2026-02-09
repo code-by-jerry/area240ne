@@ -255,8 +255,8 @@ const ChatMockup = () => {
                         }}
                         onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                         placeholder="Type your message..."
-className="flex-1 rounded-xl border border-zinc-100 bg-zinc-50 px-4 py-3 text-sm text-brand-primary transition-all placeholder:text-zinc-400 focus:border-[#C7A14A] focus:ring-2 focus:ring-[#C7A14A]/30 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-white dark:focus:border-[#C7A14A]"
-                                    />
+                        className="flex-1 rounded-xl border border-zinc-100 bg-zinc-50 px-4 py-3 text-sm text-brand-primary transition-all placeholder:text-zinc-400 focus:border-[#C7A14A] focus:ring-2 focus:ring-[#C7A14A]/30 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-white dark:focus:border-[#C7A14A]"
+                    />
                     <button
                         onClick={handleSend}
                         className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-primary text-white transition-opacity hover:opacity-90 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 dark:bg-white dark:text-black"
@@ -470,6 +470,7 @@ export default function Welcome({
             desc: 'Specializing in high-end residential and commercial projects, we offer a seamless journey from architectural blueprints to turnkey construction solutions. Explore our portfolio of precision-engineered structures.',
             accent: 'bg-brand-primary/10 text-brand-primary dark:text-[#C7A14A]',
             step: '01',
+            url: 'https://athaconstruction.in/',
         },
         {
             id: 'interiors',
@@ -480,6 +481,7 @@ export default function Welcome({
             desc: 'Our award-winning designers craft bespoke interiors that blend opulence with functionality. We tailor every detail to your lifestyle, creating spaces that are both inspiring and timeless. Discover your design aesthetic.',
             accent: 'bg-brand-primary/10 text-brand-primary dark:text-[#C7A14A]',
             step: '02',
+            url: 'https://nesthetixdesigns.com/',
         },
         {
             id: 'real-estate',
@@ -490,6 +492,7 @@ export default function Welcome({
             desc: 'Access exclusive listings and data-driven market insights. Our consultants provide strategic advice for discerning buyers, sellers, and investors in the premium property market. Find your next opportunity.',
             accent: 'bg-brand-primary/10 text-brand-primary dark:text-[#C7A14A]',
             step: '03',
+            url: 'https://area24developers.com/',
         },
         {
             id: 'development',
@@ -500,6 +503,7 @@ export default function Welcome({
             desc: 'We conceptualize and execute landmark residential and commercial developments. Our focus is on creating sustainable communities and innovative spaces that shape the future of urban living. View our master plans.',
             accent: 'bg-brand-primary/10 text-brand-primary dark:text-[#C7A14A]',
             step: '04',
+            url: 'https://area24developers.com/',
         },
         {
             id: 'events',
@@ -510,6 +514,7 @@ export default function Welcome({
             desc: 'From corporate galas to immersive brand activations, we produce extraordinary events. Our team handles everything from conceptual design to flawless execution, ensuring a memorable experience. Plan your next event.',
             accent: 'bg-brand-primary/10 text-brand-primary dark:text-[#C7A14A]',
             step: '05',
+            url: 'https://thestage365.com/',
         },
     ];
 
@@ -924,6 +929,16 @@ export default function Welcome({
                     id="expertise"
                     className="relative overflow-hidden py-16 md:py-24"
                 >
+                    {/* Background Collage Image Overlay */}
+                    <div className="absolute inset-0 -z-20">
+                        <img
+                            src="/image/collage poster.png"
+                            alt=""
+                            className="h-full w-full object-cover opacity-10 dark:opacity-5 grayscale-[0.3]"
+                        />
+                        <div className="absolute inset-0 bg-white/90 dark:bg-brand-dark/90" />
+                    </div>
+
                     <div className="absolute top-0 right-0 -z-10 h-[320px] w-[320px] rounded-full bg-brand-primary/5 blur-[80px]" />
                     <div className="absolute bottom-1/4 left-0 -z-10 h-[240px] w-[240px] rounded-full bg-[#C7A14A]/5 blur-[60px]" />
 
@@ -976,10 +991,16 @@ export default function Welcome({
                                         <p className="mt-2 flex-1 text-sm leading-relaxed text-zinc-600 line-clamp-3 dark:text-zinc-400">
                                             {service.desc}
                                         </p>
-                                        <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-brand-primary dark:text-[#C7A14A]">
-                                            <span>Explore</span>
+                                        <a
+                                            href={service.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="mt-4 flex items-center gap-2 text-sm font-semibold text-brand-primary transition-colors hover:text-[#C7A14A] dark:text-[#C7A14A] dark:hover:text-white"
+                                        >
+                                            <span>Explore Now</span>
                                             <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                                        </div>
+                                        </a>
                                     </div>
                                 </motion.div>
                             ))}
