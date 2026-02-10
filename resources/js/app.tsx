@@ -6,6 +6,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
+import SmoothScrollManager from '@/components/SmoothScrollManager';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -23,7 +24,17 @@ createInertiaApp({
         resolvePageComponent(
             `./pages/${name}.tsx`,
             import.meta.glob('./pages/**/*.tsx'),
-        ),
+        ).then((module: any) => {
+            const page = module.default;
+            const defaultLayout = page.layout;
+            page.layout = (pageNode: any) => (
+                <>
+                    <SmoothScrollManager />
+                    {defaultLayout ? defaultLayout(pageNode) : pageNode}
+                </>
+            );
+            return module;
+        }),
     setup({ el, App, props }) {
         const root = createRoot(el);
 
