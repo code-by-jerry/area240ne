@@ -23,5 +23,39 @@ export default defineConfig({
     ],
     esbuild: {
         jsx: 'automatic',
+        drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
+    },
+    build: {
+        // Optimize chunk size
+        chunkSizeWarningLimit: 1000,
+        rollupOptions: {
+            output: {
+                // Manual chunk splitting for better caching
+                manualChunks: {
+                    'vendor': [
+                        'react',
+                        'react-dom',
+                        'framer-motion',
+                        '@inertiajs/react',
+                    ],
+                    'ui': [
+                        'lucide-react',
+                    ],
+                },
+            },
+        },
+        // Minification options
+        minify: 'esbuild',
+        target: 'es2020',
+    },
+    optimizeDeps: {
+        include: [
+            'react',
+            'react-dom',
+            'framer-motion',
+            '@inertiajs/react',
+            'lucide-react',
+            'lenis',
+        ],
     },
 });

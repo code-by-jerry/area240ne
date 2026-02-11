@@ -1,150 +1,258 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Play, X, Volume2, VolumeX } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback, memo } from 'react';
+
+// ImageKit CDN base URL for optimized video delivery
+const IMAGEKIT_BASE_URL = 'https://ik.imagekit.io/area24onestorage/video';
 
 const stories = [
     {
         id: 1,
-        video: '/video/section video.mp4',
+        video: `${IMAGEKIT_BASE_URL}/section%20video.mp4`,
         title: 'Featured Highlight',
         duration: '0:30'
     },
     {
         id: 2,
-        video: '/video/story (1).mp4',
+        video: `${IMAGEKIT_BASE_URL}/story%20(1).mp4?updatedAt=1770795464230`,
         title: 'Modern Living',
         duration: '0:15'
     },
     {
         id: 3,
-        video: '/video/story (2).mp4',
+        video: `${IMAGEKIT_BASE_URL}/story%20(2).mp4?updatedAt=1770795458910`,
         title: 'Interior Excellence',
         duration: '0:15'
     },
     {
         id: 4,
-        video: '/video/story (3).mp4',
+        video: `${IMAGEKIT_BASE_URL}/story%20(3).mp4?updatedAt=1770795453948`,
         title: 'Construction Quality',
         duration: '0:15'
     },
     {
         id: 5,
-        video: '/video/story (4).mp4',
+        video: `${IMAGEKIT_BASE_URL}/story%20(4).mp4?updatedAt=1770795463189`,
         title: 'Design Details',
         duration: '0:15'
     },
     {
         id: 6,
-        video: '/video/story (5).mp4',
+        video: `${IMAGEKIT_BASE_URL}/story%20(5).mp4?updatedAt=1770795455889`,
         title: 'Client Stories',
         duration: '0:15'
     },
     {
         id: 7,
-        video: '/video/story (6).mp4',
+        video: `${IMAGEKIT_BASE_URL}/story%20(6).mp4?updatedAt=1770795448566`,
         title: 'Site Progress',
         duration: '0:15'
     },
     {
         id: 8,
-        video: '/video/story (7).mp4',
+        video: `${IMAGEKIT_BASE_URL}/story%20(7).mp4?updatedAt=1770795450715`,
         title: 'Architectural Tour',
         duration: '0:15'
     },
     {
         id: 9,
-        video: '/video/story (8).mp4',
+        video: `${IMAGEKIT_BASE_URL}/story%20(8).mp4?updatedAt=1770795440758`,
         title: 'Material Selection',
         duration: '0:15'
     },
     {
         id: 10,
-        video: '/video/story (9).mp4',
+        video: `${IMAGEKIT_BASE_URL}/story%20(9).mp4?updatedAt=1770795450578`,
         title: 'Safety First',
         duration: '0:15'
     },
     {
         id: 11,
-        video: '/video/story (10).mp4',
+        video: `${IMAGEKIT_BASE_URL}/story%20(10).mp4?updatedAt=1770795452005`,
         title: 'Team at Work',
         duration: '0:15'
     },
     {
         id: 12,
-        video: '/video/story (11).mp4',
+        video: `${IMAGEKIT_BASE_URL}/story%20(11).mp4?updatedAt=1770795458440`,
         title: 'Finishing Touches',
         duration: '0:15'
     },
     {
         id: 13,
-        video: '/video/story (12).mp4',
+        video: `${IMAGEKIT_BASE_URL}/story%20(12).mp4?updatedAt=1770795445011`,
         title: 'Smart Planning',
         duration: '0:15'
     },
     {
         id: 14,
-        video: '/video/story (13).mp4',
+        video: `${IMAGEKIT_BASE_URL}/story%20(13).mp4`,
         title: 'Project Milestones',
         duration: '0:15'
     },
     {
         id: 15,
-        video: '/video/story (14).mp4',
+        video: `${IMAGEKIT_BASE_URL}/story%20(14).mp4?updatedAt=1770795450481`,
         title: 'Community Impact',
         duration: '0:15'
     },
     {
         id: 16,
-        video: '/video/story (15).mp4',
+        video: `${IMAGEKIT_BASE_URL}/story%20(15).mp4?updatedAt=1770795440782`,
         title: 'Future Vision',
         duration: '0:15'
     }
 ];
 
-export function StoriesSection() {
+// Memoized story card to prevent unnecessary re-renders
+const StoryCard = memo(({ 
+    story, 
+    index, 
+    onClick,
+    prefersReducedMotion 
+}: { 
+    story: typeof stories[0]; 
+    index: number; 
+    onClick: () => void;
+    prefersReducedMotion: boolean;
+}) => {
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const [isVisible, setIsVisible] = useState(false);
+    const cardRef = useRef<HTMLDivElement>(null);
+
+    // Intersection Observer for lazy loading
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsVisible(true);
+                    observer.disconnect();
+                }
+            },
+            { rootMargin: '100px', threshold: 0.1 }
+        );
+
+        if (cardRef.current) {
+            observer.observe(cardRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, []);
+
+    const handleMouseEnter = useCallback(() => {
+        if (videoRef.current && isVisible) {
+            videoRef.current.play().catch(() => {});
+        }
+    }, [isVisible]);
+
+    const handleMouseLeave = useCallback(() => {
+        if (videoRef.current) {
+            videoRef.current.pause();
+            videoRef.current.currentTime = 0;
+        }
+    }, []);
+
+    const motionProps = prefersReducedMotion 
+        ? {}
+        : { layoutId: `story-${story.id}` };
+
+    return (
+        <motion.div
+            ref={cardRef}
+            {...motionProps}
+            onClick={onClick}
+            className="group relative min-w-[180px] md:min-w-[220px] aspect-[9/16] cursor-pointer overflow-hidden rounded-2xl bg-zinc-900 shadow-lg ring-1 ring-zinc-900/5 transition-transform hover:-translate-y-1 hover:shadow-xl snap-center"
+        >
+            {isVisible ? (
+                <video
+                    ref={videoRef}
+                    src={story.video}
+                    className="h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
+                    muted
+                    playsInline
+                    preload="metadata"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                />
+            ) : (
+                <div className="h-full w-full bg-zinc-800 animate-pulse" />
+            )}
+            
+            {/* Overlay Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+
+            {/* Play Icon */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="rounded-full bg-white/20 p-3 backdrop-blur-md">
+                    <Play className="h-6 w-6 fill-white text-white" />
+                </div>
+            </div>
+
+            {/* Content */}
+            <div className="absolute bottom-0 left-0 p-4 w-full">
+                <div className="flex items-center gap-2 mb-1">
+                    <div className="h-8 w-8 rounded-full border-2 border-brand-primary p-0.5">
+                        <div className="h-full w-full rounded-full bg-brand-primary/20 flex items-center justify-center">
+                            <span className="text-[10px] font-bold text-white">A24</span>
+                        </div>
+                    </div>
+                    <span className="text-xs font-medium text-white/90 truncate">{story.title}</span>
+                </div>
+            </div>
+        </motion.div>
+    );
+});
+
+StoryCard.displayName = 'StoryCard';
+
+export const StoriesSection = memo(function StoriesSection() {
     const [selectedStoryIndex, setSelectedStoryIndex] = useState<number | null>(null);
     const [isMuted, setIsMuted] = useState(false);
-    const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
     const modalVideoRef = useRef<HTMLVideoElement>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const prefersReducedMotion = useReducedMotion();
 
-    const openStory = (index: number) => {
+    const openStory = useCallback((index: number) => {
         setSelectedStoryIndex(index);
         setIsMuted(false);
-    };
+    }, []);
 
-    const closeStory = () => {
+    const closeStory = useCallback(() => {
         setSelectedStoryIndex(null);
-    };
+    }, []);
 
-    const nextStory = (e?: React.MouseEvent) => {
+    const nextStory = useCallback((e?: React.MouseEvent) => {
         e?.stopPropagation();
-        if (selectedStoryIndex !== null && selectedStoryIndex < stories.length - 1) {
-            setSelectedStoryIndex(selectedStoryIndex + 1);
-        } else {
-            closeStory();
-        }
-    };
+        setSelectedStoryIndex(prev => {
+            if (prev !== null && prev < stories.length - 1) {
+                return prev + 1;
+            }
+            return null;
+        });
+    }, []);
 
-    const prevStory = (e?: React.MouseEvent) => {
+    const prevStory = useCallback((e?: React.MouseEvent) => {
         e?.stopPropagation();
-        if (selectedStoryIndex !== null && selectedStoryIndex > 0) {
-            setSelectedStoryIndex(selectedStoryIndex - 1);
-        }
-    };
+        setSelectedStoryIndex(prev => {
+            if (prev !== null && prev > 0) {
+                return prev - 1;
+            }
+            return prev;
+        });
+    }, []);
 
-    const toggleMute = (e: React.MouseEvent) => {
+    const toggleMute = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
-        setIsMuted(!isMuted);
-    };
+        setIsMuted(prev => !prev);
+    }, []);
 
-    const scroll = (direction: 'left' | 'right') => {
+    const scroll = useCallback((direction: 'left' | 'right') => {
         if (scrollContainerRef.current) {
             const { current } = scrollContainerRef;
             const scrollAmount = direction === 'left' ? -300 : 300;
             current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
         }
-    };
+    }, []);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -157,19 +265,23 @@ export function StoriesSection() {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedStoryIndex]);
+    }, [selectedStoryIndex, closeStory, nextStory, prevStory]);
 
     return (
         <section className="py-16 bg-zinc-50 dark:bg-black/20">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
                     <div>
-                        <h2 className="font-display text-2xl font-bold text-brand-primary dark:text-white sm:text-3xl">
-                            Visual Stories
+                        <div className="mb-3 inline-flex items-center gap-2">
+                            <div className="h-px w-6 bg-[#C7A14A]" />
+                            <span className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A] uppercase">
+                                Visual Stories
+                            </span>
+                        </div>
+                        <h2 className="text-xl font-medium tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                            A glimpse into our world of{' '}
+                            <span className="text-[#C7A14A]">construction, design, and development</span>
                         </h2>
-                        <p className="mt-2 text-zinc-600 dark:text-zinc-400 max-w-xl">
-                            A glimpse into our world of construction, design, and development.
-                        </p>
                     </div>
                 </div>
 
@@ -188,50 +300,15 @@ export function StoriesSection() {
                         ref={scrollContainerRef}
                         className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory px-1"
                         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                    >
+                >
                         {stories.map((story, index) => (
-                            <motion.div
+                            <StoryCard
                                 key={story.id}
-                                layoutId={`story-${story.id}`}
+                                story={story}
+                                index={index}
                                 onClick={() => openStory(index)}
-                                className="group relative min-w-[180px] md:min-w-[220px] aspect-[9/16] cursor-pointer overflow-hidden rounded-2xl bg-zinc-900 shadow-lg ring-1 ring-zinc-900/5 transition-transform hover:-translate-y-1 hover:shadow-xl snap-center"
-                            >
-                                <video
-                                    ref={el => videoRefs.current[index] = el}
-                                    src={story.video}
-                                    className="h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
-                                    muted
-                                    playsInline
-                                    preload="metadata"
-                                    onMouseEnter={(e) => e.currentTarget.play()}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.pause();
-                                        e.currentTarget.currentTime = 0;
-                                    }}
-                                />
-                                
-                                {/* Overlay Gradient */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
-
-                                {/* Play Icon */}
-                                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
-                                    <div className="rounded-full bg-white/20 p-3 backdrop-blur-md">
-                                        <Play className="h-6 w-6 fill-white text-white" />
-                                    </div>
-                                </div>
-
-                                {/* Content */}
-                                <div className="absolute bottom-0 left-0 p-4 w-full">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <div className="h-8 w-8 rounded-full border-2 border-brand-primary p-0.5">
-                                            <div className="h-full w-full rounded-full bg-brand-primary/20 flex items-center justify-center">
-                                                <span className="text-[10px] font-bold text-white">A24</span>
-                                            </div>
-                                        </div>
-                                        <span className="text-xs font-medium text-white/90 truncate">{story.title}</span>
-                                    </div>
-                                </div>
-                            </motion.div>
+                                prefersReducedMotion={!!prefersReducedMotion}
+                            />
                         ))}
                     </div>
 
@@ -268,18 +345,18 @@ export function StoriesSection() {
                             onClick={(e) => e.stopPropagation()}
                         >
                             <motion.div
-                                layoutId={`story-${stories[selectedStoryIndex].id}`}
+                                {...(prefersReducedMotion ? {} : { layoutId: `story-${stories[selectedStoryIndex].id}` })}
                                 className="relative h-full w-full overflow-hidden rounded-2xl bg-black shadow-2xl ring-1 ring-white/10"
                             >
                                 <video
                                     ref={modalVideoRef}
-                                    key={selectedStoryIndex} // Force remount on change
                                     src={stories[selectedStoryIndex].video}
                                     className="h-full w-full object-cover"
                                     autoPlay
                                     playsInline
                                     loop
                                     muted={isMuted}
+                                    preload="auto"
                                 />
 
                                 {/* Progress Bar (Visual only for now) */}
@@ -342,4 +419,6 @@ export function StoriesSection() {
             </AnimatePresence>
         </section>
     );
-}
+});
+
+StoriesSection.displayName = 'StoriesSection';

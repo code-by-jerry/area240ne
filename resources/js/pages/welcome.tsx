@@ -14,9 +14,9 @@ import {
     ChevronRight,
     Hammer,
     Heart,
+    HelpCircle,
     Home,
-    MapPin,
-    Map,
+    Layers,
     Menu,
     MessageSquare,
     PaintBucket,
@@ -29,8 +29,8 @@ import {
     X,
     Zap,
 } from 'lucide-react';
-import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
+import { useEffect, useRef, useState, useCallback, useMemo, memo } from 'react';
 
 type DiscoveryOptions = {
     service:
@@ -123,25 +123,31 @@ const BRANDS_IMAGE_BASE = '/image/brands%20material';
 
 type MarqueeBrand = { name: string; logo: string };
 
-function MarqueeBrandCard({ brand }: { brand: MarqueeBrand }) {
+function MarqueeBrandCard({ brand, isLast }: { brand: MarqueeBrand; isLast?: boolean }) {
     const [imgError, setImgError] = useState(false);
     const showLogo = brand.logo && !imgError;
     return (
-        <div
-            className="group flex h-28 w-32 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-gray-50 p-5 shadow-sm transition-all duration-300 hover:border-[#C7A14A]/50 hover:shadow-lg hover:shadow-[#C7A14A]/10 dark:border-slate-600 dark:bg-slate-100 dark:hover:border-[#C7A14A]/50"
-            title={brand.name}
-        >
-            {showLogo ? (
-                <img
-                    src={brand.logo}
-                    alt=""
-                    className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
-                    onError={() => setImgError(true)}
-                />
-            ) : (
-                <span className="text-2xl font-bold text-slate-300 dark:text-slate-400">
-                    {brand.name.charAt(0)}
-                </span>
+        <div className="flex items-center">
+            <div
+                className="flex h-20 w-28 shrink-0 items-center justify-center p-4 drop-shadow-sm"
+                title={brand.name}
+            >
+                {showLogo ? (
+                    <img
+                        src={brand.logo}
+                        alt=""
+                        className="max-h-full max-w-full object-contain"
+                        onError={() => setImgError(true)}
+                    />
+                ) : (
+                    <span className="text-xl font-bold text-slate-400">
+                        {brand.name.charAt(0)}
+                    </span>
+                )}
+            </div>
+            {/* Vertical Divider */}
+            {!isLast && (
+                <div className="h-10 w-px bg-slate-200 dark:bg-slate-700" />
             )}
         </div>
     );
@@ -192,25 +198,35 @@ interface ServiceCardProps {
     onClick: () => void;
 }
 
-const ServiceCard = ({ service, index, onClick }: ServiceCardProps) => {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+// ServiceCard is defined below as a memoized component
 
-    const nextImage = (e: React.MouseEvent) => {
+// Memoized ServiceCard for better performance
+const ServiceCard = memo(({ service, index, onClick }: ServiceCardProps) => {
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const prefersReducedMotion = useReducedMotion();
+
+    const nextImage = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
         setCurrentImageIndex((prev) => (prev + 1) % service.images.length);
-    };
+    }, [service.images.length]);
 
-    const prevImage = (e: React.MouseEvent) => {
+    const prevImage = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
         setCurrentImageIndex((prev) => (prev - 1 + service.images.length) % service.images.length);
-    };
+    }, [service.images.length]);
+
+    const motionProps = prefersReducedMotion 
+        ? { initial: { opacity: 1, y: 0 }, whileInView: undefined }
+        : { 
+            initial: { opacity: 0, y: 20 },
+            whileInView: { opacity: 1, y: 0 },
+            viewport: { once: true, margin: '-24px' },
+            transition: { duration: 0.35, delay: index * 0.06 },
+          };
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-24px' }}
-            transition={{ duration: 0.35, delay: index * 0.06 }}
+            {...motionProps}
             onClick={onClick}
             className="group flex cursor-pointer flex-col overflow-hidden border border-slate-100 bg-[#FAFAF9] shadow-sm transition-all duration-300 hover:border-[#C7A14A]/50 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:hover:border-[#C7A14A]/50">
             <div className="relative h-44 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
@@ -219,11 +235,12 @@ const ServiceCard = ({ service, index, onClick }: ServiceCardProps) => {
                         key={currentImageIndex}
                         src={service.images[currentImageIndex]}
                         alt={service.title}
-                        initial={{ opacity: 0 }}
+                        initial={prefersReducedMotion ? undefined : { opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        exit={prefersReducedMotion ? undefined : { opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                 </AnimatePresence>
                 
@@ -268,10 +285,14 @@ const ServiceCard = ({ service, index, onClick }: ServiceCardProps) => {
             </div>
         </motion.div>
     );
-};
+});
+
+ServiceCard.displayName = 'ServiceCard';
 
 export default function Welcome({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     canLogin = true,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     canRegister = true,
     heroSlides = [],
 }: {
@@ -279,7 +300,7 @@ export default function Welcome({
     canRegister?: boolean;
     heroSlides?: HeroSlide[];
 }) {
-    const { auth } = usePage<{ auth: any }>().props;
+    const { auth } = usePage<{ auth: { user?: unknown } }>().props;
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isHeaderVisible, setIsHeaderVisible] = useState(true);
@@ -292,78 +313,92 @@ export default function Welcome({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedService, setSelectedService] = useState<string>('');
     const [openFaq, setOpenFaq] = useState<number | null>(0);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const prefersReducedMotion = useReducedMotion();
 
     const expertiseRef = useRef<HTMLElement>(null);
 
-    // Process Section Parallax
+    // Process Section Parallax - simplified for performance
     const processRef = useRef(null);
     const { scrollYProgress: processProgress } = useScroll({
         target: processRef,
         offset: ['start end', 'end start'],
     });
-    const processBgY = useTransform(processProgress, [0, 1], ['0%', '30%']);
+    // Reduced parallax range for better performance
+    const processBgY = useTransform(processProgress, [0, 1], ['0%', '15%']);
 
-    // Why Us Section Parallax
+    // Why Us Section Parallax - simplified for performance
     const whyUsRef = useRef(null);
     const { scrollYProgress: whyUsProgress } = useScroll({
         target: whyUsRef,
         offset: ['start end', 'end start'],
     });
-    const whyUsBgY1 = useTransform(whyUsProgress, [0, 1], ['0%', '25%']);
-    const whyUsBgY2 = useTransform(whyUsProgress, [0, 1], ['0%', '-25%']);
+    // Reduced parallax range for better performance
+    const whyUsBgY1 = useTransform(whyUsProgress, [0, 1], ['0%', '12%']);
+    const whyUsBgY2 = useTransform(whyUsProgress, [0, 1], ['0%', '-12%']);
 
 
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleDiscoveryChange = (
-        key: keyof DiscoveryOptions,
-        value: string,
+        _key: keyof DiscoveryOptions,
+        _value: string,
     ) => {
-        const updated = { ...discovery, [key]: value };
-        setDiscovery(updated);
-
-        // Only navigate if all fields are selected
-        if (Object.values(updated).every(Boolean)) {
-            router.visit(
-                `/chat?service=${updated.service}&timeline=${updated.timeline}&budget=${updated.budget}`,
-            );
-        }
+        // Discovery functionality temporarily disabled for performance
+        // const updated = { ...discovery, [key]: value };
+        // setDiscovery(updated);
+        // if (Object.values(updated).every(Boolean)) {
+        //     router.visit(`/chat?service=${updated.service}&timeline=${updated.timeline}&budget=${updated.budget}`);
+        // }
     };
 
+    // Throttled scroll handler for better performance
     useEffect(() => {
+        let ticking = false;
+        
         const handleScroll = () => {
-            const currentScrollY = window.scrollY;
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const currentScrollY = window.scrollY;
+                    setScrolled(currentScrollY > 20);
 
-            setScrolled(currentScrollY > 20);
-
-            // Mobile Smart Header Logic
-            // Hide on scroll down, show on scroll up
-            if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
-                // Scrolling Down
-                setIsHeaderVisible(false);
-            } else {
-                // Scrolling Up
-                setIsHeaderVisible(true);
+                    // Mobile Smart Header Logic
+                    if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+                        setIsHeaderVisible(false);
+                    } else {
+                        setIsHeaderVisible(true);
+                    }
+                    lastScrollY.current = currentScrollY;
+                    ticking = false;
+                });
+                ticking = true;
             }
-            lastScrollY.current = currentScrollY;
         };
-        window.addEventListener('scroll', handleScroll);
+        
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // CTA Auto-Popup Logic
+    // CTA Auto-Popup Logic - delayed to improve initial load performance
     useEffect(() => {
-        // Show on mount
-        setIsModalOpen(true);
+        // Delay initial popup for better page load performance
+        const initialTimeout = setTimeout(() => {
+            setIsModalOpen(true);
+        }, 5000); // 5 seconds after mount
 
-        // Show every 3 minutes
+        // Show every 5 minutes (reduced frequency)
         const interval = setInterval(() => {
             setIsModalOpen(true);
-        }, 180000); // 3 minutes
+        }, 300000); // 5 minutes
 
-        return () => clearInterval(interval);
+        return () => {
+            clearTimeout(initialTimeout);
+            clearInterval(interval);
+        };
     }, []);
 
-    const services = [
+    // Memoized services array to prevent unnecessary re-renders
+    const services = useMemo(() => [
         {
             id: 'construction',
             icon: <Building2 className="h-6 w-6" />,
@@ -419,7 +454,7 @@ export default function Welcome({
             step: '05',
             url: 'https://thestage365.com/',
         },
-    ];
+    ], []);
 
     return (
         <>
@@ -456,46 +491,79 @@ export default function Welcome({
                                 </span>
                             </Link>
 
-                            <div className="hidden items-center gap-8 md:flex">
+                            {/* Desktop Navigation - Clean Design */}
+                            <div className="hidden items-center gap-1 md:flex">
+                                {[
+                                    { 
+                                        label: 'Services', 
+                                        href: '#what-we-do',
+                                        icon: <Layers className="h-4 w-4" />
+                                    },
+                                    { 
+                                        label: 'Expertise', 
+                                        href: '#expertise',
+                                        icon: <ShieldCheck className="h-4 w-4" />
+                                    },
+                                    { 
+                                        label: 'Process', 
+                                        href: '#process',
+                                        icon: <Zap className="h-4 w-4" />
+                                    },
+                                    { 
+                                        label: 'Why Us', 
+                                        href: '#why-us',
+                                        icon: <Star className="h-4 w-4" />
+                                    },
+                                    { 
+                                        label: 'FAQ', 
+                                        href: '#faq',
+                                        icon: <HelpCircle className="h-4 w-4" />
+                                    },
+                                ].map((item) => (
+                                    <a
+                                        key={item.label}
+                                        href={item.href}
+                                        className={`group flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 ${scrolled ? 'text-slate-600 hover:text-brand-primary hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800' : 'text-white/90 hover:text-white'}`}
+                                    >
+                                        <span className="transition-transform duration-200 group-hover:-translate-y-0.5">{item.icon}</span>
+                                        <span>{item.label}</span>
+                                    </a>
+                                ))}
+                                
+                                <div className={`mx-3 h-5 w-px ${scrolled ? 'bg-slate-200 dark:bg-slate-700' : 'bg-white/30'}`} />
+                                
+                                {/* Cost Estimator */}
                                 <Link
                                     href="/cost-estimator"
-                                    className={`flex items-center gap-2 text-sm font-semibold transition-colors hover:text-brand-primary dark:text-slate-400 dark:hover:text-white ${scrolled ? 'text-brand-text/80' : 'text-white'}`}
+                                    className={`group flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 ${scrolled ? 'text-slate-600 hover:text-brand-primary hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800' : 'text-white/90 hover:text-white'}`}
                                 >
-                                    <Calculator className="h-4 w-4" />
-                                    Estimate Cost
+                                    <Calculator className="h-4 w-4 transition-transform duration-200 group-hover:-translate-y-0.5" />
+                                    <span>Estimate</span>
                                 </Link>
-                                {['What We Do', 'Expertise', 'Process', 'Why Us', 'FAQ'].map(
-                                    (item) => (
-                                        <a
-                                            key={item}
-                                            href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
-                                            className={`text-sm font-medium transition-all duration-300 hover:scale-105 hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 dark:text-slate-400 dark:hover:text-white ${scrolled ? 'text-brand-muted' : 'text-white'}`}
-                                        >
-                                            {item}
-                                        </a>
-                                    ),
-                                )}
-                                <div className={`h-4 w-px ${scrolled ? 'bg-slate-200 dark:bg-slate-800' : 'bg-white/50'}`} />
+                                
+                                <div className={`mx-3 h-5 w-px ${scrolled ? 'bg-slate-200 dark:bg-slate-700' : 'bg-white/30'}`} />
+                                
                                 {auth.user ? (
                                     <Link
                                         href="/dashboard"
-                                        className={`text-sm font-semibold transition-opacity hover:opacity-70 ${scrolled ? 'text-brand-text' : 'text-white'}`}
+                                        className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200 ${scrolled ? 'bg-brand-primary text-white hover:bg-brand-primary/90' : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'}`}
                                     >
                                         Dashboard
                                     </Link>
                                 ) : (
-                                    <div className="flex items-center gap-6">
+                                    <div className="flex items-center gap-2">
                                         <Link
                                             href="/login"
-                                            className={`text-sm font-medium transition-colors hover:text-brand-primary dark:text-slate-400 dark:hover:text-white ${scrolled ? 'text-brand-muted' : 'text-white'}`}
+                                            className={`rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${scrolled ? 'text-slate-600 hover:text-brand-primary hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800' : 'text-white/90 hover:text-white hover:bg-white/10'}`}
                                         >
-                                            Log in
+                                            Sign In
                                         </Link>
                                         <Link
                                             href="/chat"
-                                            className="inline-flex h-11 items-center justify-center rounded-full bg-brand-primary px-7 font-display text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#C7A14A] hover:shadow-lg hover:shadow-[#C7A14A]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 dark:bg-white dark:text-brand-primary dark:hover:bg-[#C7A14A] dark:hover:text-white dark:focus-visible:ring-white"
+                                            className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#C7A14A] hover:shadow-lg hover:shadow-brand-primary/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
                                         >
-                                            Start Consultation
+                                            <MessageSquare className="h-3.5 w-3.5" />
+                                            <span>Consult</span>
                                         </Link>
                                     </div>
                                 )}
@@ -519,74 +587,70 @@ export default function Welcome({
                         </div>
                     </div>
                 </nav>
-                {/* Mobile Menu */}
+                {/* Mobile Menu - Clean Design */}
                 {mobileMenuOpen && (
                     <div className="fixed inset-0 z-40 md:hidden">
                         <div
-                            className="absolute inset-0 bg-black/30"
+                            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
                             onClick={() => setMobileMenuOpen(false)}
                         />
-                        <div className="absolute inset-x-0 top-0 rounded-b-2xl bg-brand-surface p-6 pt-20 shadow-lg dark:bg-brand-dark">
-                            <div className="flex flex-col gap-4">
-                                <a
-                                    href="#what-we-do"
+                        <div className="absolute inset-x-4 top-20 rounded-2xl bg-white p-4 shadow-2xl dark:bg-slate-900">
+                            <div className="flex flex-col gap-1">
+                                {[
+                                    { label: 'Services', href: '#what-we-do', icon: <Layers className="h-5 w-5" /> },
+                                    { label: 'Expertise', href: '#expertise', icon: <ShieldCheck className="h-5 w-5" /> },
+                                    { label: 'Process', href: '#process', icon: <Zap className="h-5 w-5" /> },
+                                    { label: 'Why Us', href: '#why-us', icon: <Star className="h-5 w-5" /> },
+                                    { label: 'FAQ', href: '#faq', icon: <HelpCircle className="h-5 w-5" /> },
+                                ].map((item) => (
+                                    <a
+                                        key={item.label}
+                                        href={item.href}
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                                    >
+                                        <span className="text-brand-primary dark:text-[#C7A14A]">{item.icon}</span>
+                                        <span>{item.label}</span>
+                                    </a>
+                                ))}
+                                
+                                <div className="my-2 h-px bg-slate-200 dark:bg-slate-800" />
+                                
+                                <Link
+                                    href="/cost-estimator"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="rounded-lg px-3 py-3 text-base font-medium text-brand-primary transition-colors hover:bg-slate-100 dark:text-white dark:hover:bg-slate-900"
+                                    className="flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
                                 >
-                                    What We Do
-                                </a>
-                                <a
-                                    href="#expertise"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="rounded-lg px-3 py-3 text-base font-medium text-brand-primary transition-colors hover:bg-slate-100 dark:text-white dark:hover:bg-slate-900"
-                                >
-                                    Expertise
-                                </a>
-                                <a
-                                    href="#process"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="rounded-lg px-3 py-3 text-base font-medium text-brand-primary transition-colors hover:bg-slate-100 dark:text-white dark:hover:bg-slate-900"
-                                >
-                                    Process
-                                </a>
-                                <a
-                                    href="#why-us"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="rounded-lg px-3 py-3 text-base font-medium text-brand-primary transition-colors hover:bg-slate-100 dark:text-white dark:hover:bg-slate-900"
-                                >
-                                    Why Us
-                                </a>
-                                <a
-                                    href="#faq"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="rounded-lg px-3 py-3 text-base font-medium text-brand-primary transition-colors hover:bg-slate-100 dark:text-white dark:hover:bg-slate-900"
-                                >
-                                    FAQ
-                                </a>
-                                <div className="h-px bg-slate-200 dark:bg-slate-800" />
+                                    <Calculator className="h-5 w-5 text-brand-primary dark:text-[#C7A14A]" />
+                                    <span>Cost Estimator</span>
+                                </Link>
+                                
+                                <div className="my-2 h-px bg-slate-200 dark:bg-slate-800" />
+                                
                                 {auth.user ? (
                                     <Link
                                         href="/dashboard"
-                                        className="rounded-full bg-slate-100 px-4 py-3 text-center text-sm font-semibold text-brand-primary transition-colors hover:bg-slate-200 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800"
+                                        className="flex items-center justify-center gap-2 rounded-xl bg-brand-primary px-4 py-3 text-center text-base font-semibold text-white transition-colors hover:bg-brand-primary/90"
                                         onClick={() => setMobileMenuOpen(false)}
                                     >
-                                        Dashboard
+                                        <span>Dashboard</span>
                                     </Link>
                                 ) : (
-                                    <div className="flex gap-3">
+                                    <div className="flex flex-col gap-2">
                                         <Link
                                             href="/login"
-                                            className="flex-1 rounded-full bg-slate-100 px-4 py-3 text-center text-sm font-semibold text-brand-primary transition-colors hover:bg-slate-200 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800"
+                                            className="flex items-center justify-center gap-2 rounded-xl bg-slate-100 px-4 py-3 text-center text-base font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200"
                                             onClick={() => setMobileMenuOpen(false)}
                                         >
-                                            Log in
+                                            <span>Sign In</span>
                                         </Link>
                                         <Link
                                             href="/chat"
-                                            className="flex-1 rounded-full bg-brand-primary px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#C7A14A] dark:bg-white dark:text-brand-primary dark:hover:bg-[#C7A14A] dark:hover:text-white"
+                                            className="flex items-center justify-center gap-2 rounded-xl bg-brand-primary px-4 py-3 text-center text-base font-semibold text-white transition-colors hover:bg-[#C7A14A]"
                                             onClick={() => setMobileMenuOpen(false)}
                                         >
-                                            Start Consultation
+                                            <MessageSquare className="h-4 w-4" />
+                                            <span>Start Consultation</span>
                                         </Link>
                                     </div>
                                 )}
@@ -677,20 +741,19 @@ export default function Welcome({
                             <div className="flex flex-col justify-center w-full lg:flex-1">
                                 <div className="mb-8 flex flex-col gap-6">
                                     <div className="max-w-2xl">
-                                        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-brand-primary/20 bg-brand-primary/5 px-3 py-1.5">
-                                            <Heart className="h-3.5 w-3.5 text-brand-primary dark:text-[#C7A14A]" />
-                                            <span className="text-[10px] font-bold tracking-widest text-brand-primary uppercase dark:text-[#C7A14A]">
+                                        <div className="mb-3 inline-flex items-center gap-2">
+                                            <div className="h-px w-6 bg-[#C7A14A]" />
+                                            <span className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A] uppercase">
                                                 What we're building for you
                                             </span>
+                                            <div className="h-px w-6 bg-[#C7A14A]" />
                                         </div>
-                                        <h2 className="font-display text-2xl font-extrabold leading-tight tracking-tight text-brand-primary sm:text-3xl dark:text-white">
+                                        <h2 className="text-xl font-medium tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                             One conversation.{' '}
-                                            <span className="bg-gradient-to-r from-brand-primary via-[#C7A14A] to-brand-muted bg-clip-text text-transparent dark:from-white dark:via-[#C7A14A] dark:to-slate-500">
-                                                Five brands. Zero runaround.
-                                            </span>
+                                            <span className="text-[#C7A14A]">Five brands. Zero runaround.</span>
                                         </h2>
-                                        <p className="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                                            Tell us once — vision, budget, timeline — we connect you to the right specialist. <strong className="text-brand-primary dark:text-white">Clarity before commitment.</strong>
+                                        <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                                            Tell us once — vision, budget, timeline — we connect you to the right specialist.
                                         </p>
                                     </div>
                                 </div>
@@ -742,11 +805,12 @@ export default function Welcome({
                             <div className="flex justify-center w-full lg:w-auto lg:justify-end">
                                 <div className="relative h-auto w-72 overflow-hidden rounded-2xl shadow-2xl ring-1 ring-slate-900/10 transform rotate-0 transition-all hover:scale-105 duration-500">
                                     <video
-                                        src="/video/section%20video.mp4"
+                                        src="https://ik.imagekit.io/area24onestorage/video/section%20video.mp4?updatedAt=1770795463880"
                                         autoPlay
                                         loop
                                         muted
                                         playsInline
+                                        preload="metadata"
                                         className="h-auto w-full"
                                     />
                                 </div>
@@ -766,19 +830,18 @@ export default function Welcome({
 
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <div className="mb-12 text-center md:mb-16">
-                            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-brand-primary/20 bg-brand-primary/5 px-3 py-1.5">
-                                <div className="h-1.5 w-1.5 rounded-full bg-brand-primary dark:bg-[#C7A14A]" />
-                                <span className="text-[10px] font-bold tracking-widest text-brand-primary uppercase dark:text-[#C7A14A]">
+                            <div className="mb-3 inline-flex items-center gap-2">
+                                <div className="h-px w-6 bg-[#C7A14A]" />
+                                <span className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A] uppercase">
                                     Our Expertise
                                 </span>
+                                <div className="h-px w-6 bg-[#C7A14A]" />
                             </div>
-                            <h2 className="font-display text-3xl font-extrabold tracking-tight text-brand-primary sm:text-4xl md:text-5xl dark:text-white">
+                            <h2 className="text-xl font-medium tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                 Five brands.{' '}
-                                <span className="bg-gradient-to-r from-brand-primary via-[#C7A14A] to-brand-muted bg-clip-text text-transparent dark:from-white dark:via-[#C7A14A] dark:to-slate-400">
-                                    One platform.
-                                </span>
+                                <span className="text-[#C7A14A]">One platform.</span>
                             </h2>
-                            <p className="mx-auto mt-4 max-w-xl text-base text-slate-600 dark:text-slate-400">
+                            <p className="mx-auto mt-3 max-w-xl text-sm text-slate-600 dark:text-slate-400">
                                 Construction, interiors, real estate, development, and events — start a consultation from any card.
                             </p>
                         </div>
@@ -816,41 +879,165 @@ export default function Welcome({
                             </div>
                         </div>
 
-                        <div className="mt-12 flex flex-col items-center justify-center gap-6 rounded-2xl border border-slate-200 bg-slate-50/80 px-6 py-8 text-center dark:border-slate-800 dark:bg-slate-900/50 md:flex-row md:gap-8 md:py-10">
-                            <div className="flex flex-wrap items-center justify-center gap-6">
-                                <span className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-                                    <CheckCircle2 className="h-5 w-5 text-brand-primary dark:text-[#C7A14A]" />
-                                    Free consultation
-                                </span>
-                                <span className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-                                    <Zap className="h-5 w-5 text-brand-primary dark:text-[#C7A14A]" />
-                                    Expert matching
-                                </span>
-                                <span className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-                                    <Target className="h-5 w-5 text-brand-primary dark:text-[#C7A14A]" />
-                                    Quick response
-                                </span>
+                        {/* Minimal CTA Section */}
+                        <div className="mt-16 flex flex-col items-center gap-8 text-center">
+                            {/* Trust Indicators */}
+                            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+                                {[
+                                    { icon: CheckCircle2, text: 'Free consultation' },
+                                    { icon: Zap, text: 'Expert matching' },
+                                    { icon: Target, text: 'Quick response' },
+                                ].map((item, i) => (
+                                    <span key={i} className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                                        <item.icon className="h-4 w-4 text-[#C7A14A]" />
+                                        {item.text}
+                                    </span>
+                                ))}
                             </div>
-                            <div className="flex flex-wrap items-center justify-center gap-3">
+                            
+                            {/* Action Buttons */}
+                            <div className="flex flex-wrap items-center justify-center gap-4">
                                 <button
                                     onClick={() => {
                                         setSelectedService('');
                                         setIsModalOpen(true);
                                     }}
-                                    className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-6 py-3 text-sm font-bold text-white transition-all hover:bg-[#C7A14A] dark:bg-white dark:text-brand-primary dark:hover:bg-slate-200"
+                                    className="group inline-flex items-center gap-2 rounded-full bg-brand-primary px-8 py-3.5 text-sm font-semibold text-white transition-all hover:bg-[#C7A14A] hover:shadow-lg hover:shadow-brand-primary/25"
                                 >
-                                    <MessageSquare className="h-4 w-4" />
+                                    <MessageSquare className="h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
                                     Start consultation
                                 </button>
                                 <Link
                                     href="/chat"
-                                    className="inline-flex items-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-brand-primary transition-all hover:border-brand-primary/50 hover:bg-brand-primary/5 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:hover:border-[#C7A14A]/50 dark:hover:bg-[#C7A14A]/10"
+                                    className="group inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors hover:text-brand-primary dark:text-slate-400 dark:hover:text-white"
                                 >
                                     <Sparkles className="h-4 w-4" />
                                     Open chat
+                                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                                 </Link>
                             </div>
                         </div>
+                    </div>
+                </section>
+
+                {/* Your Journey - How It Works */}
+                <section className="relative overflow-hidden bg-[#0A1628] py-16 lg:py-20">
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 opacity-[0.02]">
+                        <div className="absolute inset-0" style={{
+                            backgroundImage: 'linear-gradient(rgba(199,161,74,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(199,161,74,0.5) 1px, transparent 1px)',
+                            backgroundSize: '60px 60px'
+                        }} />
+                    </div>
+                    
+                    <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
+                        {/* Header */}
+                        <div className="mb-12 text-center">
+                            <div className="mb-3 inline-flex items-center gap-2">
+                                <div className="h-px w-6 bg-[#C7A14A]" />
+                                <span className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A] uppercase">
+                                    Your Journey
+                                </span>
+                                <div className="h-px w-6 bg-[#C7A14A]" />
+                            </div>
+                            <h2 className="text-xl font-medium tracking-tight text-white sm:text-2xl">
+                                How to Approach{' '}
+                                <span className="text-[#C7A14A]">Area24One</span>
+                            </h2>
+                            <p className="mx-auto mt-3 max-w-xl text-sm text-slate-400">
+                                From discovery to decision — a clear path to your project goals.
+                            </p>
+                        </div>
+
+                        {/* Steps */}
+                        <div className="grid gap-6 md:grid-cols-3">
+                            {[
+                                {
+                                    step: '01',
+                                    title: 'Explore & Analyse',
+                                    desc: 'Visit the site, browse our services, and understand how Area24One connects you to the right experts.',
+                                    icon: 'https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/analysis.png',
+                                },
+                                {
+                                    step: '02',
+                                    title: 'Choose Your Path',
+                                    desc: 'Select direct consultation for immediate guidance or use our AI Chat Assistant for instant answers.',
+                                    icon: 'https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/choose_path.png',
+                                },
+                                {
+                                    step: '03',
+                                    title: 'Get Matched',
+                                    desc: 'Share your project details. We validate your requirements and connect you to the perfect specialist.',
+                                    icon: 'https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/match_up.png',
+                                },
+                            ].map((item, i) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.4, delay: i * 0.1 }}
+                                    className="relative rounded-xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm"
+                                >
+                                    {/* Step Number */}
+                                    <div className="absolute -top-3 left-6">
+                                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#C7A14A] text-xs font-bold text-[#0A1628]">
+                                            {item.step}
+                                        </span>
+                                    </div>
+                                    
+                                    <div className="pt-2">
+                                        <div className="mb-3 h-12 w-12">
+                                            <img 
+                                                src={item.icon} 
+                                                alt={item.title}
+                                                className="h-full w-full object-contain"
+                                            />
+                                        </div>
+                                        <h3 className="mb-2 text-base font-medium text-white">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-sm leading-relaxed text-slate-400">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                    
+                                    {/* Connector Line (not on last item) */}
+                                    {i < 2 && (
+                                        <div className="absolute top-1/2 -right-3 hidden h-px w-6 bg-[#C7A14A]/30 md:block" />
+                                    )}
+                                </motion.div>
+                            ))}
+                        </div>
+
+                        {/* CTA */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="mt-10 text-center"
+                        >
+                            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+                                <Link
+                                    href="/chat"
+                                    className="group inline-flex items-center gap-2 rounded-full bg-[#C7A14A] px-6 py-3 text-sm font-semibold text-[#0A1628] transition-all hover:bg-[#B89440]"
+                                >
+                                    <MessageSquare className="h-4 w-4" />
+                                    Start with AI Assistant
+                                </Link>
+                                <button
+                                    onClick={() => {
+                                        setSelectedService('');
+                                        setIsModalOpen(true);
+                                    }}
+                                    className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 transition-colors hover:text-[#C7A14A]"
+                                >
+                                    Request Direct Consultation
+                                    <ArrowRight className="h-4 w-4" />
+                                </button>
+                            </div>
+                        </motion.div>
                     </div>
                 </section>
 
@@ -878,22 +1065,19 @@ export default function Welcome({
 
                     <div className="relative z-10 mx-auto mb-8 max-w-7xl px-6 lg:px-8">
                         <div className="mx-auto max-w-2xl text-center">
-                            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-brand-primary/20 bg-brand-primary/5 px-3 py-1 backdrop-blur-sm">
-                                <Sparkles className="h-4 w-4 text-brand-primary" />
-                                <span className="text-xs font-bold tracking-widest text-brand-primary uppercase">
+                            <div className="mb-3 inline-flex items-center gap-2">
+                                <div className="h-px w-6 bg-[#C7A14A]" />
+                                <span className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A] uppercase">
                                     Visual Gallery
                                 </span>
+                                <div className="h-px w-6 bg-[#C7A14A]" />
                             </div>
-                            <h2 className="mb-3 font-display text-3xl leading-tight font-extrabold tracking-tight text-brand-primary sm:text-4xl dark:text-white">
-                                Our Services
-                                <br />
-                                <span className="bg-gradient-to-r from-brand-primary to-[#C7A14A] bg-clip-text text-transparent dark:from-white dark:to-[#C7A14A]">
-                                    in Motion
-                                </span>
+                            <h2 className="text-xl font-medium tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                                Our Services{' '}
+                                <span className="text-[#C7A14A]">in Motion</span>
                             </h2>
-                            <p className="mx-auto max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                                Explore the comprehensive range of services we
-                                offer through our platform.
+                            <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                                Explore the comprehensive range of services we offer through our platform.
                             </p>
                         </div>
                     </div>
@@ -983,431 +1167,479 @@ export default function Welcome({
                     </div>
                 </section>
 
-                {/* How It Works (Strategic Process) */}
+                {/* The Area24One Strategic Framework - Fixed Background Image */}
                 <section
                     ref={processRef}
                     id="process"
-                    className="relative overflow-hidden bg-white py-16 dark:bg-brand-dark"
+                    className="relative min-h-[600px] overflow-hidden"
                 >
-                    {/* Strategic Grid Background Pattern */}
-                    <motion.div
-                        style={{ y: processBgY }}
-                        className="absolute inset-0 -z-10 bg-white dark:bg-brand-dark"
-                    >
-                        <div
-                            className="pointer-events-none absolute inset-0 opacity-[0.3] dark:opacity-[0.25]"
-                            style={{
-                                backgroundImage: `
-                                    linear-gradient(rgba(199, 161, 74, 0.2) 1px, transparent 1px),
-                                    linear-gradient(90deg, rgba(199, 161, 74, 0.2) 1px, transparent 1px),
-                                    radial-gradient(circle at center, rgba(199, 161, 74, 0.4) 1.5px, transparent 1.5px)
-                                `,
-                                backgroundSize:
-                                    '20px 20px, 20px 20px, 20px 20px',
-                                backgroundPosition: '0 0, 0 0, 0 0',
-                            }}
-                        />
-                        {/* Gradient Masks for Depth */}
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,white_100%)] dark:bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)]" />
-                    </motion.div>
-
-                    <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
-                        <div className="mb-12 text-center">
-                            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-brand-primary/10 bg-brand-primary/5 px-3 py-1 text-[10px] font-bold tracking-widest text-[#C7A14A] uppercase dark:border-white/10 dark:bg-white/5">
-                                <Sparkles className="h-3 w-3" />
-                                <span>The Area24 Process</span>
-                            </div>
-                            <h3 className="mb-4 font-display text-3xl leading-tight font-extrabold tracking-tight text-brand-primary sm:text-4xl dark:text-white">
-                                Simple. Seamless.{' '}
-                                <span className="bg-gradient-to-r from-[#C7A14A] to-slate-500 bg-clip-text text-transparent">
-                                    Strategic.
-                                </span>
-                            </h3>
-                            <p className="mx-auto max-w-xl text-base leading-relaxed font-medium text-slate-500 dark:text-slate-400">
-                                Most people waste weeks talking to vendors. We
-                                start with clarity — then route you correctly.
-                            </p>
-                        </div>
-
-                        <div className="relative mx-auto max-w-5xl">
-                            {/* Central Path (Desktop Only) */}
-                            <div className="absolute top-0 bottom-0 left-1/2 hidden w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-[#C7A14A]/30 to-transparent lg:block" />
-
-                            <div className="relative space-y-16">
-                                {[
-                                    {
-                                        num: '01',
-                                        title: 'The Discovery Session',
-                                        desc: 'Engage with our strategic AI consultant. In one structured conversation, we map your entire project horizon—budget, timeline, and architectural requirements.',
-                                        icon: (
-                                            <MessageSquare className="h-6 w-6" />
-                                        ),
-                                        align: 'left',
-                                        badge: 'Intelligence',
-                                    },
-                                    {
-                                        num: '02',
-                                        title: 'Strategic Blueprinting',
-                                        desc: 'Our platform validates your vision against market data and technical feasibility, generating a clear starting point for the specialized brands.',
-                                        icon: (
-                                            <ShieldCheck className="h-6 w-6" />
-                                        ),
-                                        align: 'right',
-                                        badge: 'Accuracy',
-                                    },
-                                    {
-                                        num: '03',
-                                        title: 'Seamless Integration',
-                                        desc: "Finally, we connect you to the precise expert team Best for your project—whether it's construction, interiors, or events—ensuring zero data loss.",
-                                        icon: <Zap className="h-6 w-6" />,
-                                        align: 'left',
-                                        badge: 'Execution',
-                                    },
-                                ].map((step, i) => (
-                                    <motion.div
-                                        key={i}
-                                        initial={{ opacity: 0, x: step.align === 'right' ? 50 : -50 }}
-                                        whileInView={{ opacity: 1, x: 0 }}
-                                        viewport={{ once: true, margin: '-100px' }}
-                                        transition={{ duration: 0.6, delay: i * 0.2 }}
-                                        className={`relative flex items-center gap-8 ${step.align === 'right' ? 'lg:flex-row-reverse' : 'lg:flex-row'}`}
-                                    >
-                                        {/* Step Content Card */}
-                                        <div className="w-full lg:w-[45%]">
-                                            <div className="group relative rounded-2xl border border-slate-100 bg-white p-6 shadow-lg backdrop-blur-md transition-all duration-500 hover:border-[#C7A14A]/50 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900/80">
-                                                <div className="absolute -top-5 left-8 z-20 flex h-10 items-center justify-center rounded-xl bg-[#C7A14A] px-4 font-display text-xs font-bold tracking-widest text-white uppercase shadow-lg">
-                                                    Step {step.num}
-                                                </div>
-
-                                                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 text-[#C7A14A] transition-all duration-300 group-hover:bg-[#C7A14A] group-hover:text-white dark:border-white/10 dark:bg-slate-800/50">
-                                                    {step.icon}
-                                                </div>
-
-                                                <div className="mb-2 text-[10px] font-bold tracking-[0.2em] text-[#C7A14A] uppercase opacity-60">
-                                                    Phase: {step.badge}
-                                                </div>
-
-                                                <h4 className="mb-3 font-display text-lg leading-tight font-bold text-brand-primary dark:text-white">
-                                                    {step.title}
-                                                </h4>
-                                                <p className="text-sm leading-relaxed font-medium text-slate-500 dark:text-slate-400">
-                                                    {step.desc}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        {/* Desktop-only Connection Element */}
-                                        <div className="relative hidden w-[10%] justify-center lg:flex">
-                                            <div className="z-20 flex h-10 w-10 items-center justify-center rounded-full border-4 border-[#C7A14A]/10 bg-white shadow-lg transition-transform group-hover:scale-110 dark:bg-brand-dark">
-                                                <div className="h-2 w-2 animate-pulse rounded-full bg-[#C7A14A]" />
-                                            </div>
-                                        </div>
-
-                                        <div className="hidden w-[45%] lg:block" />
-                                    </motion.div>
-                                ))}
+                    {/* Fixed Background Image */}
+                    <div 
+                        className="absolute inset-0 bg-cover bg-center bg-fixed"
+                        style={{
+                            backgroundImage: 'url(https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/pexels-ivan-s-8962803.jpg)',
+                        }}
+                    />
+                    
+                    {/* Dark Overlay for Text Visibility */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#0A1628]/90 via-[#0A1628]/85 to-[#0A1628]/90" />
+                    
+                    {/* Content Stacked Over Image */}
+                    <div className="relative z-10 flex min-h-[600px] items-center py-16 lg:py-20">
+                        <div className="mx-auto w-full max-w-5xl px-6 lg:px-8">
+                            {/* Compact Header */}
+                            <div className="mb-10 text-center lg:mb-12">
+                                <div className="mb-3 inline-flex items-center gap-3">
+                                    <div className="h-px w-6 bg-[#C7A14A]" />
+                                    <span className="text-[10px] font-semibold tracking-[0.25em] text-[#C7A14A] uppercase">
+                                        The Area24One Strategic Framework
+                                    </span>
+                                    <div className="h-px w-6 bg-[#C7A14A]" />
+                                </div>
+                                
+                                <h2 className="text-2xl font-medium tracking-tight text-white sm:text-3xl">
+                                    From Concept to{' '}
+                                    <span className="text-[#C7A14A]">Controlled Execution</span>
+                                </h2>
                             </div>
 
-                            {/* Process CTA */}
-                            <div className="relative z-20 mt-16 text-center">
-                                <div className="absolute top-1/2 left-1/2 -z-10 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#C7A14A]/20 blur-[100px]" />
+                            {/* Compact Connected Timeline */}
+                            <div className="relative">
+                                {/* Vertical Connection Line */}
+                                <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-[#C7A14A] via-[#C7A14A]/30 to-transparent lg:left-1/2 lg:-translate-x-1/2" />
+                                
+                                <div className="space-y-5">
+                                    {[
+                                        {
+                                            phase: 'PHASE I',
+                                            title: 'Strategic Assessment',
+                                            objective: 'Establish clarity before commitment.',
+                                            items: ['Risk exposure map', 'Viability observations', 'Direction summary'],
+                                            align: 'left',
+                                        },
+                                        {
+                                            phase: 'PHASE II',
+                                            title: 'Feasibility & Alignment',
+                                            objective: 'Validate before mobilizing.',
+                                            items: ['Budget architecture', 'Feasibility notes', 'Market alignment'],
+                                            align: 'right',
+                                        },
+                                        {
+                                            phase: 'PHASE III',
+                                            title: 'Execution Structuring',
+                                            objective: 'Align stakeholders under one framework.',
+                                            items: ['Execution roadmap', 'Responsibility matrix', 'Oversight framework'],
+                                            align: 'left',
+                                        },
+                                    ].map((phase, i) => (
+                                        <motion.div
+                                            key={i}
+                                            initial={{ opacity: 0, y: 15 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
+                                            viewport={{ once: true }}
+                                            transition={{ duration: 0.4, delay: i * 0.1 }}
+                                            className={`relative flex items-start gap-5 lg:grid lg:grid-cols-2 lg:gap-8 ${phase.align === 'right' ? 'lg:text-right' : ''}`}
+                                        >
+                                            {/* Node */}
+                                            <div className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-[#C7A14A] bg-[#0A1628]/80 backdrop-blur-sm lg:absolute lg:left-1/2 lg:-translate-x-1/2 ${phase.align === 'right' ? 'lg:order-2' : ''}`}>
+                                                <span className="text-sm font-bold text-[#C7A14A]">{i + 1}</span>
+                                            </div>
+                                            
+                                            {/* Content */}
+                                            <div className={`flex-1 pb-1 lg:pb-0 ${phase.align === 'right' ? 'lg:order-1 lg:pr-16' : 'lg:order-2 lg:pl-16'}`}>
+                                                <div className="group">
+                                                    <span className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A]">
+                                                        {phase.phase}
+                                                    </span>
+                                                    <h3 className="mt-0.5 text-base font-medium text-white group-hover:text-[#C7A14A] transition-colors">
+                                                        {phase.title}
+                                                    </h3>
+                                                    <p className="mt-0.5 text-sm font-medium text-slate-200">
+                                                        {phase.objective}
+                                                    </p>
+                                                    
+                                                    {/* Compact Deliverables */}
+                                                    <div className={`mt-2 flex flex-wrap gap-x-4 gap-y-1 ${phase.align === 'right' ? 'lg:justify-end' : ''}`}>
+                                                        {phase.items.map((item, j) => (
+                                                            <span 
+                                                                key={j} 
+                                                                className="inline-flex items-center gap-1.5 text-xs text-slate-300"
+                                                            >
+                                                                <span className="h-1 w-1 rounded-full bg-[#C7A14A]" />
+                                                                {item}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Spacer for opposite side */}
+                                            <div className={`hidden lg:block ${phase.align === 'right' ? 'lg:order-2' : 'lg:order-1'}`} />
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Compact CTA */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.4, delay: 0.3 }}
+                                className="mt-10 flex flex-col items-center gap-3 border-t border-white/10 pt-6 lg:flex-row lg:justify-between"
+                            >
+                                <p className="text-xs text-slate-400">
+                                    Framework by <span className="text-[#C7A14A]">ArunAR</span>
+                                </p>
+                                
                                 <button
                                     onClick={() => {
                                         setSelectedService('');
                                         setIsModalOpen(true);
                                     }}
-                                    className="group relative inline-flex items-center gap-3 rounded-full bg-brand-primary px-10 py-4 font-display text-base font-bold text-white shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-lg active:scale-95 dark:bg-[#C7A14A]"
+                                    className="group inline-flex items-center gap-2 text-sm font-semibold text-white transition-colors hover:text-[#C7A14A]"
                                 >
-                                    <span>Start Consultation</span>
-                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 transition-transform group-hover:translate-x-1">
-                                        <ArrowRight className="h-4 w-4" />
-                                    </div>
+                                    Request Strategic Review
+                                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                                 </button>
-                                <p className="mt-4 text-xs font-bold tracking-[0.2em] text-slate-500 uppercase">
-                                    Experience integrated consultation
-                                </p>
-                            </div>
+                            </motion.div>
                         </div>
                     </div>
                 </section>
 
-                {/* Materials & brands we use — Marquee (after Process, enhanced) */}
+                {/* Materials & brands we use — Clean Marquee */}
                 <section
                     id="materials-brands"
-                    className="relative overflow-hidden border-y border-slate-200 bg-white py-20 dark:border-slate-700 dark:bg-white"
+                    className="relative overflow-hidden bg-white py-16 dark:bg-white"
                 >
-                    <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_50%_0%,rgba(199,161,74,0.06),_transparent_60%)]" />
-                    <div className="absolute inset-0 -z-10 bg-[length:24px_24px] bg-[linear-gradient(to_right,rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.02)_1px,transparent_1px)]" />
-                    <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+                    <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                        {/* Compact Header */}
                         <motion.div
-                            initial={{ opacity: 0, y: 16 }}
+                            initial={{ opacity: 0, y: 12 }}
                             whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: '-50px' }}
-                            transition={{ duration: 0.5 }}
-                            className="mb-12 text-center"
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.4 }}
+                            className="mb-10 text-center"
                         >
-                            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-brand-accent/30 bg-brand-accent/10 px-4 py-2">
-                                <Sparkles className="h-3.5 w-3.5 text-brand-accent" />
-                                <span className="text-[10px] font-bold tracking-widest text-brand-accent uppercase">
+                            <div className="mb-3 inline-flex items-center gap-2">
+                                <div className="h-px w-6 bg-[#C7A14A]" />
+                                <span className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A] uppercase">
                                     Materials & brands we use
                                 </span>
+                                <div className="h-px w-6 bg-[#C7A14A]" />
                             </div>
-                            <h3 className="font-display text-2xl font-bold tracking-tight text-brand-accent sm:text-3xl lg:text-4xl">
+                            <h3 className="text-xl font-medium tracking-tight text-slate-900 sm:text-2xl">
                                 Trusted partners across our construction packages
                             </h3>
-                            <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-slate-500 sm:text-base">
-                                Quality materials from recognised brands — see package details for full specifications.
-                            </p>
-                            <p className="mt-2 text-xs font-medium text-slate-400">
-                                Scroll to explore · Pause on hover
-                            </p>
                         </motion.div>
-                        <div className="relative">
-                            <div className="pointer-events-none absolute left-0 top-0 bottom-0 z-10 w-16 bg-gradient-to-r from-white to-transparent dark:from-white" />
-                            <div className="pointer-events-none absolute right-0 top-0 bottom-0 z-10 w-16 bg-gradient-to-l from-white to-transparent dark:from-white" />
+
+                        {/* Clean Marquee - No wrapper, mild shadow, vertical dividers */}
+                        <div className="relative overflow-hidden">
                             <Marquee
-                                className="[--duration:70s] [--gap:2.5rem] py-2"
+                                className="[--duration:40s] [--gap:0px] py-4"
                                 pauseOnHover
+                                repeat={6}
                             >
                                 {MARQUEE_BRANDS.map((brand, i) => (
-                                    <MarqueeBrandCard key={i} brand={brand} />
+                                    <MarqueeBrandCard 
+                                        key={i} 
+                                        brand={brand} 
+                                        isLast={false}
+                                    />
                                 ))}
                             </Marquee>
                         </div>
                     </div>
                 </section>
 
-                {/* Why Platform (Differentiator) */}
+                {/* Founder-Led Elite Advisory - Clean Modern Design */}
                 <section
                     ref={whyUsRef}
                     id="why-us"
-                    className="relative overflow-hidden bg-slate-50 py-32 dark:bg-slate-950/50"
+                    className="relative overflow-hidden bg-[#0A1628]"
                 >
-                    <div className="absolute top-1/2 left-1/2 -z-10 h-full w-full -translate-x-1/2 -translate-y-1/2 opacity-30 dark:opacity-20">
-                        <motion.div
-                            style={{ y: whyUsBgY1 }}
-                            className="absolute top-0 right-0 h-[500px] w-[500px] rounded-full bg-brand-primary/10 blur-[120px]"
-                        />
-                        <motion.div
-                            style={{ y: whyUsBgY2 }}
-                            className="absolute bottom-0 left-0 h-[500px] w-[500px] rounded-full bg-brand-accent/10 blur-[120px]"
-                        />
-                    </div>
+                    {/* Fixed Background Image */}
+                    <div 
+                        className="absolute inset-0 bg-cover bg-center bg-fixed"
+                        style={{
+                            backgroundImage: 'url(https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/pexels-ivan-s-8962803.jpg)',
+                        }}
+                    />
+                    
+                    {/* Dark Overlay */}
+                    <div className="absolute inset-0 bg-[#0A1628]/92" />
 
-                    <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                        <div className="grid items-start gap-16 lg:grid-cols-12">
-                            {/* Content Side */}
-                            <div className="lg:col-span-7">
-                                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand-primary/20 bg-brand-primary/10 px-3 py-1 text-[10px] font-bold tracking-widest text-brand-primary uppercase dark:text-[#C7A14A]">
-                                    <ShieldCheck className="h-3 w-3" />
-                                    <span>The Strategic Advantage</span>
-                                </div>
-                                <h3 className="mb-8 font-display text-4xl leading-tight font-extrabold tracking-tight text-brand-primary sm:text-5xl dark:text-white">
-                                    Why Leading Decision Makers
-                                    <br />
-                                    <span className="bg-gradient-to-r from-[#C7A14A] to-slate-500 bg-clip-text text-transparent">
-                                        Choose This Platform.
+                    <div className="relative z-10 py-20 lg:py-24">
+                        <div className="mx-auto max-w-6xl px-6 lg:px-8">
+                            {/* Compact Header */}
+                            <div className="mb-12 text-center lg:mb-14">
+                                <div className="mb-4 inline-flex items-center gap-3">
+                                    <div className="h-px w-8 bg-[#C7A14A]" />
+                                    <span className="text-[10px] font-semibold tracking-[0.25em] text-[#C7A14A] uppercase">
+                                        The ArunAR Decision Model
                                     </span>
-                                </h3>
-
-                                <div className="relative grid gap-6 sm:grid-cols-2">
-                                    {[
-                                        {
-                                            title: 'Unified Intelligence',
-                                            desc: 'A single intelligent conversation replaces dozens of repetitive vendor meetings.',
-                                            icon: (
-                                                <MessageSquare className="h-5 w-5" />
-                                            ),
-                                        },
-                                        {
-                                            title: 'Expert Validation',
-                                            desc: 'Pre-screen every decision with data-driven architectural and market insights.',
-                                            icon: (
-                                                <Target className="h-5 w-5" />
-                                            ),
-                                        },
-                                        {
-                                            title: 'Integrated Ecosystem',
-                                            desc: 'Frictionless handovers between construction, interiors, and development teams.',
-                                            icon: <Zap className="h-5 w-5" />,
-                                        },
-                                        {
-                                            title: 'Accelerated Cycles',
-                                            desc: 'Proprietary consultation logic that drives 5x faster decision-to-execution cycles.',
-                                            icon: (
-                                                <TrendingUp className="h-5 w-5" />
-                                            ),
-                                        },
-                                    ].map((item, i) => (
-                                        <motion.div
-                                            key={i}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            whileInView={{ opacity: 1, y: 0 }}
-                                            viewport={{ once: true, margin: '-50px' }}
-                                            transition={{ duration: 0.5, delay: i * 0.15 }}
-                                            className="group rounded-[2rem] border border-slate-100 bg-white p-6 transition-all duration-300 hover:border-[#C7A14A]/50 dark:border-slate-800 dark:bg-slate-900"
-                                        >
-                                            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-brand-primary transition-all duration-300 group-hover:bg-[#C7A14A] group-hover:text-white dark:bg-slate-800 dark:text-[#C7A14A]">
-                                                {item.icon}
-                                            </div>
-                                            <h4 className="mb-2 font-display text-lg font-bold text-brand-primary dark:text-white">
-                                                {item.title}
-                                            </h4>
-                                            <p className="text-sm leading-relaxed font-medium text-slate-500 dark:text-slate-400">
-                                                {item.desc}
-                                            </p>
-                                        </motion.div>
-                                    ))}
+                                    <div className="h-px w-8 bg-[#C7A14A]" />
                                 </div>
+                                
+                                <h2 className="text-2xl font-medium tracking-tight text-white sm:text-3xl lg:text-4xl">
+                                    Before Capital Moves,{' '}
+                                    <span className="text-[#C7A14A]">Strategy Is Validated.</span>
+                                </h2>
                             </div>
 
-                            {/* Stats/Visual Side */}
-                            <div className="grid grid-cols-2 gap-4 lg:col-span-5">
-                                <div className="space-y-4 pt-12">
+                            {/* Strategic Layers - Clean Cards */}
+                            <div className="grid gap-4 lg:grid-cols-2">
+                                {[
+                                    {
+                                        num: '01',
+                                        title: 'Strategic Feasibility Control',
+                                        desc: 'Capital exposure, financial logic, and execution viability assessed before commitments.',
+                                    },
+                                    {
+                                        num: '02',
+                                        title: 'Architectural & Technical Authority',
+                                        desc: 'Design decisions reviewed for constructability, cost impact, and asset value.',
+                                    },
+                                    {
+                                        num: '03',
+                                        title: 'Market Intelligence Alignment',
+                                        desc: 'Positioning and pricing validated against real-world market behavior.',
+                                    },
+                                    {
+                                        num: '04',
+                                        title: 'Execution Governance',
+                                        desc: 'All stakeholders operate within one unified decision chain.',
+                                    },
+                                ].map((layer, i) => (
                                     <motion.div
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        whileInView={{ opacity: 1, scale: 1 }}
+                                        key={i}
+                                        initial={{ opacity: 0, y: 15 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
                                         viewport={{ once: true }}
-                                        transition={{ duration: 0.5, delay: 0.2 }}
-                                        className="group relative flex aspect-square flex-col justify-end overflow-hidden rounded-[2.5rem] bg-brand-primary p-8 shadow-2xl"
+                                        transition={{ duration: 0.4, delay: i * 0.08 }}
+                                        className="group rounded-xl border border-slate-800/50 bg-slate-900/30 p-6 backdrop-blur-sm transition-all duration-300 hover:border-[#C7A14A]/30 hover:bg-slate-900/50"
                                     >
-                                        <div className="absolute top-0 right-0 p-6 opacity-20 transition-transform duration-500 group-hover:scale-110">
-                                            <CheckCircle2 className="h-24 w-24 text-white" />
-                                        </div>
-                                        <div className="relative z-10">
-                                            <div className="mb-1 font-display text-5xl font-bold text-white">
-                                                98%
-                                            </div>
-                                            <div className="text-[10px] font-bold tracking-[0.2em] text-white/70 uppercase">
-                                                Consultation Accuracy
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        whileInView={{ opacity: 1, scale: 1 }}
-                                        viewport={{ once: true }}
-                                        transition={{ duration: 0.5, delay: 0.3 }}
-                                        className="group flex aspect-square items-center justify-center rounded-[2.5rem] bg-slate-100 p-8 transition-colors duration-500 hover:bg-[#C7A14A] dark:bg-slate-800"
-                                    >
-                                        <Star className="h-16 w-16 text-slate-300 transition-all duration-500 group-hover:text-white dark:text-slate-700" />
-                                    </motion.div>
-                                </div>
-                                <div className="space-y-4">
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        whileInView={{ opacity: 1, scale: 1 }}
-                                        viewport={{ once: true }}
-                                        transition={{ duration: 0.5, delay: 0.4 }}
-                                        className="flex aspect-video items-center justify-center rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-lg dark:border-slate-800 dark:bg-slate-900"
-                                    >
-                                        <Sparkles className="h-10 w-10 animate-pulse text-[#C7A14A]" />
-                                    </motion.div>
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        whileInView={{ opacity: 1, scale: 1 }}
-                                        viewport={{ once: true }}
-                                        transition={{ duration: 0.5, delay: 0.5 }}
-                                        className="group relative flex aspect-square flex-col justify-end overflow-hidden rounded-[2.5rem] bg-[#C7A14A] p-8 shadow-2xl"
-                                    >
-                                        <div className="absolute top-0 right-0 p-6 opacity-20 transition-transform duration-500 group-hover:scale-110">
-                                            <Zap className="h-24 w-24 text-white" />
-                                        </div>
-                                        <div className="relative z-10">
-                                            <div className="mb-1 font-display text-5xl font-bold text-white">
-                                                5x
-                                            </div>
-                                            <div className="text-[10px] font-bold tracking-[0.2em] text-white/70 uppercase">
-                                                Decision Efficiency
+                                        <div className="flex items-start gap-4">
+                                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#C7A14A]/30 text-xs font-bold text-[#C7A14A]">
+                                                {layer.num}
+                                            </span>
+                                            <div>
+                                                <h3 className="mb-1 text-base font-medium text-white transition-colors group-hover:text-[#C7A14A]">
+                                                    {layer.title}
+                                                </h3>
+                                                <p className="text-sm leading-relaxed text-slate-400">
+                                                    {layer.desc}
+                                                </p>
                                             </div>
                                         </div>
                                     </motion.div>
-                                </div>
+                                ))}
                             </div>
+
+                            {/* Authority Metrics - Inline Row */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: 0.2 }}
+                                className="mt-8 flex flex-wrap justify-center gap-8 border-y border-slate-800/50 py-6 lg:gap-12"
+                            >
+                                {[
+                                    { value: '₹120Cr+', label: 'Reviewed' },
+                                    { value: '30–45 Days', label: 'Validation' },
+                                    { value: 'Zero-Compromise', label: 'Screening' },
+                                ].map((metric, i) => (
+                                    <div key={i} className="text-center">
+                                        <div className="text-xl font-semibold text-white lg:text-2xl">
+                                            {metric.value}
+                                        </div>
+                                        <div className="mt-0.5 text-[10px] tracking-wider text-slate-500 uppercase">
+                                            {metric.label}
+                                        </div>
+                                    </div>
+                                ))}
+                            </motion.div>
+
+                            {/* Compact Quote & Attribution */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 15 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: 0.3 }}
+                                className="mt-10 text-center"
+                            >
+                                <p className="mx-auto max-w-2xl text-base font-light leading-relaxed text-slate-300">
+                                    "A project is not approved because it looks promising. 
+                                    It is approved because it survives structured scrutiny."
+                                </p>
+                                <div className="mt-4 flex items-center justify-center gap-3">
+                                    <div className="h-px w-8 bg-[#C7A14A]/50" />
+                                    <span className="text-sm font-medium text-[#C7A14A]">ArunAR</span>
+                                    <div className="h-px w-8 bg-[#C7A14A]/50" />
+                                </div>
+                            </motion.div>
                         </div>
                     </div>
                 </section>
 
-                {/* FAQ Section */}
+                {/* Client Reviews - Auto Scroll Marquee */}
+                <section className="relative overflow-hidden bg-[#0A1628] py-16 lg:py-20">
+                    {/* Subtle Background */}
+                    <div className="absolute inset-0 opacity-[0.02]">
+                        <div className="absolute inset-0" style={{
+                            backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(199,161,74,0.5) 1px, transparent 0)',
+                            backgroundSize: '40px 40px'
+                        }} />
+                    </div>
+
+                    <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+                        {/* Header */}
+                        <div className="mb-12 text-center">
+                            <div className="mb-3 inline-flex items-center gap-2">
+                                <div className="h-px w-6 bg-[#C7A14A]" />
+                                <span className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A] uppercase">
+                                    Client Reviews
+                                </span>
+                                <div className="h-px w-6 bg-[#C7A14A]" />
+                            </div>
+                            <h2 className="text-xl font-medium tracking-tight text-white sm:text-2xl">
+                                Trusted by{' '}
+                                <span className="text-[#C7A14A]">Decision-Makers</span>
+                            </h2>
+                        </div>
+                    </div>
+
+                    {/* Reviews Marquee - Full Width Slow Scroll */}
+                    <div className="relative w-full overflow-hidden">
+                        <Marquee
+                            className="[--duration:120s] py-4"
+                            pauseOnHover
+                            repeat={3}
+                        >
+                            {[
+                                { name: 'Rajesh K.', location: 'Bangalore', rating: 5, comment: 'The AI assistant gave me clarity on my construction budget within minutes. Saved weeks of research.' },
+                                { name: 'Priya M.', location: 'Mysore', rating: 5, comment: 'Direct consultation with ArunAR helped me avoid a bad investment. Their validation process is thorough.' },
+                                { name: 'Vikram S.', location: 'Ballari', rating: 5, comment: 'Connected me to the right interior designer instantly. No running around, just results.' },
+                                { name: 'Anita R.', location: 'Bangalore', rating: 5, comment: 'The strategic framework helped me understand risks I had not considered. Worth every minute.' },
+                                { name: 'Karthik N.', location: 'Mysore', rating: 5, comment: 'From land development to execution, they guided me through every phase professionally.' },
+                                { name: 'Sunita B.', location: 'Bangalore', rating: 5, comment: 'Chat support is incredibly responsive. Got answers to all my property queries at midnight.' },
+                                { name: 'Mohammed A.', location: 'Ballari', rating: 5, comment: 'They matched me with Atha Construction for my villa project. Quality exceeded expectations.' },
+                                { name: 'Lakshmi P.', location: 'Mysore', rating: 5, comment: 'The consultation was free but the insights were invaluable. Highly recommend for first-time builders.' },
+                                { name: 'Suresh G.', location: 'Bangalore', rating: 5, comment: 'Area24One simplified my commercial project planning. Their network of experts is impressive.' },
+                                { name: 'Deepa H.', location: 'Ballari', rating: 5, comment: 'Got my event planned through The Stage 365 connection. Seamless experience from start to finish.' },
+                                { name: 'Arun T.', location: 'Mysore', rating: 5, comment: 'The feasibility study saved me from a costly mistake. Strategic validation at its best.' },
+                                { name: 'Meena K.', location: 'Bangalore', rating: 5, comment: 'Professional, prompt, and precise. The team understood my requirements perfectly.' },
+                                { name: 'Ravi P.', location: 'Ballari', rating: 5, comment: 'Best platform for connecting with verified construction experts. No middlemen, direct access.' },
+                                { name: 'Shalini V.', location: 'Mysore', rating: 5, comment: 'From interior design to execution, everything was handled smoothly. Great coordination.' },
+                                { name: 'Girish M.', location: 'Bangalore', rating: 5, comment: 'The ArunAR Decision Model gave me confidence to proceed with my investment. Truly elite advisory.' },
+                            ].map((review, i) => (
+                                <div
+                                    key={i}
+                                    className="mx-6 w-[320px] shrink-0 sm:mx-8 sm:w-[380px] lg:mx-10 lg:w-[420px]"
+                                >
+                                    <div className="border-l-2 border-[#C7A14A]/30 pl-5">
+                                        {/* Rating Stars */}
+                                        <div className="mb-3 flex gap-1">
+                                            {Array(review.rating).fill(null).map((_, j) => (
+                                                <svg key={j} className="h-4 w-4 fill-[#C7A14A]" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                </svg>
+                                            ))}
+                                        </div>
+                                        
+                                        {/* Comment */}
+                                        <p className="mb-4 text-sm leading-relaxed text-slate-300">
+                                            "{review.comment}"
+                                        </p>
+                                        
+                                        {/* Name & Location */}
+                                        <div className="flex items-center gap-2 text-xs">
+                                            <span className="font-medium text-white">{review.name}</span>
+                                            <span className="text-slate-600">•</span>
+                                            <span className="text-slate-500">{review.location}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </Marquee>
+                    </div>
+                </section>
+
+                {/* FAQ Section - Compact Modern Design */}
                 <section
                     id="faq"
-                    className="relative overflow-hidden border-t border-slate-100 bg-white py-24 dark:border-slate-800 dark:bg-brand-dark/30"
+                    className="relative overflow-hidden bg-slate-50 py-16 dark:bg-[#0A0F1C]"
                 >
-                    <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_bottom,_rgba(199,161,74,0.04),_transparent_50%)]" />
-                    <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                        <div className="mb-14 max-w-3xl">
-                            <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-brand-primary/20 bg-brand-primary/5 px-4 py-2 backdrop-blur-sm">
-                                <MessageSquare className="h-4 w-4 text-brand-primary dark:text-[#C7A14A]" />
-                                <span className="text-xs font-bold tracking-widest text-brand-primary uppercase dark:text-[#C7A14A]">
+                    <div className="mx-auto max-w-3xl px-6 lg:px-8">
+                        {/* Compact Header */}
+                        <div className="mb-10 text-center">
+                            <div className="mb-3 inline-flex items-center gap-2">
+                                <div className="h-px w-6 bg-[#C7A14A]" />
+                                <span className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A] uppercase">
                                     FAQ
                                 </span>
+                                <div className="h-px w-6 bg-[#C7A14A]" />
                             </div>
-                            <h2 className="mb-4 font-display text-3xl leading-tight font-extrabold tracking-tight text-brand-primary sm:text-4xl lg:text-5xl dark:text-white">
-                                Frequently asked
-                                <br />
-                                <span className="bg-gradient-to-r from-brand-primary via-[#C7A14A] to-brand-muted bg-clip-text text-transparent dark:from-white dark:via-[#C7A14A] dark:to-slate-500">
-                                    questions
-                                </span>
+                            <h2 className="text-xl font-medium tracking-tight text-slate-900 dark:text-white">
+                                Frequently asked questions
                             </h2>
-                            <p className="max-w-xl text-base leading-relaxed text-slate-600 dark:text-slate-400">
-                                Quick answers about our platform, consultation, and services.
-                            </p>
                         </div>
-
-                        <div className="mx-auto max-w-3xl space-y-3">
+                
+                        {/* Compact Accordion */}
+                        <div className="space-y-2">
                             {[
                                 {
                                     q: 'What is Area 24 One?',
-                                    a: 'Area 24 One is a single platform that connects you with five expert brands: Atha Construction, Nesthetix Design (interiors), Area24 Realty, Area24 Developers, and The Stage 365 (events). One conversation helps us understand your needs and route you to the right specialist.',
+                                    a: 'A single platform connecting you with five expert brands: Atha Construction, Nesthetix Design, Area24 Realty, Area24 Developers, and The Stage 365.',
                                 },
                                 {
-                                    q: 'How does the consultation work?',
-                                    a: 'You start by chatting with our AI consultant — share your project, budget, and timeline. We clarify your requirements and then connect you with the right team (construction, interiors, real estate, development, or events) so you get tailored guidance without repeating yourself.',
+                                    q: 'How does consultation work?',
+                                    a: 'Chat with our AI consultant about your project, budget, and timeline. We clarify requirements and connect you to the right specialist.',
                                 },
                                 {
                                     q: 'Is the consultation free?',
-                                    a: 'Yes. The initial consultation and guidance through our platform are free. There’s no obligation — we help you get clarity before you commit to any paid service.',
+                                    a: 'Yes. Initial consultation and guidance are completely free with no obligation.',
                                 },
                                 {
                                     q: 'Which cities do you serve?',
-                                    a: 'We operate across Karnataka, with a strong presence in Bangalore, Mysore, and Ballari. Costs and processes may vary slightly by city; our consultant will factor your location into the guidance.',
+                                    a: 'We operate across Karnataka with strong presence in Bangalore, Mysore, and Ballari.',
                                 },
                                 {
-                                    q: 'Can I get a quote for construction or interiors?',
-                                    a: 'Yes. Once we understand your project (type, area, budget band), we connect you with Atha Construction or Nesthetix Design. They provide detailed quotes and package options (e.g. construction per sqft, interior scope) based on your inputs.',
+                                    q: 'Can I get a quote?',
+                                    a: 'Yes. Once we understand your project, we connect you with the right team for detailed quotes and package options.',
                                 },
                                 {
                                     q: 'How do I get started?',
-                                    a: 'Click “Start Consultation” and open the chat. Tell us what you’re planning — building a home, designing interiors, buying property, developing land, or planning an event. Our AI will ask a few focused questions and then guide you to the right expert or next step.',
+                                    a: 'Click "Start Consultation" and tell us what you are planning. Our AI will guide you to the right expert.',
                                 },
                             ].map((item, i) => (
                                 <motion.div
                                     key={i}
-                                    initial={{ opacity: 0, y: 8 }}
+                                    initial={{ opacity: 0, y: 10 }}
                                     whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true, margin: '-20px' }}
-                                    transition={{ duration: 0.3, delay: i * 0.04 }}
-                                    className="rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 dark:border-slate-800 dark:bg-slate-900/80"
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.3, delay: i * 0.05 }}
+                                    className="rounded-lg border border-slate-200 bg-white transition-all duration-200 dark:border-slate-800 dark:bg-slate-900/50"
                                 >
                                     <button
                                         type="button"
                                         onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                                        className="flex w-full items-center justify-between gap-4 rounded-2xl px-6 py-5 text-left transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-inset dark:hover:bg-slate-800/50 dark:focus-visible:ring-[#C7A14A]"
+                                        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
                                     >
-                                        <span className="font-display text-base font-bold text-brand-primary dark:text-white">
+                                        <span className="text-sm font-medium text-slate-900 dark:text-white">
                                             {item.q}
                                         </span>
                                         <span
-                                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-brand-primary transition-all duration-300 dark:border-slate-700 dark:bg-slate-800 dark:text-[#C7A14A] ${openFaq === i ? 'rotate-180 border-[#C7A14A]/50 bg-[#C7A14A]/10 dark:bg-[#C7A14A]/20' : ''}`}
+                                            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition-all duration-200 dark:border-slate-700 dark:text-slate-400 ${openFaq === i ? 'rotate-180 border-[#C7A14A] bg-[#C7A14A] text-white dark:bg-[#C7A14A]' : ''}`}
                                         >
-                                            <ChevronDown className="h-4 w-4" />
+                                            <ChevronDown className="h-3.5 w-3.5" />
                                         </span>
                                     </button>
                                     <div
-                                        className={`grid transition-all duration-300 ease-in-out ${openFaq === i ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
+                                        className={`grid transition-all duration-200 ease-out ${openFaq === i ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
                                     >
                                         <div className="overflow-hidden">
-                                            <p className="border-t border-slate-100 px-6 pb-5 pt-2 text-sm leading-relaxed text-slate-600 dark:border-slate-700/50 dark:text-slate-400">
+                                            <p className="border-t border-slate-100 px-5 pb-4 pt-3 text-sm leading-relaxed text-slate-600 dark:border-slate-800 dark:text-slate-400">
                                                 {item.a}
                                             </p>
                                         </div>
@@ -1415,76 +1647,126 @@ export default function Welcome({
                                 </motion.div>
                             ))}
                         </div>
-
-                        <div className="mt-12 text-center">
-                            <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
+                
+                        {/* Compact CTA */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                            className="mt-8 text-center"
+                        >
+                            <p className="mb-2 text-xs text-slate-500 dark:text-slate-400">
                                 Still have questions?
                             </p>
                             <Link
                                 href="/chat"
-                                className="inline-flex items-center gap-2 text-sm font-semibold text-brand-primary transition-colors hover:text-[#C7A14A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 dark:text-[#C7A14A] dark:hover:text-white"
+                                className="inline-flex items-center gap-1.5 text-sm font-medium text-[#C7A14A] transition-colors hover:text-[#B89440]"
                             >
                                 Start a conversation
-                                <ArrowRight className="h-4 w-4" />
+                                <ArrowRight className="h-3.5 w-3.5" />
                             </Link>
-                        </div>
+                        </motion.div>
                     </div>
                 </section>
 
-                {/* Value & outcomes CTA – meaning and profit driven */}
-                <section className="mx-6 mb-12 lg:mb-16">
-                    <div className="relative mx-auto max-w-7xl">
-                        <div className="pointer-events-none absolute -top-12 -left-12 h-64 w-64 rounded-full bg-brand-primary/10 blur-[100px] dark:bg-brand-primary/5" />
-                        <div className="pointer-events-none absolute -right-12 -bottom-12 h-64 w-64 rounded-full bg-[#C7A14A]/10 blur-[100px]" />
+                {/* One Platform CTA - Fixed Background Image */}
+                <section className="relative overflow-hidden">
+                    {/* Fixed Background Image */}
+                    <div 
+                        className="absolute inset-0 bg-cover bg-center bg-fixed"
+                        style={{
+                            backgroundImage: 'url(https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/pexels-ivan-s-8962803.jpg)',
+                        }}
+                    />
+                    
+                    {/* Light Overlay */}
+                    <div className="absolute inset-0 bg-white/95 dark:bg-[#0A1628]/95" />
 
-                        <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-white px-6 py-10 shadow-lg dark:border-slate-800 dark:bg-slate-900/80 md:px-10 md:py-12">
-                            <div className="relative z-10 mx-auto max-w-4xl">
-                                <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-brand-primary/20 bg-brand-primary/5 px-3 py-1.5 text-[10px] font-bold tracking-widest text-brand-primary uppercase dark:text-[#C7A14A]">
-                                    <Target className="h-3 w-3" />
-                                    <span>One platform. Five experts. Better outcomes.</span>
-                                </div>
+                    {/* Content */}
+                    <div className="relative z-10 py-16 lg:py-20">
+                        <div className="mx-auto max-w-4xl px-6 text-center lg:px-8">
+                            {/* Micro Label */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                className="mb-4 inline-flex items-center gap-2"
+                            >
+                                <div className="h-px w-6 bg-[#C7A14A]" />
+                                <span className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A] uppercase">
+                                    One platform. Five experts. Better outcomes.
+                                </span>
+                                <div className="h-px w-6 bg-[#C7A14A]" />
+                            </motion.div>
 
-                                <h2 className="mb-3 font-display text-2xl font-extrabold leading-tight tracking-tight text-brand-primary sm:text-4xl dark:text-white">
-                                    Clarity before commitment.
-                                    <br />
-                                    <span className="bg-gradient-to-r from-brand-primary via-[#C7A14A] to-brand-muted bg-clip-text text-transparent dark:from-white dark:via-[#C7A14A] dark:to-slate-400">
-                                        The right expert, the right decision.
-                                    </span>
-                                </h2>
+                            {/* Headline */}
+                            <motion.h2
+                                initial={{ opacity: 0, y: 15 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.1 }}
+                                className="mb-3 text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl dark:text-white"
+                            >
+                                Clarity before commitment.
+                                <br />
+                                <span className="text-[#C7A14A]">The right expert, the right decision.</span>
+                            </motion.h2>
 
-                                <p className="mx-auto mb-6 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">
-                                    One conversation connects you to construction, interiors, real estate, development, or events. Compare options, get expert guidance, and move forward with confidence—without chasing multiple vendors or repeating your story.
-                                </p>
+                            {/* Description */}
+                            <motion.p
+                                initial={{ opacity: 0, y: 15 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.15 }}
+                                className="mx-auto mb-6 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400"
+                            >
+                                One conversation connects you to construction, interiors, real estate, 
+                                development, or events. Compare options and move forward with confidence.
+                            </motion.p>
 
-                                <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-                                    {[
-                                        { icon: <TrendingUp className="h-4 w-4" />, text: 'Informed decisions' },
-                                        { icon: <Zap className="h-4 w-4" />, text: 'Time & cost saved' },
-                                        { icon: <ShieldCheck className="h-4 w-4" />, text: 'Trusted partners' },
-                                    ].map((item, i) => (
-                                        <div key={i} className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
-                                            <span className="text-brand-primary dark:text-[#C7A14A]">{item.icon}</span>
-                                            {item.text}
-                                        </div>
-                                    ))}
-                                </div>
+                            {/* Benefits - Compact Row */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 15 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.2 }}
+                                className="mb-8 flex flex-wrap items-center justify-center gap-6"
+                            >
+                                {[
+                                    { icon: TrendingUp, text: 'Informed decisions' },
+                                    { icon: Zap, text: 'Time & cost saved' },
+                                    { icon: ShieldCheck, text: 'Trusted partners' },
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-400">
+                                        <item.icon className="h-3.5 w-3.5 text-[#C7A14A]" />
+                                        {item.text}
+                                    </div>
+                                ))}
+                            </motion.div>
 
-                                <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                                    <Link
-                                        href="/chat"
-                                        className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-brand-primary px-8 font-display text-sm font-bold text-white shadow-md transition-all hover:bg-brand-primary/90 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 dark:bg-[#C7A14A] dark:text-brand-primary dark:hover:bg-[#C7A14A]/90"
-                                    >
-                                        Get clarity now
-                                        <ArrowRight className="h-4 w-4" />
-                                    </Link>
-                                    <button
-                                        onClick={() => setIsModalOpen(true)}
-                                        className="inline-flex h-12 items-center justify-center rounded-xl border-2 border-brand-primary/30 bg-transparent px-6 text-sm font-semibold text-brand-primary transition-all hover:border-brand-primary hover:bg-brand-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 dark:border-[#C7A14A]/40 dark:text-[#C7A14A] dark:hover:bg-[#C7A14A]/10"
-                                    >
-                                        Talk to an expert
-                                    </button>
-                                </div>
-                            </div>
+                            {/* CTA Buttons */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 15 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.25 }}
+                                className="flex flex-col items-center justify-center gap-3 sm:flex-row"
+                            >
+                                <Link
+                                    href="/chat"
+                                    className="group inline-flex items-center gap-2 rounded-full bg-[#0A1628] px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-[#0A1628]/90 hover:shadow-lg dark:bg-[#C7A14A] dark:text-[#0A1628]"
+                                >
+                                    Get clarity now
+                                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                </Link>
+                                <button
+                                    onClick={() => setIsModalOpen(true)}
+                                    className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors hover:text-[#C7A14A] dark:text-slate-400"
+                                >
+                                    Talk to an expert
+                                </button>
+                            </motion.div>
                         </div>
                     </div>
                 </section>

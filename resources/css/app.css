@@ -230,3 +230,56 @@ html {
         @apply bg-background text-foreground;
     }
 }
+
+/* Performance Optimizations */
+@layer utilities {
+    /* Hardware acceleration for animated elements */
+    .gpu-accelerated {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+    }
+    
+    /* Optimized will-change for scroll animations */
+    .will-change-transform {
+        will-change: transform;
+    }
+    
+    .will-change-opacity {
+        will-change: opacity;
+    }
+    
+    /* Content visibility for off-screen sections */
+    .content-visibility-auto {
+        content-visibility: auto;
+        contain-intrinsic-size: 0 500px;
+    }
+    
+    /* Reduce motion for users who prefer it */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+    
+    /* Optimize image rendering */
+    .optimize-image {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+    
+    /* Contain layout for complex components */
+    .contain-layout {
+        contain: layout style paint;
+    }
+    
+    /* Prevent layout shift */
+    .aspect-ratio-box {
+        aspect-ratio: attr(data-ratio);
+    }
+}
