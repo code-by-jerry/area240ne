@@ -68,7 +68,7 @@ export default function ChatWidget() {
     const [isOpen, setIsOpen] = useState(false);
     const [sessionId, setSessionId] = useState<string | null>(() => getStoredSessionId());
     const [messages, setMessages] = useState<Message[]>([
-        { sender: 'bot', text: 'Hello! looking for Real Estate, Construction, or Interior Design?' }
+        { sender: 'bot', text: 'Hello! I am your Area 24 expert consultant. Looking for Real Estate, Construction, or Interior Design?' }
     ]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -137,7 +137,10 @@ export default function ChatWidget() {
                     min-h-[280px]">
                     {/* Header - touch target */}
                     <div className="bg-brand-primary text-white px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pr-4 pb-3 pl-4 sm:p-4 flex justify-between items-center shrink-0">
-                        <span className="font-semibold text-sm sm:text-base">Area24One Assistant</span>
+                        <div className="flex items-center gap-2">
+                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-[10px] font-bold text-brand-primary">AI</div>
+                            <span className="font-semibold text-sm sm:text-base">Area 24 Consultant</span>
+                        </div>
                         <button type="button" onClick={() => setIsOpen(false)} className="touch-manipulation p-2 -m-2 rounded-lg hover:bg-white/20 active:bg-white/30" aria-label="Close">
                             <X className="w-5 h-5 sm:w-4 sm:h-4" />
                         </button>

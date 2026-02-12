@@ -196,24 +196,58 @@ interface ServiceCardProps {
     };
     index: number;
     onClick: () => void;
+    globalTick?: number;
 }
 
 // ServiceCard is defined below as a memoized component
 
 // Memoized ServiceCard for better performance
-const ServiceCard = memo(({ service, index, onClick }: ServiceCardProps) => {
+const ServiceCard = memo(({ service, index, onClick, globalTick }: ServiceCardProps) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [isHovered, setIsHovered] = useState(false);
+    const [direction, setDirection] = useState(0); // -1 for left, 1 for right
     const prefersReducedMotion = useReducedMotion();
 
-    const nextImage = useCallback((e: React.MouseEvent) => {
-        e.stopPropagation();
+    const nextImage = useCallback(() => {
+        setDirection(1);
         setCurrentImageIndex((prev) => (prev + 1) % service.images.length);
     }, [service.images.length]);
 
     const prevImage = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
+        setDirection(-1);
         setCurrentImageIndex((prev) => (prev - 1 + service.images.length) % service.images.length);
     }, [service.images.length]);
+
+    // Sync with global tick
+    useEffect(() => {
+        if (globalTick !== undefined && !isHovered) {
+            setDirection(1);
+            setCurrentImageIndex(globalTick % service.images.length);
+        }
+    }, [globalTick, isHovered, service.images.length]);
+
+    const handleNextClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        nextImage();
+    };
+
+    const variants = {
+        enter: (direction: number) => ({
+            x: direction > 0 ? '100%' : '-100%',
+            opacity: 0
+        }),
+        center: {
+            zIndex: 1,
+            x: 0,
+            opacity: 1
+        },
+        exit: (direction: number) => ({
+            zIndex: 0,
+            x: direction < 0 ? '100%' : '-100%',
+            opacity: 0
+        })
+    };
 
     const motionProps = prefersReducedMotion 
         ? { initial: { opacity: 1, y: 0 }, whileInView: undefined }
@@ -228,19 +262,26 @@ const ServiceCard = memo(({ service, index, onClick }: ServiceCardProps) => {
         <motion.div
             {...motionProps}
             onClick={onClick}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             className="group flex cursor-pointer flex-col overflow-hidden border border-slate-100 bg-[#FAFAF9] shadow-sm transition-all duration-300 hover:border-[#C7A14A]/50 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:hover:border-[#C7A14A]/50">
-            <div className="relative h-44 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
-                <AnimatePresence mode="wait">
+            <div className={`relative h-64 w-full overflow-hidden transition-colors duration-300 ${currentImageIndex === 0 ? 'bg-brand-primary' : 'bg-slate-100 dark:bg-slate-800'}`}>
+                <AnimatePresence initial={false} custom={direction} mode="popLayout">
                     <motion.img
                         key={currentImageIndex}
                         src={service.images[currentImageIndex]}
                         alt={service.title}
-                        initial={prefersReducedMotion ? undefined : { opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={prefersReducedMotion ? undefined : { opacity: 0 }}
-                        transition={{ duration: 0.2 }}
+                        custom={direction}
+                        variants={variants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{
+                            x: { type: 'spring', stiffness: 300, damping: 30 },
+                            opacity: { duration: 0.2 }
+                        }}
                         loading="lazy"
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className={`h-full w-full transition-transform duration-500 group-hover:scale-105 ${currentImageIndex === 0 ? 'object-contain p-8' : 'object-cover'}`}
                     />
                 </AnimatePresence>
                 
@@ -252,7 +293,7 @@ const ServiceCard = memo(({ service, index, onClick }: ServiceCardProps) => {
                         <ChevronLeft size={16} />
                     </button>
                     <button
-                        onClick={nextImage}
+                        onClick={handleNextClick}
                         className="rounded-full bg-black/50 p-1 text-white hover:bg-[#C7A14A] backdrop-blur-sm transition-colors"
                     >
                         <ChevronRight size={16} />
@@ -313,10 +354,19 @@ export default function Welcome({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedService, setSelectedService] = useState<string>('');
     const [openFaq, setOpenFaq] = useState<number | null>(0);
+    const [globalImageTick, setGlobalImageTick] = useState(0);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const prefersReducedMotion = useReducedMotion();
 
     const expertiseRef = useRef<HTMLElement>(null);
+
+    // Global sync timer for expertise cards
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setGlobalImageTick((prev) => prev + 1);
+        }, 5000); // 5 seconds delay
+        return () => clearInterval(interval);
+    }, []);
 
     // Process Section Parallax - simplified for performance
     const processRef = useRef(null);
@@ -379,20 +429,55 @@ export default function Welcome({
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // CTA Auto-Popup Logic - delayed to improve initial load performance
+    // CTA Auto-Popup Logic - Controlled by session and 3-minute intervals
     useEffect(() => {
-        // Delay initial popup for better page load performance
-        const initialTimeout = setTimeout(() => {
-            setIsModalOpen(true);
-        }, 5000); // 5 seconds after mount
+        const POPUP_STORAGE_KEY = 'area24one_last_popup_time';
+        const SESSION_KEY = 'area24one_popup_shown_in_session';
+        const RECURRING_INTERVAL = 180000; // 3 minutes in milliseconds
 
-        // Show every 5 minutes (reduced frequency)
+        const checkAndShowPopup = () => {
+            const now = Date.now();
+            const lastPopupTime = localStorage.getItem(POPUP_STORAGE_KEY);
+            const sessionShown = sessionStorage.getItem(SESSION_KEY);
+
+            // 1. Initial Load Logic: Show if not shown in THIS session yet
+            if (!sessionShown) {
+                // Delay initial popup for better page load performance
+                const initialTimeout = setTimeout(() => {
+                    setIsModalOpen(true);
+                    sessionStorage.setItem(SESSION_KEY, 'true');
+                    localStorage.setItem(POPUP_STORAGE_KEY, Date.now().toString());
+                }, 5000); // 5 seconds after mount
+                return initialTimeout;
+            }
+
+            // 2. Recurring Logic: Show every 3 minutes if already shown once in session
+            if (lastPopupTime) {
+                const timeSinceLastPopup = now - parseInt(lastPopupTime);
+                if (timeSinceLastPopup >= RECURRING_INTERVAL) {
+                    setIsModalOpen(true);
+                    localStorage.setItem(POPUP_STORAGE_KEY, Date.now().toString());
+                }
+            }
+        };
+
+        const initialTimeoutId = checkAndShowPopup();
+
         const interval = setInterval(() => {
-            setIsModalOpen(true);
-        }, 300000); // 5 minutes
+            const now = Date.now();
+            const lastPopupTime = localStorage.getItem(POPUP_STORAGE_KEY);
+            
+            if (lastPopupTime) {
+                const timeSinceLastPopup = now - parseInt(lastPopupTime);
+                if (timeSinceLastPopup >= RECURRING_INTERVAL) {
+                    setIsModalOpen(true);
+                    localStorage.setItem(POPUP_STORAGE_KEY, Date.now().toString());
+                }
+            }
+        }, 10000); // Check every 10 seconds
 
         return () => {
-            clearTimeout(initialTimeout);
+            if (initialTimeoutId) clearTimeout(initialTimeoutId);
             clearInterval(interval);
         };
     }, []);
@@ -403,7 +488,13 @@ export default function Welcome({
             id: 'construction',
             icon: <Building2 className="h-6 w-6" />,
             logo: '/image/atha.png',
-            images: ['/image/hero/construction.jpg', '/image/atha.png'],
+            images: [
+                'https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/Atha.png?updatedAt=1770815540515',
+                'https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg',
+                'https://images.pexels.com/photos/69483/pexels-photo-69483.jpeg',
+                'https://images.pexels.com/photos/29453302/pexels-photo-29453302.jpeg',
+                'https://images.pexels.com/photos/27195983/pexels-photo-27195983.jpeg'
+            ],
             title: 'Atha Construction',
             desc: 'Specializing in high-end residential and commercial projects, we offer a seamless journey from architectural blueprints to turnkey construction solutions.',
             accent: 'bg-brand-primary/10 text-brand-primary dark:text-[#C7A14A]',
@@ -414,7 +505,13 @@ export default function Welcome({
             id: 'interiors',
             icon: <PaintBucket className="h-6 w-6" />,
             logo: '/image/nesthetix.png',
-            images: ['/image/hero/interior.jpg', '/image/nesthetix.png'],
+            images: [
+                'https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/Nesthetix.png?updatedAt=1770815540561',
+                'https://images.pexels.com/photos/20285350/pexels-photo-20285350.jpeg',
+                'https://images.pexels.com/photos/20285351/pexels-photo-20285351.jpeg',
+                'https://images.pexels.com/photos/11701127/pexels-photo-11701127.jpeg',
+                'https://images.pexels.com/photos/439227/pexels-photo-439227.jpeg'
+            ],
             title: 'Nesthetix Design',
             desc: 'Our award-winning designers craft bespoke interiors that blend opulence with functionality. We tailor every detail to your lifestyle.',
             accent: 'bg-brand-primary/10 text-brand-primary dark:text-[#C7A14A]',
@@ -425,7 +522,13 @@ export default function Welcome({
             id: 'real-estate',
             icon: <Home className="h-6 w-6" />,
             logo: '/image/area 24 realty.png',
-            images: ['/image/hero/realty.jpg', '/image/area 24 realty.png'],
+            images: [
+                'https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/area%2024%20realty.png?updatedAt=1770815540228',
+                'https://images.pexels.com/photos/8293778/pexels-photo-8293778.jpeg',
+                'https://images.pexels.com/photos/7937748/pexels-photo-7937748.jpeg',
+                'https://images.pexels.com/photos/8482871/pexels-photo-8482871.jpeg',
+                'https://images.pexels.com/photos/29726512/pexels-photo-29726512.jpeg'
+            ],
             title: 'Area24 Realty',
             desc: 'Access exclusive listings and data-driven market insights. Our consultants provide strategic advice for discerning buyers, sellers, and investors.',
             accent: 'bg-brand-primary/10 text-brand-primary dark:text-[#C7A14A]',
@@ -436,7 +539,13 @@ export default function Welcome({
             id: 'development',
             icon: <Hammer className="h-6 w-6" />,
             logo: '/image/hero/Area24 developers  logo mockup.png',
-            images: ['/image/hero/developer.jpg', '/image/hero/Area24 developers  logo mockup.png'],
+            images: [
+                'https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/Area%2024%20Developers.png?updatedAt=1770815541191',
+                'https://images.pexels.com/photos/392031/pexels-photo-392031.jpeg',
+                'https://images.pexels.com/photos/1579356/pexels-photo-1579356.jpeg',
+                'https://images.pexels.com/photos/2314021/pexels-photo-2314021.jpeg',
+                'https://images.pexels.com/photos/29141362/pexels-photo-29141362.jpeg'
+            ],
             title: 'Area24 Developers',
             desc: 'We conceptualize and execute landmark residential and commercial developments. Our focus is on creating sustainable communities.',
             accent: 'bg-brand-primary/10 text-brand-primary dark:text-[#C7A14A]',
@@ -447,7 +556,13 @@ export default function Welcome({
             id: 'events',
             icon: <Sparkles className="h-6 w-6" />,
             logo: '/image/stage 365.png',
-            images: ['/image/hero/event.jpg', '/image/STAGE 365.png'],
+            images: [
+                'https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/stage%20365.png?updatedAt=1770815540783',
+                'https://images.pexels.com/photos/50675/banquet-wedding-society-deco-50675.jpeg',
+                'https://images.pexels.com/photos/169190/pexels-photo-169190.jpeg',
+                'https://images.pexels.com/photos/169190/pexels-photo-169190.jpeg',
+                'https://images.pexels.com/photos/1047442/pexels-photo-1047442.jpeg'
+            ],
             title: 'The Stage 365',
             desc: 'From corporate galas to immersive brand activations, we produce extraordinary events. Our team handles everything from conceptual design to execution.',
             accent: 'bg-brand-primary/10 text-brand-primary dark:text-[#C7A14A]',
@@ -462,28 +577,28 @@ export default function Welcome({
             <div className="font-inter scroll-smooth min-h-screen bg-brand-surface text-brand-text selection:bg-brand-primary selection:text-white dark:bg-brand-dark dark:text-slate-50">
                 {/* Navbar */}
                 <nav
-                    className={`fixed top-0 w-full z-50 border-b border-slate-200 bg-black/80 py-3 shadow-sm backdrop-blur-md transition-transform duration-300 dark:border-slate-800 dark:bg-brand-dark/95
+                    className={`fixed top-0 w-full z-50 border-b border-slate-200 bg-black/80 py-2 shadow-sm backdrop-blur-xl transition-transform duration-300 dark:border-slate-800 dark:bg-brand-dark/95
                         ${!isHeaderVisible ? '-translate-y-full' : 'translate-y-0'}
                         md:translate-y-0 md:fixed md:inset-x-0 md:border-transparent md:shadow-none md:backdrop-blur-none md:transition-all md:duration-500
                         ${
                             scrolled
-                                ? 'md:border-slate-200 md:bg-white/90 md:py-4 md:shadow-sm md:backdrop-blur-md md:dark:border-slate-800 md:dark:bg-brand-dark/90'
-                                : 'md:bg-black/20 md:py-6 md:backdrop-blur-md md:dark:bg-black/40'
+                                ? 'md:border-slate-200 md:bg-white/80 md:py-2 md:shadow-sm md:backdrop-blur-xl md:dark:border-slate-800 md:dark:bg-brand-dark/80'
+                                : 'md:bg-black/40 md:py-3 md:backdrop-blur-xl md:dark:bg-black/60'
                         }`}>
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <div className="flex items-center justify-between gap-3">
                             <Link
                                 href="/"
-                                className="group flex cursor-pointer items-center gap-3 md:gap-4"
+                                className="group flex cursor-pointer items-center gap-2 md:gap-3"
                             >
-                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-primary p-1 shadow-lg shadow-brand-primary/10 transition-transform duration-500 group-hover:scale-105 md:h-16 md:w-16 md:rounded-2xl dark:bg-white">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-primary p-1 shadow-lg shadow-brand-primary/10 transition-transform duration-500 group-hover:scale-105 md:h-12 md:w-12 md:rounded-xl dark:bg-brand-primary">
                                     <img
-                                        src="/image/area 24 one.png"
+                                        src="https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/area%2024%20one.png?updatedAt=1770815540578"
                                         alt="Logo"
-                                        className="h-full w-full object-contain invert dark:invert-0"
+                                        className="h-full w-full object-contain"
                                     />
                                 </div>
-                                <span className={`font-display text-xl font-extrabold tracking-tighter uppercase md:text-2xl dark:text-white ${scrolled ? 'text-brand-primary' : 'text-white'}`}>
+                                <span className={`font-display text-lg font-extrabold tracking-tighter uppercase md:text-xl dark:text-white ${scrolled ? 'text-brand-primary' : 'text-white'}`}>
                                     Area 24{' '}
                                     <span className={`font-medium ${scrolled ? 'text-brand-muted' : 'text-white'}`}>
                                         one
@@ -492,7 +607,7 @@ export default function Welcome({
                             </Link>
 
                             {/* Desktop Navigation - Clean Design */}
-                            <div className="hidden items-center gap-1 md:flex">
+                            <div className="hidden items-center gap-0.5 md:flex">
                                 {[
                                     { 
                                         label: 'Services', 
@@ -523,44 +638,44 @@ export default function Welcome({
                                     <a
                                         key={item.label}
                                         href={item.href}
-                                        className={`group flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 ${scrolled ? 'text-slate-600 hover:text-brand-primary hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800' : 'text-white/90 hover:text-white'}`}
+                                        className={`group flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium transition-all duration-200 hover:bg-white/10 ${scrolled ? 'text-slate-600 hover:text-brand-primary hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800' : 'text-white/90 hover:text-white'}`}
                                     >
                                         <span className="transition-transform duration-200 group-hover:-translate-y-0.5">{item.icon}</span>
                                         <span>{item.label}</span>
                                     </a>
                                 ))}
                                 
-                                <div className={`mx-3 h-5 w-px ${scrolled ? 'bg-slate-200 dark:bg-slate-700' : 'bg-white/30'}`} />
+                                <div className={`mx-2 h-4 w-px ${scrolled ? 'bg-slate-200 dark:bg-slate-700' : 'bg-white/30'}`} />
                                 
                                 {/* Cost Estimator */}
                                 <Link
                                     href="/cost-estimator"
-                                    className={`group flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/10 ${scrolled ? 'text-slate-600 hover:text-brand-primary hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800' : 'text-white/90 hover:text-white'}`}
+                                    className={`group flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium transition-all duration-200 hover:bg-white/10 ${scrolled ? 'text-slate-600 hover:text-brand-primary hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800' : 'text-white/90 hover:text-white'}`}
                                 >
                                     <Calculator className="h-4 w-4 transition-transform duration-200 group-hover:-translate-y-0.5" />
                                     <span>Estimate</span>
                                 </Link>
                                 
-                                <div className={`mx-3 h-5 w-px ${scrolled ? 'bg-slate-200 dark:bg-slate-700' : 'bg-white/30'}`} />
+                                <div className={`mx-2 h-4 w-px ${scrolled ? 'bg-slate-200 dark:bg-slate-700' : 'bg-white/30'}`} />
                                 
                                 {auth.user ? (
                                     <Link
                                         href="/dashboard"
-                                        className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200 ${scrolled ? 'bg-brand-primary text-white hover:bg-brand-primary/90' : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'}`}
+                                        className={`rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-all duration-200 ${scrolled ? 'bg-brand-primary text-white hover:bg-brand-primary/90' : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'}`}
                                     >
                                         Dashboard
                                     </Link>
                                 ) : (
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1.5">
                                         <Link
                                             href="/login"
-                                            className={`rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${scrolled ? 'text-slate-600 hover:text-brand-primary hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800' : 'text-white/90 hover:text-white hover:bg-white/10'}`}
+                                            className={`rounded-lg px-2.5 py-1.5 text-[13px] font-medium transition-all duration-200 ${scrolled ? 'text-slate-600 hover:text-brand-primary hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800' : 'text-white/90 hover:text-white hover:bg-white/10'}`}
                                         >
                                             Sign In
                                         </Link>
                                         <Link
                                             href="/chat"
-                                            className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition-all duration-300 hover:bg-[#C7A14A] hover:shadow-lg hover:shadow-brand-primary/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                                            className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary px-3 py-1.5 text-[13px] font-semibold text-white transition-all duration-300 hover:bg-[#C7A14A] hover:shadow-lg hover:shadow-brand-primary/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
                                         >
                                             <MessageSquare className="h-3.5 w-3.5" />
                                             <span>Consult</span>
@@ -665,7 +780,7 @@ export default function Welcome({
 
 
                 {/* Trust/Authority Strip */}
-                <section className="relative overflow-hidden bg-brand-primary py-10 dark:bg-brand-primary">
+                <section className="relative overflow-hidden bg-black py-4">
                     {/* Textured Background Pattern */}
                     <div className="absolute inset-0 opacity-10">
                         <div
@@ -679,51 +794,82 @@ export default function Welcome({
                     </div>
 
                     {/* Gradient Overlays */}
-                    <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-brand-primary to-transparent" />
-                    <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-brand-primary to-transparent" />
+                    <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-black to-transparent" />
+                    <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-black to-transparent" />
 
                     <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8">
                         <Marquee
-                            className="[--duration:40s] [--gap:4rem]"
+                            className="[--duration:60s] [--gap:0rem]"
                             pauseOnHover
                         >
                             {[
                                 {
-                                    icon: <ShieldCheck className="h-6 w-6 stroke-[1.5]" />,
+                                    type: 'badge',
+                                    icon: <ShieldCheck className="h-8 w-8 stroke-[1.5]" />,
                                     text: 'Decade-Backed Domain Expertise',
-                                    },
-                                    {
-                                    icon: <MessageSquare className="h-6 w-6 stroke-[1.5]" />,
+                                },
+                                {
+                                    type: 'logo',
+                                    icon: <img src="https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/area%2024%20one.png?updatedAt=1770815540578" className="h-20 w-auto brightness-0 invert" alt="Area 24 One" />,
+                                },
+                                {
+                                    type: 'badge',
+                                    icon: <MessageSquare className="h-10 w-10 stroke-[1.5]" />,
                                     text: 'Consultation Before Commitment',
-                                    },
-                                    {
-                                    icon: <CheckCircle2 className="h-6 w-6 stroke-[1.5]" />,
+                                },
+                                {
+                                    type: 'logo',
+                                    icon: <img src="https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/Atha.png?updatedAt=1770815540515" className="h-20 w-auto brightness-0 invert" alt="Atha" />,
+                                },
+                                {
+                                    type: 'badge',
+                                    icon: <CheckCircle2 className="h-10 w-10 stroke-[1.5]" />,
                                     text: 'Verified Specialists, Not Middlemen',
-                                    },
-                                    {
-                                    icon: <Users className="h-6 w-6 stroke-[1.5]" />,
+                                },
+                                {
+                                    type: 'logo',
+                                    icon: <img src="https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/Nesthetix.png?updatedAt=1770815540561" className="h-20 w-auto brightness-0 invert" alt="Nesthetix" />,
+                                },
+                                {
+                                    type: 'badge',
+                                    icon: <Users className="h-10 w-10 stroke-[1.5]" />,
                                     text: 'Right Expert, First Time',
-                                    },
-                                    {
-                                    icon: <Zap className="h-6 w-6 stroke-[1.5]" />,
+                                },
+                                {
+                                    type: 'logo',
+                                    icon: <img src="https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/area%2024%20realty.png?updatedAt=1770815540228" className="h-20 w-auto brightness-0 invert" alt="Area 24 Realty" />,
+                                },
+                                {
+                                    type: 'badge',
+                                    icon: <Zap className="h-10 w-10 stroke-[1.5]" />,
                                     text: 'Reduced Decision & Planning Time',
-                                    },
-                                    {
-                                    icon: <Star className="h-6 w-6 stroke-[1.5]" />,
+                                },
+                                {
+                                    type: 'logo',
+                                    icon: <img src="https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/Area%2024%20Developers.png?updatedAt=1770815541191" className="h-20 w-auto brightness-0 invert" alt="Area 24 Developers" />,
+                                },
+                                {
+                                    type: 'badge',
+                                    icon: <Star className="h-10 w-10 stroke-[1.5]" />,
                                     text: 'Premium Execution Partners',
                                 },
-
+                                {
+                                    type: 'logo',
+                                    icon: <img src="https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/stage%20365.png?updatedAt=1770815540783" className="h-20 w-auto brightness-0 invert" alt="Stage 365" />,
+                                },
                             ].map((item, i) => (
-                                <div
-                                    key={i}
-                                    className="group mx-4 flex cursor-default items-center gap-3 text-white/90"
-                                >
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-white backdrop-blur-sm transition-all duration-300 group-hover:bg-white group-hover:text-brand-primary">
-                                        {item.icon}
+                                <div key={i} className="flex items-center">
+                                    <div className="flex items-center gap-8 px-14">
+                                        <div className={`flex h-24 w-auto items-center justify-center opacity-90 transition-opacity hover:opacity-100 ${item.type === 'badge' ? 'text-white' : ''}`}>
+                                            {item.icon}
+                                        </div>
+                                        {item.text && (
+                                            <span className="whitespace-nowrap font-display text-sm font-bold tracking-wide uppercase text-white">
+                                                {item.text}
+                                            </span>
+                                        )}
                                     </div>
-                                    <span className="font-display text-sm font-bold tracking-wide uppercase text-white transition-colors duration-300">
-                                        {item.text}
-                                    </span>
+                                    <div className="h-8 w-px bg-white/30" />
                                 </div>
                             ))}
                         </Marquee>
@@ -805,14 +951,16 @@ export default function Welcome({
                             <div className="flex justify-center w-full lg:w-auto lg:justify-end">
                                 <div className="relative h-auto w-72 overflow-hidden rounded-2xl shadow-2xl ring-1 ring-slate-900/10 transform rotate-0 transition-all hover:scale-105 duration-500">
                                     <video
-                                        src="https://ik.imagekit.io/area24onestorage/video/section%20video.mp4?updatedAt=1770795463880"
                                         autoPlay
                                         loop
                                         muted
                                         playsInline
                                         preload="metadata"
                                         className="h-auto w-full"
-                                    />
+                                    >
+                                        <source src="/video/section.mp4" type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                    </video>
                                 </div>
                             </div>
                         </div>
@@ -854,6 +1002,7 @@ export default function Welcome({
                                         key={service.id}
                                         service={service}
                                         index={i}
+                                        globalTick={globalImageTick}
                                         onClick={() => {
                                             setSelectedService(service.id);
                                             setIsModalOpen(true);
@@ -869,6 +1018,7 @@ export default function Welcome({
                                         <ServiceCard
                                             service={service}
                                             index={i + 3}
+                                            globalTick={globalImageTick}
                                             onClick={() => {
                                                 setSelectedService(service.id);
                                                 setIsModalOpen(true);
@@ -1776,11 +1926,11 @@ export default function Welcome({
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
                             <div className="flex items-center gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-primary p-1 transition-transform duration-500 hover:rotate-6 dark:bg-white">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-primary p-1 transition-transform duration-500 hover:rotate-6 dark:bg-brand-primary">
                                     <img
-                                        src="/image/area 24 one.png"
+                                        src="https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/area%2024%20one.png?updatedAt=1770815540578"
                                         alt="Logo"
-                                        className="h-full w-full object-contain invert dark:invert-0"
+                                        className="h-full w-full object-contain"
                                     />
                                 </div>
                                 <span className="font-display text-sm font-extrabold tracking-tighter uppercase">

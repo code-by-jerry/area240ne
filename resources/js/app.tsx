@@ -10,6 +10,30 @@ import SmoothScrollManager from '@/components/SmoothScrollManager';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
+// Simple route helper fallback for frontend
+(window as any).route = (name: string, params: any = {}) => {
+    const routes: Record<string, string> = {
+        'home': '/',
+        'cost-estimator.create': '/cost-estimator',
+        'cost-estimator.store': '/cost-estimator',
+        'cost-estimation.show': '/cost-estimation/:uuid',
+    };
+    
+    let path = routes[name] || name;
+    
+    // Replace params like :uuid
+    if (params && typeof params === 'object') {
+        Object.keys(params).forEach(key => {
+            path = path.replace(`:${key}`, params[key]);
+        });
+    } else if (params && (typeof params === 'string' || typeof params === 'number')) {
+        // Handle single param case like route('name', id)
+        path = path.replace(/:[a-zA-Z0-9_]+/, String(params));
+    }
+    
+    return path;
+};
+
 // CSRF for axios (fixes 419 on POST /chat from widget and ChatApp)
 const csrfToken = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content;
 if (csrfToken) {

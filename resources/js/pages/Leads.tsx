@@ -3,6 +3,8 @@ import { Head } from '@inertiajs/react';
 
 interface Lead {
     id: number;
+    name?: string;
+    email?: string;
     phone: string;
     message: string;
     created_at: string;
@@ -25,10 +27,10 @@ export default function Leads({ leads }: LeadsProps) {
         try {
             const data = JSON.parse(msg);
             // If it's just a simple string, return it as is
-            if (typeof data !== 'object') return msg;
+            if (typeof data !== 'object' || data === null) return msg;
 
             // Exclude redundant fields
-            const { phone, service, message, ...rest } = data;
+            const { phone, service, message, name, email, ...rest } = data;
 
             if (Object.keys(rest).length === 0) return msg;
 
@@ -56,8 +58,7 @@ export default function Leads({ leads }: LeadsProps) {
                         <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-700">
                             <thead className="bg-gray-50 dark:bg-zinc-800">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ID</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Phone</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Client</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Service</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Details</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
@@ -67,18 +68,31 @@ export default function Leads({ leads }: LeadsProps) {
                                 {leads.length > 0 ? (
                                     leads.map((lead) => (
                                         <tr key={lead.id}>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">#{lead.id}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-medium">{lead.phone}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{lead.service || '-'}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                                <div className="font-bold text-gray-900 dark:text-gray-100">{lead.name || 'Anonymous'}</div>
+                                                <div className="text-xs text-gray-500 dark:text-gray-400">{lead.phone}</div>
+                                                {lead.email && <div className="text-xs text-gray-500 dark:text-gray-400">{lead.email}</div>}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                <span className="inline-flex items-center rounded-full bg-brand-primary/10 px-2.5 py-0.5 text-xs font-medium text-brand-primary">
+                                                    {lead.service || '-'}
+                                                </span>
+                                            </td>
                                             <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 max-w-lg">
                                                 {parseMessage(lead.message)}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(lead.created_at).toLocaleDateString()}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                {new Date(lead.created_at).toLocaleDateString('en-IN', {
+                                                    day: '2-digit',
+                                                    month: 'short',
+                                                    year: 'numeric'
+                                                })}
+                                            </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No leads found yet.</td>
+                                        <td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No leads found yet.</td>
                                     </tr>
                                 )}
                             </tbody>

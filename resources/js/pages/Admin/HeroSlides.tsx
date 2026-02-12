@@ -80,14 +80,16 @@ export default function HeroSlides({ slides }: { slides: HeroSlide[] }) {
         e.preventDefault();
         
         if (editingSlide) {
-            // Use post with _method: put/patch if needed, or just post for FormData in Laravel
+            // Use post with _method: put if needed, or just post for FormData in Laravel
             // Laravel Inertia file uploads with PUT/PATCH are tricky, usually easier to use POST with _method spoofing
             // or just a dedicated route. Here I used POST in web.php for update as well.
             post(update.url(editingSlide.id), {
+                forceFormData: true,
                 onSuccess: () => setIsDialogOpen(false),
             });
         } else {
             post(store.url(), {
+                forceFormData: true,
                 onSuccess: () => setIsDialogOpen(false),
             });
         }

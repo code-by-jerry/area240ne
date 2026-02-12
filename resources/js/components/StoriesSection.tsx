@@ -2,104 +2,149 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Play, X, Volume2, VolumeX } from 'lucide-react';
 import { useEffect, useRef, useState, useCallback, memo } from 'react';
 
-// ImageKit CDN base URL for optimized video delivery
-const IMAGEKIT_BASE_URL = 'https://ik.imagekit.io/area24onestorage/video';
-
 const stories = [
     {
         id: 1,
-        video: `${IMAGEKIT_BASE_URL}/section%20video.mp4`,
-        title: 'Featured Highlight',
-        duration: '0:30'
+        video: 'https://www.pexels.com/download/video/5824192/',
+        title: 'Residential Space',
+        duration: '0:15'
     },
     {
         id: 2,
-        video: `${IMAGEKIT_BASE_URL}/story%20(1).mp4?updatedAt=1770795464230`,
-        title: 'Modern Living',
+        video: 'https://www.pexels.com/download/video/29681897/',
+        title: 'Residential Space',
         duration: '0:15'
     },
     {
         id: 3,
-        video: `${IMAGEKIT_BASE_URL}/story%20(2).mp4?updatedAt=1770795458910`,
-        title: 'Interior Excellence',
+        video: 'https://www.pexels.com/download/video/32144168/',
+        title: 'Residential Space',
         duration: '0:15'
     },
     {
         id: 4,
-        video: `${IMAGEKIT_BASE_URL}/story%20(3).mp4?updatedAt=1770795453948`,
-        title: 'Construction Quality',
+        video: 'https://www.pexels.com/download/video/29681899/',
+        title: 'Residential Space',
         duration: '0:15'
     },
     {
         id: 5,
-        video: `${IMAGEKIT_BASE_URL}/story%20(4).mp4?updatedAt=1770795463189`,
-        title: 'Design Details',
+        video: 'https://www.pexels.com/download/video/34292919/',
+        title: 'Residential Space',
         duration: '0:15'
     },
     {
         id: 6,
-        video: `${IMAGEKIT_BASE_URL}/story%20(5).mp4?updatedAt=1770795455889`,
-        title: 'Client Stories',
+        video: 'https://www.pexels.com/download/video/34208839/',
+        title: 'Residential Space',
         duration: '0:15'
     },
     {
         id: 7,
-        video: `${IMAGEKIT_BASE_URL}/story%20(6).mp4?updatedAt=1770795448566`,
-        title: 'Site Progress',
+        video: 'https://www.pexels.com/download/video/34010377/',
+        title: 'Residential Space',
         duration: '0:15'
     },
     {
         id: 8,
-        video: `${IMAGEKIT_BASE_URL}/story%20(7).mp4?updatedAt=1770795450715`,
-        title: 'Architectural Tour',
+        video: 'https://www.pexels.com/download/video/34236991/',
+        title: 'Residential Space',
         duration: '0:15'
     },
     {
         id: 9,
-        video: `${IMAGEKIT_BASE_URL}/story%20(8).mp4?updatedAt=1770795440758`,
-        title: 'Material Selection',
+        video: 'https://www.pexels.com/download/video/34154109/',
+        title: 'Residential Space',
         duration: '0:15'
     },
     {
         id: 10,
-        video: `${IMAGEKIT_BASE_URL}/story%20(9).mp4?updatedAt=1770795450578`,
-        title: 'Safety First',
+        video: 'https://www.pexels.com/download/video/34292914/',
+        title: 'Residential Space',
         duration: '0:15'
     },
     {
         id: 11,
-        video: `${IMAGEKIT_BASE_URL}/story%20(10).mp4?updatedAt=1770795452005`,
-        title: 'Team at Work',
+        video: 'https://www.pexels.com/download/video/35458123/',
+        title: 'Residential Space',
         duration: '0:15'
     },
     {
         id: 12,
-        video: `${IMAGEKIT_BASE_URL}/story%20(11).mp4?updatedAt=1770795458440`,
-        title: 'Finishing Touches',
+        video: 'https://www.pexels.com/download/video/34237009/',
+        title: 'Residential Space',
         duration: '0:15'
     },
     {
         id: 13,
-        video: `${IMAGEKIT_BASE_URL}/story%20(12).mp4?updatedAt=1770795445011`,
-        title: 'Smart Planning',
+        video: 'https://www.pexels.com/download/video/29532430/',
+        title: 'Residential Space',
         duration: '0:15'
     },
     {
         id: 14,
-        video: `${IMAGEKIT_BASE_URL}/story%20(13).mp4`,
-        title: 'Project Milestones',
+        video: 'https://www.pexels.com/download/video/34593442/',
+        title: 'Residential Space',
         duration: '0:15'
     },
     {
         id: 15,
-        video: `${IMAGEKIT_BASE_URL}/story%20(14).mp4?updatedAt=1770795450481`,
-        title: 'Community Impact',
+        video: 'https://www.pexels.com/download/video/32477168/',
+        title: 'Residential Space',
         duration: '0:15'
     },
     {
         id: 16,
-        video: `${IMAGEKIT_BASE_URL}/story%20(15).mp4?updatedAt=1770795440782`,
-        title: 'Future Vision',
+        video: 'https://www.pexels.com/download/video/28514875/',
+        title: 'Residential Space',
+        duration: '0:15'
+    },
+    {
+        id: 17,
+        video: 'https://www.pexels.com/download/video/34373823/',
+        title: 'Residential Space',
+        duration: '0:15'
+    },
+    {
+        id: 18,
+        video: 'https://www.pexels.com/download/video/28514866/',
+        title: 'Residential Space',
+        duration: '0:15'
+    },
+    {
+        id: 19,
+        video: 'https://www.pexels.com/download/video/36065026/',
+        title: 'Pool',
+        duration: '0:15'
+    },
+    {
+        id: 20,
+        video: 'https://www.pexels.com/download/video/27682746/',
+        title: 'Pool',
+        duration: '0:15'
+    },
+    {
+        id: 21,
+        video: 'https://www.pexels.com/download/video/29138315/',
+        title: 'Pool',
+        duration: '0:15'
+    },
+    {
+        id: 22,
+        video: 'https://www.pexels.com/download/video/6617117/',
+        title: 'Pool',
+        duration: '0:15'
+    },
+    {
+        id: 23,
+        video: 'https://www.pexels.com/download/video/36065027/',
+        title: 'Lounge & City View',
+        duration: '0:15'
+    },
+    {
+        id: 24,
+        video: 'https://www.pexels.com/download/video/29532359/',
+        title: 'Gym',
         duration: '0:15'
     }
 ];

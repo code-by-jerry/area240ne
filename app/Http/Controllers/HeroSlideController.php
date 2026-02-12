@@ -73,7 +73,7 @@ class HeroSlideController extends Controller
             'button_text' => $request->button_text,
             'button_link' => $request->button_link,
             'is_active' => $request->boolean('is_active'),
-            'order' => $request->input('order', 0),
+            'order' => (int) $request->input('order', 0),
         ]);
 
         return redirect()->back()->with('success', 'Slide updated successfully.');

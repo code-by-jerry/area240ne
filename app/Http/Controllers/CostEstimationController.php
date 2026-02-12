@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CostEstimation;
+use App\Models\Lead;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -33,9 +34,37 @@ class CostEstimationController extends Controller
             'estimated_cost' => 'required|numeric',
         ]);
 
-        CostEstimation::create($validated);
+        $estimation = CostEstimation::create($validated);
 
-        return redirect()->back()->with('success', 'Cost estimation saved successfully!');
+        // Also create a Lead record so it shows up in the general Leads panel
+        Lead::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'service' => 'Cost Estimation',
+            'location' => $validated['city'] . ', ' . $validated['state'],
+            'message' => json_encode([
+                'plot_area' => $validated['plot_area'] . ' sq.ft',
+                'floors' => $validated['floors'],
+                'package' => $validated['package'],
+                'estimated_cost' => '₹' . number_format($validated['estimated_cost']),
+            ]),
+            'lead_status' => 'new'
+        ]);
+
+        return redirect()->route('cost-estimation.show', $estimation->uuid)->with('success', 'Cost estimation saved successfully!');
+    }
+
+    /**
+     * Display the specified cost estimation.
+     */
+    public function show($uuid)
+    {
+        $estimation = CostEstimation::where('uuid', $uuid)->firstOrFail();
+
+        return Inertia::render('CostEstimationResult', [
+            'estimation' => $estimation
+        ]);
     }
 
     /**

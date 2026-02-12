@@ -12,6 +12,7 @@ Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
 Route::get('/cost-estimator', [CostEstimationController::class, 'create'])->name('cost-estimator.create');
 Route::post('/cost-estimator', [CostEstimationController::class, 'store'])->name('cost-estimator.store');
+Route::get('/cost-estimation/{uuid}', [CostEstimationController::class, 'show'])->name('cost-estimation.show');
 
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('dashboard', function () {
