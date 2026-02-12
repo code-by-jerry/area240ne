@@ -56,9 +56,11 @@ const SlideContent = memo(({ slide, index, prefersReducedMotion }: { slide: Hero
                             transition={{ delay: 0.1, duration: 0.5, ease: "easeOut" }}
                             className="mb-1 md:mb-3 inline-flex items-center gap-2"
                         >
-                            <span className="rounded-full bg-brand-primary/25 px-2 py-0.5 md:px-3 md:py-1 text-[8px] md:text-[10px] font-bold tracking-[0.2em] text-white uppercase backdrop-blur-xl ring-1 ring-white/20 shadow-xl">
+                            <div className="h-px w-4 md:w-8 bg-[#C7A14A]/60" />
+                            <span className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] text-[#C7A14A] uppercase">
                                 {slide.tag}
                             </span>
+                            <div className="h-px w-4 md:w-8 bg-[#C7A14A]/60" />
                         </motion.div>
                     )}
                     
@@ -73,7 +75,7 @@ const SlideContent = memo(({ slide, index, prefersReducedMotion }: { slide: Hero
                             }`}
                         >
                             {slide.title.split(' ').map((word, i) => (
-                                <span key={i} className={word.toLowerCase() === 'expert' || word.toLowerCase() === 'intelligent' ? 'text-brand-primary' : ''}>
+                                <span key={i} className={word.toLowerCase() === 'expert' || word.toLowerCase() === 'intelligent' || word.toLowerCase() === 'consultation.' ? 'text-[#C7A14A]' : ''}>
                                     {word}{' '}
                                 </span>
                             ))}
@@ -102,12 +104,13 @@ const SlideContent = memo(({ slide, index, prefersReducedMotion }: { slide: Hero
                         >
                             <Link
                                 href={slide.button_link}
-                                className={`group relative inline-flex items-center justify-center overflow-hidden rounded-full px-4 py-1.5 md:px-8 md:py-3 text-[11px] md:text-base font-bold transition-all hover:scale-105 active:scale-95 ${
+                                className={`group relative inline-flex items-center justify-center overflow-hidden rounded-full px-4 py-1.5 md:px-8 md:py-3 text-[11px] md:text-base font-bold transition-all hover:scale-105 active:scale-95 hover:shadow-[#C7A14A]/20 ${
                                     isFirstSlide 
                                     ? 'bg-brand-primary text-white shadow-xl md:shadow-2xl shadow-brand-primary/40' 
                                     : 'bg-white text-brand-dark shadow-xl md:shadow-2xl shadow-white/10'
                                 }`}
                             >
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#C7A14A]/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                                 <span className="relative z-10 flex items-center gap-1.5 md:gap-2">
                                     {slide.button_text}
                                     <ChevronRight className="h-3 w-3 md:h-4 md:w-4 transition-transform group-hover:translate-x-1" />
@@ -135,7 +138,8 @@ const SlideContent = memo(({ slide, index, prefersReducedMotion }: { slide: Hero
                         className="hidden lg:block w-full max-w-md xl:max-w-lg"
                     >
                         <div className="relative group">
-                            <div className="absolute -inset-4 bg-brand-primary/20 rounded-[2.5rem] blur-3xl group-hover:bg-brand-primary/30 transition-colors duration-700" />
+                            <div className="absolute -inset-4 bg-brand-primary/20 rounded-[2.5rem] blur-3xl group-hover:bg-[#C7A14A]/20 transition-colors duration-700" />
+                            <div className="absolute -inset-8 bg-[#C7A14A]/10 rounded-[3rem] blur-3xl opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
                             <div className="relative scale-95 xl:scale-100 transform-gpu transition-transform duration-700 hover:scale-105">
                                 <ChatMockup />
                             </div>

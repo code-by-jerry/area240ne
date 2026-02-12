@@ -29,7 +29,7 @@ import {
     X,
     Zap,
 } from 'lucide-react';
-import { AnimatePresence, motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useRef, useState, useCallback, useMemo, memo } from 'react';
 
 type DiscoveryOptions = {
@@ -368,26 +368,8 @@ export default function Welcome({
         return () => clearInterval(interval);
     }, []);
 
-    // Process Section Parallax - simplified for performance
     const processRef = useRef(null);
-    const { scrollYProgress: processProgress } = useScroll({
-        target: processRef,
-        offset: ['start end', 'end start'],
-    });
-    // Reduced parallax range for better performance
-    const processBgY = useTransform(processProgress, [0, 1], ['0%', '15%']);
-
-    // Why Us Section Parallax - simplified for performance
     const whyUsRef = useRef(null);
-    const { scrollYProgress: whyUsProgress } = useScroll({
-        target: whyUsRef,
-        offset: ['start end', 'end start'],
-    });
-    // Reduced parallax range for better performance
-    const whyUsBgY1 = useTransform(whyUsProgress, [0, 1], ['0%', '12%']);
-    const whyUsBgY2 = useTransform(whyUsProgress, [0, 1], ['0%', '-12%']);
-
-
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleDiscoveryChange = (
@@ -410,14 +392,18 @@ export default function Welcome({
             if (!ticking) {
                 window.requestAnimationFrame(() => {
                     const currentScrollY = window.scrollY;
-                    setScrolled(currentScrollY > 20);
+                    
+                    // Only update if value changes
+                    const isScrolled = currentScrollY > 20;
+                    setScrolled(prev => prev !== isScrolled ? isScrolled : prev);
 
-                    // Mobile Smart Header Logic
+                    // Mobile Smart Header Logic - only update if actually changed
                     if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
-                        setIsHeaderVisible(false);
+                        setIsHeaderVisible(prev => prev === false ? prev : false);
                     } else {
-                        setIsHeaderVisible(true);
+                        setIsHeaderVisible(prev => prev === true ? prev : true);
                     }
+                    
                     lastScrollY.current = currentScrollY;
                     ticking = false;
                 });
@@ -1304,6 +1290,7 @@ export default function Welcome({
                                             src={src}
                                             alt={`Gallery item ${idx + 1}`}
                                             className="h-full w-full object-cover"
+                                            loading="lazy"
                                             onError={(e) => {
                                                 e.currentTarget.style.background =
                                                     'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)';
@@ -1323,9 +1310,9 @@ export default function Welcome({
                     id="process"
                     className="relative min-h-[600px] overflow-hidden"
                 >
-                    {/* Fixed Background Image */}
+                    {/* Fixed Background Image - Optimized */}
                     <div 
-                        className="absolute inset-0 bg-cover bg-center bg-fixed"
+                        className="absolute inset-0 bg-cover bg-center"
                         style={{
                             backgroundImage: 'url(https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/pexels-ivan-s-8962803.jpg)',
                         }}
@@ -1508,9 +1495,9 @@ export default function Welcome({
                     id="why-us"
                     className="relative overflow-hidden bg-[#0A1628]"
                 >
-                    {/* Fixed Background Image */}
+                    {/* Fixed Background Image - Optimized */}
                     <div 
-                        className="absolute inset-0 bg-cover bg-center bg-fixed"
+                        className="absolute inset-0 bg-cover bg-center"
                         style={{
                             backgroundImage: 'url(https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/pexels-ivan-s-8962803.jpg)',
                         }}
@@ -1822,9 +1809,9 @@ export default function Welcome({
 
                 {/* One Platform CTA - Fixed Background Image */}
                 <section className="relative overflow-hidden">
-                    {/* Fixed Background Image */}
+                    {/* Fixed Background Image - Optimized */}
                     <div 
-                        className="absolute inset-0 bg-cover bg-center bg-fixed"
+                        className="absolute inset-0 bg-cover bg-center"
                         style={{
                             backgroundImage: 'url(https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/pexels-ivan-s-8962803.jpg)',
                         }}

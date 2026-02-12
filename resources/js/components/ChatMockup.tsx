@@ -80,11 +80,11 @@ export const ChatMockup = () => {
                     content: (
                         <>
                             Perfect. I can help coordinate between{' '}
-                            <strong className="text-brand-primary dark:text-white">
+                            <strong className="text-[#C7A14A]">
                                 Atha Construction
                             </strong>{' '}
                             and{' '}
-                            <strong className="text-brand-primary dark:text-white">
+                            <strong className="text-[#C7A14A]">
                                 Nesthetix Design
                             </strong>
                             . May I know your preferred budget range?
@@ -137,13 +137,13 @@ export const ChatMockup = () => {
     };
 
     return (
-        <div className="flex h-[400px] w-full max-w-[340px] flex-col overflow-hidden rounded-[1.5rem] border border-white/20 bg-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-md ring-1 ring-white/20">
+        <div className="flex h-[400px] w-full max-w-[340px] flex-col overflow-hidden rounded-[1.5rem] border border-white/20 bg-black/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] backdrop-blur-md ring-1 ring-white/20">
             {/* Top Bar */}
-            <div className="flex shrink-0 items-center justify-between border-b border-white/10 bg-white/5 px-4 py-3 backdrop-blur-xl">
+            <div className="flex shrink-0 items-center justify-between border-b border-white/10 bg-black/40 px-4 py-3 backdrop-blur-xl">
                 <div className="flex items-center gap-3">
-                    <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-brand-primary text-[10px] font-bold text-white shadow-sm ring-2 ring-white/20">
+                    <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-[#C7A14A] text-[10px] font-bold text-white shadow-lg ring-2 ring-white/20">
                         AI
-                        <span className="absolute right-0 bottom-0 h-2.5 w-2.5 rounded-full border-2 border-white/20 bg-green-500"></span>
+                        <span className="absolute right-0 bottom-0 h-2.5 w-2.5 rounded-full border-2 border-black/40 bg-green-500 shadow-sm"></span>
                     </div>
                     <div>
                         <div className="text-xs font-bold text-white leading-none">
@@ -151,7 +151,7 @@ export const ChatMockup = () => {
                         </div>
                         <div className="mt-1 flex items-center gap-1">
                             <span className="h-1 w-1 animate-pulse rounded-full bg-green-500"></span>
-                            <span className="text-[9px] font-semibold tracking-wider text-white/60 uppercase">
+                            <span className="text-[9px] font-semibold tracking-wider text-white/70 uppercase">
                                 Online
                             </span>
                         </div>
@@ -170,9 +170,9 @@ export const ChatMockup = () => {
                         className={`flex animate-in flex-col duration-500 fade-in slide-in-from-bottom-2 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
                     >
                         <div
-                            className={`max-w-[85%] rounded-xl p-3 text-[12px] leading-snug font-medium shadow-sm ${msg.role === 'user'
-                                ? 'rounded-tr-none bg-brand-primary/80 text-white backdrop-blur-sm border border-white/20'
-                                : 'rounded-tl-none border border-white/10 bg-white/10 text-white backdrop-blur-sm'
+                            className={`max-w-[85%] rounded-xl p-3 text-[12px] leading-snug font-medium shadow-md transition-all ${msg.role === 'user'
+                                ? 'rounded-tr-none bg-brand-primary/90 text-white backdrop-blur-sm border border-white/20'
+                                : 'rounded-tl-none border border-white/10 bg-white/10 text-white backdrop-blur-sm hover:bg-white/15'
                                 }`}
                         >
                             {msg.content}
@@ -183,7 +183,7 @@ export const ChatMockup = () => {
                                     <button
                                         key={opt}
                                         onClick={() => handleOptionClick(opt)}
-                                        className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-semibold text-white whitespace-nowrap transition-all hover:bg-white/20 hover:border-[#C7A14A]/50 hover:shadow-sm"
+                                        className="rounded-full border border-white/20 bg-white/5 px-3 py-1 text-[10px] font-semibold text-white whitespace-nowrap transition-all hover:bg-white/20 hover:border-[#C7A14A] hover:text-[#C7A14A] hover:shadow-lg"
                                     >
                                         {opt}
                                     </button>
@@ -194,15 +194,15 @@ export const ChatMockup = () => {
                 ))}
                 {isTyping && (
                     <div className="flex w-12 animate-in items-center gap-1 rounded-xl rounded-tl-none border border-white/10 bg-white/5 p-3 fade-in backdrop-blur-sm">
-                        <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/40 [animation-delay:-0.3s]"></div>
-                        <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/40 [animation-delay:-0.15s]"></div>
-                        <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/40"></div>
+                        <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#C7A14A] [animation-delay:-0.3s]"></div>
+                        <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#C7A14A] [animation-delay:-0.15s]"></div>
+                        <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#C7A14A]"></div>
                     </div>
                 )}
             </div>
 
             {/* Input Bar */}
-            <div className="shrink-0 border-t border-white/10 bg-white/5 p-4 backdrop-blur-xl">
+            <div className="shrink-0 border-t border-white/10 bg-black/40 p-4 backdrop-blur-xl">
                 <div className="relative flex items-center">
                     <input
                         ref={inputRef}
@@ -214,11 +214,11 @@ export const ChatMockup = () => {
                         }}
                         onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                         placeholder="Type your message..."
-                        className="w-full rounded-full border border-white/10 bg-white/5 py-2 pl-4 pr-10 text-[11px] font-medium text-white placeholder:text-white/40 focus:border-[#C7A14A]/50 focus:outline-none focus:ring-1 focus:ring-[#C7A14A]/50 transition-all"
+                        className="w-full rounded-full border border-white/10 bg-white/5 py-2 pl-4 pr-10 text-[11px] font-medium text-white placeholder:text-white/40 focus:border-[#C7A14A] focus:outline-none focus:ring-1 focus:ring-[#C7A14A] transition-all"
                     />
                     <button
                         onClick={handleSend}
-                        className="absolute right-1 flex h-7 w-7 items-center justify-center rounded-full bg-brand-primary text-white shadow-lg transition-all hover:scale-105 active:scale-95"
+                        className="absolute right-1 flex h-7 w-7 items-center justify-center rounded-full bg-[#C7A14A] text-white shadow-lg transition-all hover:scale-105 active:scale-95 hover:bg-[#B89440]"
                     >
                         <ArrowRight className="h-3.5 w-3.5" />
                     </button>
