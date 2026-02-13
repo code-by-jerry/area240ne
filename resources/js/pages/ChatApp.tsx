@@ -251,19 +251,13 @@ export default function ChatApp() {
                             href="/"
                             className="group mb-6 flex items-center gap-3 px-2 transition-opacity hover:opacity-80"
                         >
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white p-1 shadow-sm ring-1 ring-zinc-200">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-transparent p-1 shadow-sm ring-1 ring-zinc-200">
                                 <img
-                                    src="/image/Area 24 one logo black.png"
+                                    src="https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/main%20logo.png"
                                     alt="Area 24 One Logo"
                                     className="h-full w-full object-contain"
                                 />
                             </div>
-                            <span className="text-lg font-bold tracking-tight text-brand-primary uppercase dark:text-white">
-                                Area 24{' '}
-                                <span className="font-medium text-brand-muted">
-                                    one
-                                </span>
-                            </span>
                         </Link>
 
                         {/* New Chat Button */}

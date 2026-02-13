@@ -577,19 +577,20 @@ export default function Welcome({
                                 href="/"
                                 className="group flex cursor-pointer items-center gap-2 md:gap-3"
                             >
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-primary p-1 shadow-lg shadow-brand-primary/10 transition-transform duration-500 group-hover:scale-105 md:h-12 md:w-12 md:rounded-xl dark:bg-brand-primary">
+                                <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-transparent p-1 shadow-lg shadow-brand-primary/10 transition-transform duration-500 group-hover:scale-105 md:h-20 md:w-20 md:rounded-xl dark:bg-transparent">
+                                    {/* Mobile Logo: Always White */}
                                     <img
-                                        src="https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/area%2024%20one.png?updatedAt=1770815540578"
-                                        alt="Logo"
-                                        className="h-full w-full object-contain"
+                                        src="/image/main logo (white).png"
+                                        alt="Logo Mobile"
+                                        className="h-full w-full object-contain md:hidden"
+                                    />
+                                    {/* Desktop Logo: Switches on Scroll */}
+                                    <img
+                                        src={scrolled ? "/image/main logo.png" : "/image/main logo (white).png"}
+                                        alt="Logo Desktop"
+                                        className="hidden h-full w-full object-contain md:block"
                                     />
                                 </div>
-                                <span className={`font-display text-lg font-extrabold tracking-tighter uppercase md:text-xl dark:text-white ${scrolled ? 'text-brand-primary' : 'text-white'}`}>
-                                    Area 24{' '}
-                                    <span className={`font-medium ${scrolled ? 'text-brand-muted' : 'text-white'}`}>
-                                        one
-                                    </span>
-                                </span>
                             </Link>
 
                             {/* Desktop Navigation - Clean Design */}
@@ -679,10 +680,10 @@ export default function Welcome({
                                 </Link>
                                 <button
                                     aria-label="Toggle menu"
-                                    className="rounded-lg p-2 text-brand-primary transition-colors hover:bg-slate-100 dark:text-white dark:hover:bg-slate-900"
+                                    className={`rounded-lg p-2 transition-colors hover:bg-slate-100/10 ${scrolled ? 'text-brand-primary md:text-white' : 'text-white'}`}
                                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                                 >
-                                    {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+                                    {mobileMenuOpen ? <X size={22} className="text-white md:text-inherit" /> : <Menu size={22} className="text-white md:text-inherit" />}
                                 </button>
                             </div>
                         </div>
@@ -1913,9 +1914,9 @@ export default function Welcome({
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
                             <div className="flex items-center gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-primary p-1 transition-transform duration-500 hover:rotate-6 dark:bg-brand-primary">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-transparent p-1 transition-transform duration-500 hover:rotate-6 dark:bg-transparent">
                                     <img
-                                        src="https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/area%2024%20one.png?updatedAt=1770815540578"
+                                        src="/image/main logo (white).png"
                                         alt="Logo"
                                         className="h-full w-full object-contain"
                                     />

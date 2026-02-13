@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\ChatSession;
 use App\Models\ChatMessage;
+use App\Models\Intent;
+use App\Models\ServiceConfig;
 
 /**
  * AREA24ONE CHAT SERVICE (v1.1 - PHASE 1 OPTIMIZED)
@@ -344,7 +346,7 @@ What brings you here today? 👋";
 
             // No clear intent - show intro and move to INTENT_DETECTION
             $this->session->update(['state' => 'INTENT_DETECTION']);
-            return ['text' => 'Hello! 👋 ' . self::AREA24ONE_INTRO_TEXT];
+            return ['text' => 'Hello! 👋 ' . $this->getIntroText()];
         }
 
         // STATE 2: INTENT_DETECTION - Detect service intent directly
@@ -405,12 +407,12 @@ What brings you here today? 👋";
             $title = $suggestedService . (($data['location'] ?? '') ? ' – ' . $data['location'] : '');
             $this->session->update(['state' => 'LEAD_QUALIFICATION', 'data' => $data, 'title' => $title]);
             $response = $this->buildServiceResponse($suggestedService, $data['location'] ?? null);
-            $question = self::LEAD_QUESTIONS[$suggestedService]['q1'] ?? 'Tell me more?';
-            $options = self::LEAD_QUESTION_OPTIONS[$suggestedService]['q1'] ?? null;
+            $question = $this->getLeadQuestion($suggestedService, 'q1') ?: 'Tell me more?';
+            $options = $this->getLeadOptions($suggestedService, 'q1');
             
-            $result = [
-                'text' => $response['text'] . "\n\n" . $question
-            ];
+                $result = [
+                    'text' => $response['text'] . "\n\n" . $question
+                ];
             
             if ($options) {
                 $result['options'] = $options;
@@ -471,7 +473,7 @@ What brings you here today? 👋";
                 if ($service === 'Interiors' && $label) {
                     $interiorService = new \App\Services\InteriorPackageService();
                     $overview = $interiorService->getInteriorOverview();
-                    $brand = self::SERVICE_TO_BRAND['Interiors'] ?? null;
+                    $brand = $this->getBrandArray('Interiors');
                     if ($brand && !empty($brand['phone'])) {
                         $overview .= "\n\n📞 **Want to discuss?** ";
                         $overview .= implode(' | ', array_map(fn($p) => "Call: {$p}", $brand['phone']));
@@ -484,7 +486,7 @@ What brings you here today? 👋";
                 if ($service === 'Construction' && $label) {
                     $pkgService = new \App\Services\ConstructionPackageService();
                     $overview = $pkgService->getPackageOverview();
-                    $brand = self::SERVICE_TO_BRAND['Construction'] ?? null;
+                    $brand = $this->getBrandArray('Construction');
                     if ($brand && !empty($brand['phone'])) {
                         $overview .= "\n\n📞 **Want to discuss?** ";
                         $overview .= implode(' | ', array_map(fn($p) => "Call: {$p}", $brand['phone']));
@@ -522,8 +524,8 @@ What brings you here today? 👋";
             // Move to next question or collect name/phone
             if ($currentQ === 'q1') {
                 $data['current_question'] = 'q2';
-                $nextQ = self::LEAD_QUESTIONS[$service]['q2'] ?? 'Next question?';
-                $options = self::LEAD_QUESTION_OPTIONS[$service]['q2'] ?? null;
+                $nextQ = $this->getLeadQuestion($service, 'q2') ?: 'Next question?';
+                $options = $this->getLeadOptions($service, 'q2');
                 $this->session->update(['data' => $data]);
                 
                 $result = ['text' => $nextQ];
@@ -533,8 +535,8 @@ What brings you here today? 👋";
                 return $result;
             } elseif ($currentQ === 'q2') {
                 $data['current_question'] = 'q3';
-                $nextQ = self::LEAD_QUESTIONS[$service]['q3'] ?? 'Final question?';
-                $options = self::LEAD_QUESTION_OPTIONS[$service]['q3'] ?? null;
+                $nextQ = $this->getLeadQuestion($service, 'q3') ?: 'Final question?';
+                $options = $this->getLeadOptions($service, 'q3');
                 $this->session->update(['data' => $data]);
                 
                 $result = ['text' => $nextQ];
@@ -639,7 +641,7 @@ What brings you here today? 👋";
                 if ($serviceType) {
                     $details = $interiorService->getPackageDetails($serviceType);
                     if ($details) {
-                        $brand = self::SERVICE_TO_BRAND['Interiors'] ?? null;
+                        $brand = $this->getBrandArray('Interiors');
                         $text = $details;
                         if ($brand && ! empty($brand['phone'])) {
                             $text .= "\n\n📞 **Need more details?**\n";
@@ -651,7 +653,7 @@ What brings you here today? 👋";
                     }
                 }
                 $overview = $interiorService->getInteriorOverview();
-                $brand = self::SERVICE_TO_BRAND['Interiors'] ?? null;
+                $brand = $this->getBrandArray('Interiors');
                 if ($brand && ! empty($brand['phone'])) {
                     $overview .= "\n\n📞 **Want to discuss your project?**\n";
                     foreach ($brand['phone'] as $phone) {
@@ -669,7 +671,7 @@ What brings you here today? 👋";
                     if ($packagePrice) {
                         $details = $packageService->getPackageDetails($packagePrice);
                         if ($details) {
-                            $brand = self::SERVICE_TO_BRAND['Construction'] ?? null;
+                            $brand = $this->getBrandArray('Construction');
                             $text = $details;
                             if ($brand && ! empty($brand['phone'])) {
                                 $text .= "\n\n📞 **Need more details?**\n";
@@ -681,7 +683,7 @@ What brings you here today? 👋";
                         }
                     }
                     $overview = $packageService->getPackageOverview();
-                    $brand = self::SERVICE_TO_BRAND['Construction'] ?? null;
+                    $brand = $this->getBrandArray('Construction');
                     if ($brand && ! empty($brand['phone'])) {
                         $overview .= "\n\n📞 **Want to discuss your project?**\n";
                         foreach ($brand['phone'] as $phone) {
@@ -692,7 +694,7 @@ What brings you here today? 👋";
                 }
                 if (strpos($lowInput, 'comparison') !== false || strpos($lowInput, 'compare') !== false) {
                     $comparison = $packageService->getPackageComparison();
-                    $brand = self::SERVICE_TO_BRAND['Construction'] ?? null;
+                    $brand = $this->getBrandArray('Construction');
                     if ($brand && ! empty($brand['phone'])) {
                         $comparison .= "\n\n📞 **Need help choosing?**\n";
                         foreach ($brand['phone'] as $phone) {
@@ -719,7 +721,7 @@ What brings you here today? 👋";
                         // User asked about specific package
                         $packageDetails = $packageService->getPackageDetails($packagePrice);
                         if ($packageDetails) {
-                            $brand = self::SERVICE_TO_BRAND[$service] ?? null;
+                            $brand = $this->getBrandArray($service) ?? null;
                             $responseText = $packageDetails;
                             if ($brand && !empty($brand['phone'])) {
                                 $responseText .= "\n\n📞 **Need more details?**\n";
@@ -732,7 +734,7 @@ What brings you here today? 👋";
                     } else {
                         // General pricing query - show overview
                         $overview = $packageService->getPackageOverview();
-                        $brand = self::SERVICE_TO_BRAND[$service] ?? null;
+                        $brand = $this->getBrandArray($service) ?? null;
                         if ($brand && !empty($brand['phone'])) {
                             $overview .= "\n\n📞 **Want to discuss your project?**\n";
                             foreach ($brand['phone'] as $phone) {
@@ -748,7 +750,7 @@ What brings you here today? 👋";
                     strpos($lowInput, 'difference') !== false || 
                     strpos($lowInput, 'compare') !== false) {
                     $comparison = $packageService->getPackageComparison();
-                    $brand = self::SERVICE_TO_BRAND[$service] ?? null;
+                    $brand = $this->getBrandArray($service) ?? null;
                     if ($brand && !empty($brand['phone'])) {
                         $comparison .= "\n\n📞 **Need help choosing?**\n";
                         foreach ($brand['phone'] as $phone) {
@@ -769,7 +771,7 @@ What brings you here today? 👋";
                     if ($serviceType) {
                         $details = $interiorService->getPackageDetails($serviceType);
                         if ($details) {
-                            $brand = self::SERVICE_TO_BRAND[$service] ?? null;
+                            $brand = $this->getBrandArray($service) ?? null;
                             $responseText = $details;
                             if ($brand && ! empty($brand['phone'])) {
                                 $responseText .= "\n\n📞 **Need more details?**\n";
@@ -781,7 +783,7 @@ What brings you here today? 👋";
                         }
                     }
                     $overview = $interiorService->getInteriorOverview();
-                    $brand = self::SERVICE_TO_BRAND[$service] ?? null;
+                    $brand = $this->getBrandArray($service) ?? null;
                     if ($brand && ! empty($brand['phone'])) {
                         $overview .= "\n\n📞 **Want to discuss your project?**\n";
                         foreach ($brand['phone'] as $phone) {
@@ -793,7 +795,7 @@ What brings you here today? 👋";
 
                 if (strpos($lowInput, 'comparison') !== false || strpos($lowInput, 'compare') !== false) {
                     $comparison = $interiorService->getComparisonTable();
-                    $brand = self::SERVICE_TO_BRAND[$service] ?? null;
+                    $brand = $this->getBrandArray($service) ?? null;
                     if ($brand && ! empty($brand['phone'])) {
                         $comparison .= "\n\n📞 **Need help choosing?**\n";
                         foreach ($brand['phone'] as $phone) {
@@ -814,7 +816,7 @@ What brings you here today? 👋";
 
                 // Add service context if available
                 if ($service) {
-                    $brand = self::SERVICE_TO_BRAND[$service] ?? null;
+                    $brand = $this->getBrandArray($service) ?? null;
                     if ($brand) {
                         // Append contact info for easy reference
                         $responseText .= "\n\n📞 **Need immediate help?**\n";
@@ -864,7 +866,7 @@ What brings you here today? 👋";
             
             // Generic helpful response with service context
             if ($service) {
-                $brand = self::SERVICE_TO_BRAND[$service] ?? null;
+                $brand = $this->getBrandArray($service) ?? null;
                 $serviceName = $brand['brand_name'] ?? $service;
                 
                 return [
@@ -922,7 +924,11 @@ What brings you here today? 👋";
      */
     protected function detectGreeting(string $input): bool
     {
-        foreach (self::GREETING_KEYWORDS as $greeting) {
+        // Try DB first
+        $cfg = ServiceConfig::whereNotNull('greeting_keywords')->first();
+        $greetingKeywords = $cfg ? $cfg->greeting_keywords : self::GREETING_KEYWORDS;
+
+        foreach ($greetingKeywords as $greeting) {
             if (strpos($input, $greeting) !== false) {
                 return true;
             }
@@ -938,24 +944,29 @@ What brings you here today? 👋";
         $matches = [];
         $keywordsMatched = [];
 
-        // Weight keywords: specific service keywords get higher priority
-        $primaryKeywords = [
-            'Interiors' => ['interior', 'interior design', 'decor', 'design', 'furniture'],
-            'Real Estate' => ['real estate', 'property', 'buy', 'sell', 'invest'],
-            'Event' => ['event', 'wedding', 'party', 'celebrate'],
-            'Construction' => ['build', 'construct', 'construction', 'villa'],
-            'Land Development' => ['land', 'development', 'agricultural']
-        ];
+        $services = ['Construction', 'Interiors', 'Real Estate', 'Event', 'Land Development'];
 
-        foreach (self::SERVICES_INTENT_KEYWORDS as $service => $keywords) {
+        foreach ($services as $service) {
+            // 1. Try DB ServiceConfig detection_keywords
+            $cfg = ServiceConfig::where('service_vertical', $service)->first();
+            $keywords = $cfg ? ($cfg->detection_keywords ?? []) : [];
+
+            // 2. If empty, try DB Intent keywords
+            if (empty($keywords)) {
+                $keywords = $this->getServiceDetectionKeywords($service);
+            }
+
+            // 3. If still empty, use static fallback
+            if (empty($keywords)) {
+                $keywords = self::SERVICES_INTENT_KEYWORDS[$service] ?? [];
+            }
+
             $serviceKeywordCount = 0;
             $matchedKeywords = [];
 
             foreach ($keywords as $keyword) {
                 if (strpos($input, $keyword) !== false) {
-                    // Weight primary keywords higher (2x multiplier)
-                    $weight = (isset($primaryKeywords[$service]) && in_array($keyword, $primaryKeywords[$service])) ? 2 : 1;
-                    $serviceKeywordCount += $weight;
+                    $serviceKeywordCount += 1;
                     $matchedKeywords[] = $keyword;
                 }
             }
@@ -991,11 +1002,40 @@ What brings you here today? 👋";
     }
 
     /**
+     * Load detection keywords for a service from DB intents.
+     */
+    protected function getServiceDetectionKeywords(string $service): array
+    {
+        $sets = Intent::where('service_vertical', $service)->pluck('keywords')->all();
+        $all = [];
+        foreach ($sets as $arr) {
+            if (is_array($arr)) {
+                foreach ($arr as $kw) {
+                    if (is_string($kw)) {
+                        $kw = trim(mb_strtolower($kw));
+                        if ($kw !== '' && strlen($kw) >= 3) {
+                            $all[] = $kw;
+                        }
+                    }
+                }
+            }
+        }
+        if (empty($all)) {
+            return [];
+        }
+        return array_values(array_unique($all));
+    }
+
+    /**
      * Helper: Match location from input
      */
     protected function matchLocation(string $input): ?string
     {
-        foreach (self::LOCATION_KEYWORDS as $location => $keywords) {
+        // Try DB first (from first available config that has global settings)
+        $cfg = ServiceConfig::whereNotNull('location_keywords')->first();
+        $locationKeywords = $cfg ? $cfg->location_keywords : self::LOCATION_KEYWORDS;
+
+        foreach ($locationKeywords as $location => $keywords) {
             foreach ($keywords as $keyword) {
                 if (strpos($input, $keyword) !== false) {
                     return $location;
@@ -1035,7 +1075,7 @@ What brings you here today? 👋";
      */
     protected function getCustomPricingResponse(string $service): string
     {
-        $brand = self::SERVICE_TO_BRAND[$service] ?? null;
+        $brand = $this->getBrandArray($service) ?? null;
         $name = $brand['brand_name'] ?? $service;
         $phones = $brand['phone'] ?? ['+91 9916047222', '+91 9606956044'];
 
@@ -1106,7 +1146,22 @@ What brings you here today? 👋";
      */
     protected function getProcessTimelineResponse(string $service): ?string
     {
-        $brand = self::SERVICE_TO_BRAND[$service] ?? null;
+        $cfg = ServiceConfig::where('service_vertical', $service)->first();
+        if ($cfg && !empty($cfg->process_timeline)) {
+            $brand = $this->getBrandArray($service) ?? null;
+            $phones = $brand['phone'] ?? [];
+            $text = $cfg->process_timeline;
+
+            if (!empty($phones)) {
+                $text .= "\n\n📞 **Want a tailored timeline?**\n";
+                foreach ($phones as $phone) {
+                    $text .= "Call: {$phone}\n";
+                }
+            }
+            return $text;
+        }
+
+        $brand = $this->getBrandArray($service) ?? null;
         $phones = $brand['phone'] ?? [];
 
         $responses = [
@@ -1166,17 +1221,21 @@ What brings you here today? 👋";
      */
     protected function isAboutBrandQuery(string $input, string $service): bool
     {
-        $brand = self::SERVICE_TO_BRAND[$service] ?? null;
+        $brand = $this->getBrandArray($service) ?? null;
         if (!$brand) {
             return false;
         }
         $aboutKeywords = ['about', 'tell me about', 'who is', 'what is', 'who are', 'what are', 'info', 'information', 'know about'];
+        $brandTerms = array_filter([
+            strtolower($brand['brand_name'] ?? ''),
+            strtolower($brand['brand_short'] ?? ''),
+        ]);
         $triggers = [
-            'Interiors' => ['nesthetix', 'nesthetix design', 'interior design company'],
-            'Construction' => ['atha', 'atha construction', 'construction company'],
-            'Real Estate' => ['area24 realty', 'area24 real estate', 'realty'],
-            'Event' => ['stage365', 'stage 365', 'event company'],
-            'Land Development' => ['area24 land', 'land development', 'area24 developers'],
+            'Interiors' => array_merge(['nesthetix', 'nesthetix design', 'interior design company'], $brandTerms),
+            'Construction' => array_merge(['atha', 'atha construction', 'construction company'], $brandTerms),
+            'Real Estate' => array_merge(['area24 realty', 'area24 real estate', 'realty'], $brandTerms),
+            'Event' => array_merge(['stage365', 'stage 365', 'event company'], $brandTerms),
+            'Land Development' => array_merge(['area24 land', 'land development', 'area24 developers'], $brandTerms),
         ];
         $serviceTriggers = $triggers[$service] ?? [];
         foreach ($aboutKeywords as $kw) {
@@ -1252,28 +1311,36 @@ What brings you here today? 👋";
      */
     protected function buildServiceResponse(string $service, ?string $location): array
     {
-        $brand = self::SERVICE_TO_BRAND[$service] ?? null;
+        $cfg = \App\Models\ServiceConfig::where('service_vertical', $service)->first();
+        $brand = $cfg ? [
+            'brand_name' => $cfg->brand_name,
+            'brand_short' => $cfg->brand_short,
+            'website' => $cfg->website,
+            'instagram' => $cfg->instagram,
+            'facebook' => $cfg->facebook,
+            'linkedin' => $cfg->linkedin,
+            'phone' => $cfg->phone ?? [],
+            'projects_count' => $cfg->projects_count,
+            'description' => $cfg->description,
+            'ceo_name' => $cfg->ceo_name,
+            'ceo_website' => $cfg->ceo_website,
+            'ceo_experience' => $cfg->ceo_experience,
+        ] : (self::SERVICE_TO_BRAND[$service] ?? null);
         if (!$brand) {
             return ['text' => 'Service not found.'];
         }
-
-        // Format as text with HTML-friendly structure for links
         $response = "✨ **{$service}** - {$brand['brand_name']}\n\n";
-        
         $response .= "📊 **Track Record**\n";
         $response .= "✓ {$brand['projects_count']} successful projects\n";
         $response .= "✓ {$brand['description']}\n\n";
-        
         $response .= "📞 **Contact Us**\n";
         if (!empty($brand['phone']) && is_array($brand['phone'])) {
             foreach ($brand['phone'] as $phone) {
                 $response .= "Phone: {$phone}\n";
             }
         }
-        
         $response .= "\n🔗 **Connect With Us**\n";
         $response .= "Website: " . $brand['website'] . "\n";
-        
         if ($brand['instagram']) {
             $response .= "Instagram: " . $brand['instagram'] . "\n";
         }
@@ -1283,19 +1350,25 @@ What brings you here today? 👋";
         if ($brand['linkedin']) {
             $response .= "LinkedIn: " . $brand['linkedin'] . "\n";
         }
-        
         $response .= "\n👨‍💼 **Leadership**\n";
         $response .= "Founder & CEO: {$brand['ceo_name']}\n";
         $response .= "Experience: {$brand['ceo_experience']}\n";
         $response .= "Portfolio: " . $brand['ceo_website'] . "\n";
-
-        // Return enriched response with brand metadata for potential future rendering
         return [
             'text' => $response,
             'brand' => $brand,
             'service' => $service,
             'type' => 'service_info'
         ];
+    }
+
+    /**
+     * Get Introduction Text
+     */
+    protected function getIntroText(): string
+    {
+        $cfg = ServiceConfig::whereNotNull('intro_text')->first();
+        return $cfg ? $cfg->intro_text : self::AREA24ONE_INTRO_TEXT;
     }
 
     /**
@@ -1310,20 +1383,64 @@ What brings you here today? 👋";
         }
         
         if (!empty($data['q1_answer'])) {
-            $q1Label = self::LEAD_QUESTIONS[$service]['q1'] ?? 'Question 1';
+            $q1Label = $this->getLeadQuestion($service, 'q1') ?: 'Question 1';
             $message .= "{$q1Label}: {$data['q1_answer']}\n";
         }
         
         if (!empty($data['q2_answer'])) {
-            $q2Label = self::LEAD_QUESTIONS[$service]['q2'] ?? 'Question 2';
+            $q2Label = $this->getLeadQuestion($service, 'q2') ?: 'Question 2';
             $message .= "{$q2Label}: {$data['q2_answer']}\n";
         }
         
         if (!empty($data['q3_answer'])) {
-            $q3Label = self::LEAD_QUESTIONS[$service]['q3'] ?? 'Question 3';
+            $q3Label = $this->getLeadQuestion($service, 'q3') ?: 'Question 3';
             $message .= "{$q3Label}: {$data['q3_answer']}\n";
         }
         
         return trim($message);
+    }
+
+    protected function getLeadQuestion(string $service, string $key): string
+    {
+        $cfg = \App\Models\ServiceConfig::where('service_vertical', $service)->first();
+        if ($cfg) {
+            if ($key === 'q1' && $cfg->q1) return $cfg->q1;
+            if ($key === 'q2' && $cfg->q2) return $cfg->q2;
+            if ($key === 'q3' && $cfg->q3) return $cfg->q3;
+        }
+        return self::LEAD_QUESTIONS[$service][$key] ?? '';
+    }
+
+    protected function getLeadOptions(string $service, string $key): ?array
+    {
+        $cfg = \App\Models\ServiceConfig::where('service_vertical', $service)->first();
+        if ($cfg) {
+            if ($key === 'q1' && is_array($cfg->options_q1) && count($cfg->options_q1)) return $cfg->options_q1;
+            if ($key === 'q2' && is_array($cfg->options_q2) && count($cfg->options_q2)) return $cfg->options_q2;
+            if ($key === 'q3' && is_array($cfg->options_q3) && count($cfg->options_q3)) return $cfg->options_q3;
+        }
+        return self::LEAD_QUESTION_OPTIONS[$service][$key] ?? null;
+    }
+
+    protected function getBrandArray(string $service): ?array
+    {
+        $cfg = \App\Models\ServiceConfig::where('service_vertical', $service)->first();
+        if ($cfg) {
+            return [
+                'brand_name' => $cfg->brand_name,
+                'brand_short' => $cfg->brand_short,
+                'website' => $cfg->website,
+                'instagram' => $cfg->instagram,
+                'facebook' => $cfg->facebook,
+                'linkedin' => $cfg->linkedin,
+                'phone' => $cfg->phone ?? [],
+                'projects_count' => $cfg->projects_count,
+                'description' => $cfg->description,
+                'ceo_name' => $cfg->ceo_name,
+                'ceo_website' => $cfg->ceo_website,
+                'ceo_experience' => $cfg->ceo_experience,
+            ];
+        }
+        return self::SERVICE_TO_BRAND[$service] ?? null;
     }
 }

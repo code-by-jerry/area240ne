@@ -51,7 +51,7 @@ export default function HeroSlides({ slides }: { slides: HeroSlide[] }) {
         button_link: '',
         order: 0,
         is_active: true,
-        image: null as File | null,
+        image_url: '',
     });
 
     const openCreateDialog = () => {
@@ -70,7 +70,7 @@ export default function HeroSlides({ slides }: { slides: HeroSlide[] }) {
             button_link: slide.button_link || '',
             order: slide.order,
             is_active: Boolean(slide.is_active),
-            image: null,
+            image_url: slide.image_path || '',
         });
         clearErrors();
         setIsDialogOpen(true);
@@ -84,12 +84,10 @@ export default function HeroSlides({ slides }: { slides: HeroSlide[] }) {
             // Laravel Inertia file uploads with PUT/PATCH are tricky, usually easier to use POST with _method spoofing
             // or just a dedicated route. Here I used POST in web.php for update as well.
             post(update.url(editingSlide.id), {
-                forceFormData: true,
                 onSuccess: () => setIsDialogOpen(false),
             });
         } else {
             post(store.url(), {
-                forceFormData: true,
                 onSuccess: () => setIsDialogOpen(false),
             });
         }
@@ -208,21 +206,22 @@ export default function HeroSlides({ slides }: { slides: HeroSlide[] }) {
                         
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="space-y-2">
-                                <Label htmlFor="image">Background Image {editingSlide ? '(Optional)' : '(Required)'}</Label>
+                                <Label htmlFor="image_url">Background Image URL {editingSlide ? '(Optional)' : '(Required)'}</Label>
                                 <div className="flex items-center gap-4">
-                                    {editingSlide && !data.image && (
+                                    {editingSlide && (
                                         <div className="relative h-20 w-32 overflow-hidden rounded-md border">
                                             <img src={editingSlide.image_path} alt="Current" className="h-full w-full object-cover" />
                                         </div>
                                     )}
                                     <Input 
-                                        id="image" 
-                                        type="file" 
-                                        accept="image/*"
-                                        onChange={(e) => setData('image', e.target.files ? e.target.files[0] : null)}
+                                        id="image_url" 
+                                        type="url" 
+                                        value={data.image_url}
+                                        onChange={(e) => setData('image_url', e.target.value)}
+                                        placeholder="https://example.com/your-image.jpg"
                                     />
                                 </div>
-                                {errors.image && <p className="text-sm text-red-500">{errors.image}</p>}
+                                {errors.image_url && <p className="text-sm text-red-500">{errors.image_url}</p>}
                             </div>
 
                             <div className="grid gap-4 md:grid-cols-2">

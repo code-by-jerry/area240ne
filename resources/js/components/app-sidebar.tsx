@@ -13,7 +13,7 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Calculator, Image as ImageIcon } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Calculator, Image as ImageIcon, Users, Sparkles } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -21,6 +21,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: '/dashboard',
         icon: LayoutGrid,
+    },
+    {
+        title: 'Users',
+        href: '/admin/users',
+        icon: Users,
     },
     {
         title: 'Leads',
@@ -36,6 +41,16 @@ const mainNavItems: NavItem[] = [
         title: 'Hero Slides',
         href: '/admin/hero-slides',
         icon: ImageIcon,
+    },
+    {
+        title: 'Chat Intents',
+        href: '/admin/intents',
+        icon: Sparkles,
+    },
+    {
+        title: 'Service Configs',
+        href: '/admin/service-configs',
+        icon: Sparkles,
     },
 ];
 

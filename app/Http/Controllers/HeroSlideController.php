@@ -20,7 +20,7 @@ class HeroSlideController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'image' => 'required|image|max:10240', // 10MB max
+            'image_url' => 'required|url',
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'button_text' => 'nullable|string|max:50',
@@ -29,10 +29,8 @@ class HeroSlideController extends Controller
             'order' => 'integer',
         ]);
 
-        $path = $request->file('image')->store('hero-slides', 'public');
-
         HeroSlide::create([
-            'image_path' => '/storage/' . $path,
+            'image_path' => $request->input('image_url'),
             'title' => $request->title,
             'description' => $request->description,
             'button_text' => $request->button_text,
@@ -47,7 +45,7 @@ class HeroSlideController extends Controller
     public function update(Request $request, HeroSlide $heroSlide)
     {
         $request->validate([
-            'image' => 'nullable|image|max:10240',
+            'image_url' => 'nullable|url',
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'button_text' => 'nullable|string|max:50',
@@ -56,15 +54,8 @@ class HeroSlideController extends Controller
             'order' => 'integer',
         ]);
 
-        if ($request->hasFile('image')) {
-            // Delete old image
-            $oldPath = str_replace('/storage/', '', $heroSlide->image_path);
-            if (Storage::disk('public')->exists($oldPath)) {
-                Storage::disk('public')->delete($oldPath);
-            }
-            
-            $path = $request->file('image')->store('hero-slides', 'public');
-            $heroSlide->image_path = '/storage/' . $path;
+        if ($request->filled('image_url')) {
+            $heroSlide->image_path = $request->input('image_url');
         }
 
         $heroSlide->update([
@@ -81,9 +72,11 @@ class HeroSlideController extends Controller
 
     public function destroy(HeroSlide $heroSlide)
     {
-        $path = str_replace('/storage/', '', $heroSlide->image_path);
-        if (Storage::disk('public')->exists($path)) {
-            Storage::disk('public')->delete($path);
+        if (str_starts_with($heroSlide->image_path, '/storage/')) {
+            $path = str_replace('/storage/', '', $heroSlide->image_path);
+            if (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
         }
         
         $heroSlide->delete();
