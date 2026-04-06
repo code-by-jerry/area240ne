@@ -2,289 +2,209 @@
 
 namespace Tests;
 
+use App\Models\ChatSetting;
+use App\Models\ChatServiceItem;
 use App\Models\ChatSession;
+use App\Models\ChatQualificationFlow;
 use App\Models\Lead;
-use App\Models\Intent;
-use App\Models\User;
-use Database\Factories\UserFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-/**
- * Test the ultra-simple v3.0 chat flow
- *
- * States: INIT → SERVICE_SELECT → Q1 → Q2 → Q3 → LEAD_CAPTURE → FINAL
- * No discovery dialog, just 3 quick questions per service
- */
 class DatasetDrivenChatTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected $user;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create();
+
+        $this->seed(\Database\Seeders\DatabaseSeeder::class);
     }
 
-    /** @test */
-    public function it_starts_with_greeting_and_service_selection()
+    public function test_it_loads_admin_driven_welcome_message_and_service_options(): void
     {
-        $this->actingAs($this->user);
-
         $response = $this->postJson('/chat', [
             'message' => '',
-            'session_id' => null
+            'session_id' => null,
         ]);
 
-        $response->assertStatus(200);
-        $this->assertStringContainsString('What do you need', $response['reply']);
-        $this->assertCount(5, $response['options']);
-        $this->assertContains('Build a House/Villa', $response['options']);
+        $response->assertOk()
+            ->assertJsonPath('type', 'welcome')
+            ->assertJsonCount(5, 'options');
+
+        $this->assertStringContainsString('Area24ONE helps with homes, interiors, property, events, and land development', $response->json('reply'));
+        $this->assertContains('Construction', $response->json('options'));
+        $this->assertContains('Interiors', $response->json('options'));
     }
 
-    /** @test */
-    public function it_selects_construction_service()
+    public function test_it_uses_service_specific_intents_and_knowledge_after_service_selection(): void
     {
-        $this->actingAs($this->user);
+        ChatSetting::query()->whereKey(1)->update(['lead_capture_enabled' => false]);
 
-        // Get initial greeting
-        $greeting = $this->postJson('/chat', [
+        $welcome = $this->postJson('/chat', [
             'message' => '',
-            'session_id' => null
-        ]);
-        $sessionId = $greeting['session_id'];
-
-        // Select service
-        $response = $this->postJson('/chat', [
-            'message' => 'Build a House/Villa',
-            'session_id' => $sessionId
+            'session_id' => null,
         ]);
 
-        $response->assertStatus(200);
-
-        // Check session state changed to Q1
-        $session = ChatSession::find($sessionId);
-        $this->assertEquals('Q1', $session->state);
-        $this->assertEquals('Construction', $session->data['service']);
-
-        // Response should be Q1
-        $this->assertStringContainsString('Do you own land', $response['reply']);
-    }
-
-    /** @test */
-    public function it_progresses_through_3_questions()
-    {
-        $this->actingAs($this->user);
-
-        // Start chat
-        $greeting = $this->postJson('/chat', ['message' => '', 'session_id' => null]);
-        $sessionId = $greeting['session_id'];
-
-        // Select service
-        $service = $this->postJson('/chat', [
-            'message' => 'Interior Design',
-            'session_id' => $sessionId
-        ]);
-        $this->assertEquals('Q1', ChatSession::find($sessionId)->state);
-        $this->assertStringContainsString('What space', $service['reply']);
-
-        // Answer Q1
-        $q1 = $this->postJson('/chat', [
-            'message' => 'Apartment',
-            'session_id' => $sessionId
-        ]);
-        $session = ChatSession::find($sessionId);
-        $this->assertEquals('Q2', $session->state);
-        $this->assertEquals('apartment', $session->data['q1']);
-        $this->assertStringContainsString('Approx area', $q1['reply']);
-
-        // Answer Q2
-        $q2 = $this->postJson('/chat', [
-            'message' => '3BHK',
-            'session_id' => $sessionId
-        ]);
-        $session = ChatSession::find($sessionId);
-        $this->assertEquals('Q3', $session->state);
-        $this->assertEquals('3bhk', $session->data['q2']);
-        $this->assertStringContainsString('Budget', $q2['reply']);
-
-        // Answer Q3 - should transition to LEAD_CAPTURE
-        $q3 = $this->postJson('/chat', [
-            'message' => '₹15 lakhs',
-            'session_id' => $sessionId
-        ]);
-        $session = ChatSession::find($sessionId);
-        $this->assertEquals('LEAD_CAPTURE', $session->state);
-        $this->assertEquals('₹15 lakhs', $session->data['q3']);
-        $this->assertStringContainsString('share your name', $q3['reply']);
-    }
-
-    /** @test */
-    public function it_captures_lead_from_passive_contact_info()
-    {
-        $this->actingAs($this->user);
-
-        // Start and select service
-        $greeting = $this->postJson('/chat', ['message' => '', 'session_id' => null]);
-        $sessionId = $greeting['session_id'];
-
-        $this->postJson('/chat', [
-            'message' => 'Event Management',
-            'session_id' => $sessionId
-        ]);
-
-        // Answer Q1
-        $this->postJson('/chat', [
-            'message' => 'Wedding',
-            'session_id' => $sessionId
-        ]);
-
-        // Answer Q2
-        $this->postJson('/chat', [
-            'message' => '100 guests',
-            'session_id' => $sessionId
-        ]);
-
-        // Answer Q3 - include name and phone
-        $this->postJson('/chat', [
-            'message' => 'I am John Doe and my number is 9876543210',
-            'session_id' => $sessionId
-        ]);
-
-        // Now in LEAD_CAPTURE
-        $session = ChatSession::find($sessionId);
-        $this->assertEquals('LEAD_CAPTURE', $session->state);
-
-        // Should have contact info extracted from Q3 answer
-        $data = $session->data ?? [];
-        $this->assertNotEmpty($data['phone'], 'Phone should be extracted');
-    }
-
-    /** @test */
-    public function it_handles_global_restart_command()
-    {
-        $this->actingAs($this->user);
-
-        // Start chat
-        $greeting = $this->postJson('/chat', ['message' => '', 'session_id' => null]);
-        $sessionId = $greeting['session_id'];
-
-        // Select service
-        $this->postJson('/chat', [
-            'message' => 'Real Estate',
-            'session_id' => $sessionId
-        ]);
-
-        // Verify in Q1
-        $session = ChatSession::find($sessionId);
-        $this->assertEquals('Q1', $session->state);
-
-        // Send restart command
-        $response = $this->postJson('/chat', [
-            'message' => 'restart',
-            'session_id' => $sessionId
-        ]);
-
-        // Check state reset
-        $session = ChatSession::find($sessionId);
-        $this->assertEquals('SERVICE_SELECT', $session->state);
-        $this->assertEmpty($session->data);
-        $this->assertCount(5, $response['options']);
-    }
-
-    /** @test */
-    public function it_uses_dataset_intents_for_knowledge_questions()
-    {
-        $this->actingAs($this->user);
-
-        // Start and select service
-        $greeting = $this->postJson('/chat', ['message' => '', 'session_id' => null]);
-        $sessionId = $greeting['session_id'];
+        $sessionId = $welcome->json('session_id');
 
         $this->postJson('/chat', [
             'message' => 'Construction',
-            'session_id' => $sessionId
+            'session_id' => $sessionId,
+        ])->assertOk();
+
+        $intent = $this->postJson('/chat', [
+            'message' => 'What is the price and budget for this?',
+            'session_id' => $sessionId,
         ]);
 
-        // We're in Q1, just verify we can answer it
-        $session = ChatSession::find($sessionId);
-        $this->assertEquals('Q1', $session->state);
+        $intent->assertOk()
+            ->assertJsonPath('type', 'intent_match')
+            ->assertJsonPath('redirect', '/cost-estimator');
 
-        // Answer Q1 to move to Q2
-        $response = $this->postJson('/chat', [
-            'message' => 'I own land',
-            'session_id' => $sessionId
+        $knowledge = $this->postJson('/chat', [
+            'message' => 'How long does it usually take?',
+            'session_id' => $sessionId,
         ]);
 
-        // Should now be in Q2
-        $session = ChatSession::find($sessionId);
-        $this->assertEquals('Q2', $session->state);
-
-        // The system has dataset integrated - even if knowledge matching isn't perfect,
-        // the flow works and dataset is accessible for future enhancements
-        $this->assertNotEmpty($response['reply']);
+        $knowledge->assertOk()
+            ->assertJsonPath('type', 'knowledge_match');
     }
 
-    /** @test */
-    public function it_completes_full_interior_design_flow()
+    public function test_it_completes_qualification_and_persists_a_lead_when_contact_details_are_collected(): void
     {
-        $this->actingAs($this->user);
-
-        // Start
-        $greeting = $this->postJson('/chat', ['message' => '', 'session_id' => null]);
-        $sessionId = $greeting['session_id'];
-
-        $this->assertStringContainsString('What do you need', $greeting['reply']);
-
-        // Select service
-        $select = $this->postJson('/chat', [
-            'message' => 'Interior Design',
-            'session_id' => $sessionId
-        ]);
-        $this->assertEquals('Q1', ChatSession::find($sessionId)->state);
-
-        // Go through 3 questions
-        $this->postJson('/chat', ['message' => 'Apartment', 'session_id' => $sessionId]);
-        $this->postJson('/chat', ['message' => '3000 sqft', 'session_id' => $sessionId]);
-        $response = $this->postJson('/chat', [
-            'message' => '₹30 lakhs',
-            'session_id' => $sessionId
+        $welcome = $this->postJson('/chat', [
+            'message' => '',
+            'session_id' => null,
         ]);
 
-        // Now in LEAD_CAPTURE
-        $session = ChatSession::find($sessionId);
-        $this->assertEquals('LEAD_CAPTURE', $session->state);
-        $this->assertStringContainsString('share your name', $response['reply']);
-    }
+        $sessionId = $welcome->json('session_id');
 
-    /** @test */
-    public function it_does_not_duplicate_messages()
-    {
-        $this->actingAs($this->user);
-
-        // Start chat
-        $greeting = $this->postJson('/chat', ['message' => '', 'session_id' => null]);
-        $sessionId = $greeting['session_id'];
-
-        // Select service
         $this->postJson('/chat', [
-            'message' => 'Land Development',
-            'session_id' => $sessionId
+            'message' => 'Interiors',
+            'session_id' => $sessionId,
+        ])->assertOk();
+
+        foreach ([
+            'Residential home',
+            '1000-2000 sqft',
+            'Modern',
+            'Bangalore',
+            'John Smith',
+            '9876543210',
+        ] as $answer) {
+            $response = $this->postJson('/chat', [
+                'message' => $answer,
+                'session_id' => $sessionId,
+            ]);
+        }
+
+        $response->assertOk()
+            ->assertJsonPath('type', 'qualification_complete');
+
+        $session = ChatSession::query()->findOrFail($sessionId);
+
+        $this->assertSame('QUALIFIED', $session->state);
+        $this->assertNotNull($session->lead_id);
+
+        $lead = Lead::query()->findOrFail($session->lead_id);
+
+        $this->assertSame('Interiors', $lead->service);
+        $this->assertSame('John Smith', $lead->name);
+        $this->assertSame('9876543210', $lead->phone);
+        $this->assertSame('Bangalore', $lead->location);
+        $this->assertStringContainsString('Contact Phone: 9876543210', $lead->message ?? '');
+    }
+
+    public function test_it_detects_natural_construction_requests_without_requiring_exact_service_name(): void
+    {
+        $welcome = $this->postJson('/chat', [
+            'message' => '',
+            'session_id' => null,
         ]);
 
-        // Get messages
-        $history1 = ChatSession::find($sessionId)->messages;
-        $messageCount1 = count($history1);
+        $sessionId = $welcome->json('session_id');
 
-        // The last message should be the bot's discovery question
-        $lastMessage = $history1->last();
-        $this->assertEquals('bot', $lastMessage->sender);
+        $response = $this->postJson('/chat', [
+            'message' => 'I want to build a house for us',
+            'session_id' => $sessionId,
+        ]);
 
-        // If we fetch again (similar to what frontend does)
-        // we shouldn't create duplicate messages
-        $messages = ChatSession::find($sessionId)->messages;
-        $this->assertEquals($messageCount1, count($messages));
+        $response->assertOk()
+            ->assertJsonPath('type', 'qualification_prompt');
+
+        $this->assertStringContainsString('What\'s your project?', $response->json('reply'));
+    }
+
+    public function test_it_can_unpack_freeform_construction_details_into_multiple_qualification_answers(): void
+    {
+        $welcome = $this->postJson('/chat', [
+            'message' => '',
+            'session_id' => null,
+        ]);
+
+        $sessionId = $welcome->json('session_id');
+
+        $this->postJson('/chat', [
+            'message' => 'home construction',
+            'session_id' => $sessionId,
+        ])->assertOk();
+
+        $response = $this->postJson('/chat', [
+            'message' => 'Apartment, 3cr, 2 years, Bangalore',
+            'session_id' => $sessionId,
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('type', 'qualification_prompt');
+
+        $session = ChatSession::query()->findOrFail($sessionId);
+
+        $this->assertSame('Residential', $session->data['qualification']['project_type']);
+        $this->assertSame('1-5Cr', $session->data['qualification']['budget']);
+        $this->assertSame('12+ months', $session->data['qualification']['timeline']);
+        $this->assertSame('Bangalore', $session->data['qualification']['location']);
+        $this->assertSame('contact_name', $session->data['last_question_key']);
+        $this->assertStringContainsString('What is your name?', $response->json('reply'));
+    }
+
+    public function test_service_detection_and_option_mapping_follow_database_config(): void
+    {
+        $construction = ChatServiceItem::query()->where('slug', 'construction')->firstOrFail();
+        $construction->update([
+            'meta' => [
+                'aliases' => ['family nest build'],
+            ],
+        ]);
+
+        ChatQualificationFlow::query()
+            ->where('service_id', $construction->id)
+            ->where('field_key', 'project_type')
+            ->update([
+                'validation_rules' => ['alias:Residential=nest|duplex'],
+            ]);
+
+        $welcome = $this->postJson('/chat', [
+            'message' => '',
+            'session_id' => null,
+        ]);
+
+        $sessionId = $welcome->json('session_id');
+
+        $this->postJson('/chat', [
+            'message' => 'family nest build',
+            'session_id' => $sessionId,
+        ])->assertOk();
+
+        $response = $this->postJson('/chat', [
+            'message' => 'nest, 3cr, 2 years, Bangalore',
+            'session_id' => $sessionId,
+        ]);
+
+        $session = ChatSession::query()->findOrFail($sessionId);
+
+        $this->assertSame('Residential', $session->data['qualification']['project_type']);
+        $this->assertSame('1-5Cr', $session->data['qualification']['budget']);
+        $this->assertSame('12+ months', $session->data['qualification']['timeline']);
+        $this->assertStringContainsString('What is your name?', $response->json('reply'));
     }
 }

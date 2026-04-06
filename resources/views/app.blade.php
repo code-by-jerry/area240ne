@@ -31,11 +31,18 @@
             }
         </style>
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <title inertia>{{ config('app.name', 'Area24One') }}</title>
 
-        <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        <meta name="application-name" content="Area24One">
+        <meta name="apple-mobile-web-app-title" content="Area24One">
+        <meta name="theme-color" content="#0f172a">
+        <meta name="msapplication-TileColor" content="#0f172a">
+
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+        <link rel="icon" type="image/png" sizes="180x180" href="/favicon-180.png">
+        <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
+        <link rel="manifest" href="/site.webmanifest">
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=outfit:300,400,500,600,700,800|plus-jakarta-sans:400,500,600,700" rel="stylesheet" />

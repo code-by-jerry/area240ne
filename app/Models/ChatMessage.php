@@ -6,9 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class ChatMessage extends Model
 {
-    protected $fillable = ['session_id', 'sender', 'message', 'options'];
+    protected $fillable = [
+        'session_id',
+        'sender',
+        'message',
+        'type',
+        'meta',
+        'options',
+    ];
 
     protected $casts = [
         'options' => 'array',
+        'meta' => 'array',
     ];
 }

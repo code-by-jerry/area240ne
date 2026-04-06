@@ -1,4 +1,3 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -13,59 +12,124 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Calculator, Image as ImageIcon, Users, Sparkles } from 'lucide-react';
+import {
+    LayoutGrid,
+    Calculator,
+    Image as ImageIcon,
+    Users,
+    Sparkles,
+    MessageCircleMore,
+    MessageSquareDashed,
+    Database,
+    ListChecks,
+    FlaskConical,
+    MessageSquareQuote,
+    Upload,
+    MessagesSquare,
+    Settings2,
+    ClipboardList,
+    Blocks,
+    Newspaper,
+} from 'lucide-react';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
+const mainNavGroups = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
-        icon: LayoutGrid,
+        title: 'Overview',
+        items: [
+            {
+                title: 'Dashboard',
+                href: '/dashboard',
+                icon: LayoutGrid,
+            },
+        ],
     },
     {
-        title: 'Users',
-        href: '/admin/users',
-        icon: Users,
+        title: 'Business',
+        items: [
+            {
+                title: 'Users',
+                href: '/admin/users',
+                icon: Users,
+            },
+            {
+                title: 'Leads',
+                href: '/leads',
+                icon: ClipboardList,
+            },
+            {
+                title: 'Cost Estimations',
+                href: '/admin/cost-estimations',
+                icon: Calculator,
+            },
+            {
+                title: 'Hero Slides',
+                href: '/admin/hero-slides',
+                icon: ImageIcon,
+            },
+            {
+                title: 'Blogs',
+                href: '/admin/blogs',
+                icon: Newspaper,
+            },
+        ],
     },
     {
-        title: 'Leads',
-        href: '/leads',
-        icon: BookOpen,
+        title: 'Chat Assistant',
+        items: [
+            {
+                title: 'Chat Settings',
+                href: '/admin/chat-settings',
+                icon: Settings2,
+            },
+            {
+                title: 'Chat Services',
+                href: '/admin/chat-services',
+                icon: Blocks,
+            },
+            {
+                title: 'Qualification Flows',
+                href: '/admin/chat-qualification-flows',
+                icon: ListChecks,
+            },
+            {
+                title: 'Chat Intents',
+                href: '/admin/chat-intents',
+                icon: Sparkles,
+            },
+            {
+                title: 'Chat Knowledge',
+                href: '/admin/chat-knowledge-items',
+                icon: Database,
+            },
+            {
+                title: 'Response Templates',
+                href: '/admin/chat-response-templates',
+                icon: MessageSquareQuote,
+            },
+        ],
     },
     {
-        title: 'Cost Estimations',
-        href: '/admin/cost-estimations',
-        icon: Calculator,
+        title: 'Operations',
+        items: [
+            {
+                title: 'Chat Imports',
+                href: '/admin/chat-imports',
+                icon: Upload,
+            },
+            {
+                title: 'Chat Sessions',
+                href: '/admin/chat-sessions',
+                icon: MessagesSquare,
+            },
+            {
+                title: 'Chat Tester',
+                href: '/admin/chat-tester',
+                icon: FlaskConical,
+            },
+        ],
     },
-    {
-        title: 'Hero Slides',
-        href: '/admin/hero-slides',
-        icon: ImageIcon,
-    },
-    {
-        title: 'Chat Intents',
-        href: '/admin/intents',
-        icon: Sparkles,
-    },
-    {
-        title: 'Service Configs',
-        href: '/admin/service-configs',
-        icon: Sparkles,
-    },
-];
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
+] satisfies Array<{ title: string; items: NavItem[] }>;
 
 export function AppSidebar() {
     return (
@@ -83,11 +147,10 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain groups={mainNavGroups} />
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

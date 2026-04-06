@@ -23,6 +23,7 @@ interface Message {
     options?: string[];
     brand?: any;
     type?: string;
+    meta?: Record<string, unknown> | null;
     highlight?: boolean;
     requires_input?: boolean;
 }
@@ -131,6 +132,8 @@ export default function ChatApp() {
                     sender: m.sender,
                     text: m.message,
                     options: m.options,
+                    type: m.type,
+                    meta: m.meta,
                 }),
             );
 
@@ -177,6 +180,8 @@ export default function ChatApp() {
                         sender: 'bot',
                         text: response.data.reply,
                         options: response.data.options,
+                        type: response.data.type,
+                        meta: response.data.meta,
                         highlight: response.data.highlight ?? false,
                         requires_input: response.data.requires_input ?? false,
                     },
@@ -196,13 +201,11 @@ export default function ChatApp() {
             }
         } catch (err: unknown) {
             const status = axios.isAxiosError(err) ? err.response?.status : 0;
-            const text = status === 419
-                ? 'Session expired. Please refresh the page and try again.'
-                : 'Sorry, connection error.';
-            setMessages((prev) => [
-                ...prev,
-                { sender: 'bot', text },
-            ]);
+            const text =
+                status === 419
+                    ? 'Session expired. Please refresh the page and try again.'
+                    : 'Sorry, connection error.';
+            setMessages((prev) => [...prev, { sender: 'bot', text }]);
         } finally {
             setLoading(false);
         }
@@ -236,6 +239,12 @@ export default function ChatApp() {
 
         await fetchBotResponse(msgToSend, sessionId);
     };
+
+    const isWelcomeMessage = (msg: Message, idx: number) =>
+        msg.sender === 'bot' &&
+        idx === 0 &&
+        messages.length > 0 &&
+        msg.type === 'welcome';
 
     return (
         <>
@@ -399,8 +408,8 @@ export default function ChatApp() {
                     </header>
 
                     {/* Chat Area - mobile first */}
-                    <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-8 overscroll-contain">
-                        <div className="mx-auto max-w-3xl space-y-6 sm:space-y-8 pb-24 sm:pb-20">
+                    <main className="flex-1 overflow-x-hidden overflow-y-auto overscroll-contain p-4 md:p-8">
+                        <div className="mx-auto max-w-3xl space-y-6 pb-24 sm:space-y-8 sm:pb-20">
                             {/* Empty State / Welcome */}
                             {messages.length === 0 && !loading && (
                                 <div className="flex h-[50vh] flex-col items-center justify-center text-center opacity-50">
@@ -436,11 +445,16 @@ export default function ChatApp() {
                                         >
                                             <div
                                                 className={`prose prose-zinc dark:prose-invert rounded-2xl px-4 py-2 text-base leading-7 break-words whitespace-pre-wrap ${
-                                                    msg.sender === 'user' 
-                                                        ? 'bg-white ring-1 ring-zinc-200 dark:bg-zinc-800/80 dark:ring-zinc-700' 
-                                                        : msg.highlight
-                                                        ? 'bg-red-50 ring-2 ring-red-500 dark:bg-red-900/20 dark:ring-red-500 font-semibold animate-pulse'
-                                                        : ''
+                                                    msg.sender === 'user'
+                                                        ? 'bg-white ring-1 ring-zinc-200 dark:bg-zinc-800/80 dark:ring-zinc-700'
+                                                        : isWelcomeMessage(
+                                                                msg,
+                                                                idx,
+                                                            )
+                                                          ? 'bg-gradient-to-br from-white to-zinc-50 px-5 py-4 shadow-sm ring-1 ring-zinc-200/80 dark:from-zinc-900 dark:to-zinc-950 dark:ring-zinc-800'
+                                                          : msg.highlight
+                                                            ? 'animate-pulse bg-red-50 font-semibold ring-2 ring-red-500 dark:bg-red-900/20 dark:ring-red-500'
+                                                            : 'bg-transparent'
                                                 } `}
                                             >
                                                 {parseTextWithLinks(msg.text)}
@@ -468,7 +482,7 @@ export default function ChatApp() {
                                                                 messages.length -
                                                                     1
                                                         }
-                                                        className={`touch-manipulation rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium shadow-sm transition-all hover:border-zinc-300 hover:bg-zinc-50 active:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:active:bg-zinc-700 min-h-[44px] sm:min-h-0 ${idx !== messages.length - 1 ? 'cursor-not-allowed opacity-50' : ''} `}
+                                                        className={`min-h-[44px] touch-manipulation rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium shadow-sm transition-all hover:border-zinc-300 hover:bg-zinc-50 active:bg-zinc-100 sm:min-h-0 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:active:bg-zinc-700 ${idx !== messages.length - 1 ? 'cursor-not-allowed opacity-50' : ''} `}
                                                     >
                                                         {option}
                                                     </button>
@@ -495,14 +509,14 @@ export default function ChatApp() {
                         </div>
                     </main>
 
-                    <footer className="absolute bottom-0 left-0 right-0 w-full bg-transparent p-3 sm:p-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                    <footer className="absolute right-0 bottom-0 left-0 w-full bg-transparent p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:p-4">
                         <div className="mx-auto max-w-3xl">
                             <form
                                 onSubmit={(e) => handleSend(e)}
-                                className="relative flex items-end gap-2 rounded-2xl sm:rounded-3xl border border-zinc-200 bg-white p-2.5 sm:p-3 shadow-xl shadow-zinc-200/50 focus-within:ring-2 focus-within:ring-brand-primary/50 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-none"
+                                className="relative flex items-end gap-2 rounded-2xl border border-zinc-200 bg-white p-2.5 shadow-xl shadow-zinc-200/50 focus-within:ring-2 focus-within:ring-brand-primary/50 sm:rounded-3xl sm:p-3 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-none"
                             >
                                 <input
-                                    className="flex-1 min-w-0 resize-none border-0 bg-transparent px-3 py-3 text-base placeholder:text-zinc-400 focus:ring-0 focus:outline-none dark:text-white sm:py-3 [touch-action:manipulation]"
+                                    className="min-w-0 flex-1 [touch-action:manipulation] resize-none border-0 bg-transparent px-3 py-3 text-base placeholder:text-zinc-400 focus:ring-0 focus:outline-none sm:py-3 dark:text-white"
                                     placeholder="Message Area24One..."
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
@@ -511,7 +525,7 @@ export default function ChatApp() {
                                 <button
                                     type="submit"
                                     disabled={!input.trim() || loading}
-                                    className="touch-manipulation shrink-0 rounded-xl sm:rounded-2xl bg-brand-primary p-3 text-white transition-all hover:bg-zinc-800 disabled:opacity-30 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-zinc-200 sm:p-2 sm:mb-1"
+                                    className="shrink-0 touch-manipulation rounded-xl bg-brand-primary p-3 text-white transition-all hover:bg-zinc-800 active:scale-95 disabled:opacity-30 sm:mb-1 sm:rounded-2xl sm:p-2 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
                                     aria-label="Send"
                                 >
                                     <Send className="h-5 w-5" />

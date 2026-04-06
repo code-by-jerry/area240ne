@@ -17,33 +17,65 @@ const FAR_VALUES: Record<string, number> = {
 };
 
 const PACKAGES = [
-    { 
-        id: 'basic', 
-        name: 'Basic', 
-        price: 1800, 
-        description: 'Standard finishes, essential amenities',
-        features: ['RCC Structure', 'Standard Flooring', 'Basic Electrical']
+    {
+        id: 'basic',
+        name: 'Basic',
+        price: 1849,
+        description: 'Basic package with standard materials and essential features',
+        features: [
+            'Standard materials',
+            'Basic design documentation',
+            'Essential features',
+        ],
     },
-    { 
-        id: 'standard', 
-        name: 'Standard', 
-        price: 2200, 
-        description: 'Quality materials, better aesthetics',
-        features: ['Premium Vitrified Tiles', 'Modular Switches', 'Plastic Emulsion Paint']
+    {
+        id: 'standard',
+        name: 'Standard',
+        price: 2025,
+        description: 'Standard package with better materials and enhanced documentation',
+        features: [
+            'Better materials and brands',
+            'Enhanced documentation',
+            'Improved coordination',
+        ],
     },
-    { 
-        id: 'premium', 
-        name: 'Premium', 
-        price: 2800, 
-        description: 'Superior finishes, modern design',
-        features: ['Italian Marble', 'Branded Fittings', 'Smart Home Ready']
+    {
+        id: 'premium',
+        name: 'Premium',
+        price: 2399,
+        description: 'Premium package with dedicated architect and quality materials',
+        features: [
+            'Site engineer daily visits',
+            'Dedicated architect',
+            'Quality materials (JSW Steel, ACC Cement)',
+            'Lift pit and shaft included',
+        ],
     },
-    { 
-        id: 'luxury', 
-        name: 'Luxury', 
-        price: 3500, 
-        description: 'Ultra-premium specifications',
-        features: ['Designer Interiors', 'Home Automation', 'Premium Landscaping']
+    {
+        id: 'luxury',
+        name: 'Luxury',
+        price: 2799,
+        description: 'Luxury package with full-time site engineer and interior support',
+        features: [
+            'Full-time site engineer',
+            'Premium materials (JSW TMT, Ultratech)',
+            'Interior and home decor support',
+            'Compound wall included',
+        ],
+    },
+    {
+        id: 'ultra_premium',
+        name: 'Ultra Premium',
+        price: 4400,
+        description: 'Ultra premium package with smart home and solar solutions',
+        features: [
+            'TATA TMT Steel',
+            'Premium brands throughout',
+            'Smart home features',
+            'Solar solutions',
+            'Security systems',
+            'Landscape included',
+        ],
     },
 ];
 

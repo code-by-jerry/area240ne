@@ -25,6 +25,8 @@ interface Message {
     sender: 'user' | 'bot';
     text: string;
     options?: string[];
+    type?: string;
+    meta?: Record<string, unknown> | null;
 }
 
 function parseTextWithLinks(text: string): React.ReactNode {
@@ -67,11 +69,10 @@ function parseTextWithLinks(text: string): React.ReactNode {
 export default function ChatWidget() {
     const [isOpen, setIsOpen] = useState(false);
     const [sessionId, setSessionId] = useState<string | null>(() => getStoredSessionId());
-    const [messages, setMessages] = useState<Message[]>([
-        { sender: 'bot', text: 'Hello! I am your Area 24 expert consultant. Looking for Real Estate, Construction, or Interior Design?' }
-    ]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
+    const [hasBootstrapped, setHasBootstrapped] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -81,6 +82,88 @@ export default function ChatWidget() {
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
+
+    useEffect(() => {
+        if (!isOpen || hasBootstrapped || loading) {
+            return;
+        }
+
+        if (sessionId) {
+            void loadSession(sessionId);
+            return;
+        }
+
+        void loadWelcome();
+    }, [hasBootstrapped, isOpen, loading, sessionId]);
+
+    const loadWelcome = async () => {
+        setLoading(true);
+
+        try {
+            const response = await axios.post('/chat', {
+                message: '',
+                session_id: sessionId || undefined,
+            });
+
+            setMessages([
+                {
+                    sender: 'bot',
+                    text: response.data.reply,
+                    options: response.data.options ?? undefined,
+                    type: response.data.type,
+                    meta: response.data.meta ?? null,
+                },
+            ]);
+
+            if (response.data.session_id) {
+                setSessionId(response.data.session_id);
+                setStoredSessionId(response.data.session_id);
+            }
+
+            setHasBootstrapped(true);
+        } catch {
+            setMessages([
+                {
+                    sender: 'bot',
+                    text: 'Sorry, I am having trouble connecting right now.',
+                },
+            ]);
+            setHasBootstrapped(true);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const loadSession = async (id: string) => {
+        setLoading(true);
+
+        try {
+            const response = await axios.get(`/chat/session/${id}`);
+            const loadedMessages: Message[] = response.data.messages.map((message: any) => ({
+                sender: message.sender,
+                text: message.message,
+                options: message.options ?? undefined,
+                type: message.type,
+                meta: message.meta ?? null,
+            }));
+
+            if (loadedMessages.length > 0) {
+                setMessages(loadedMessages);
+            } else {
+                await loadWelcome();
+                return;
+            }
+
+            setHasBootstrapped(true);
+        } catch {
+            setSessionId(null);
+            setStoredSessionId(null);
+            setMessages([]);
+            await loadWelcome();
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleSend = async (e?: React.FormEvent, option?: string) => {
         e?.preventDefault();
@@ -102,6 +185,8 @@ export default function ChatWidget() {
                     sender: 'bot',
                     text: response.data.reply,
                     options: response.data.options ?? undefined,
+                    type: response.data.type,
+                    meta: response.data.meta ?? null,
                 },
             ]);
 

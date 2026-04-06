@@ -2,68 +2,38 @@
 
 namespace App\Services;
 
-use App\Models\Intent;
+use App\Models\ChatIntent;
 use App\Models\Lead;
 
-/**
- * ENHANCED LEAD SCORING SERVICE
- *
- * Calculates lead quality score (0-100) based on 5 components:
- * - Service Clarity (0-25): How clear is the service need?
- * - Budget Clarity (0-25): How specific is the budget?
- * - Timeline Clarity (0-25): How clear is the timeline?
- * - Engagement Level (0-15): How engaged is the user?
- * - Decision Authority (0-10): Is user the decision maker?
- *
- * Grades:
- * - HOT: 90-100 (High conversion probability)
- * - WARM: 70-89 (Good conversion probability)
- * - COLD: 50-69 (Low conversion probability)
- * - NOT_LEAD: <50 (Not qualified)
- */
 class LeadScoringService
 {
     public const SCORE_HOT = 90;
     public const SCORE_WARM = 70;
     public const SCORE_COLD = 50;
 
-    /**
-     * Score a lead based on multiple factors
-     */
     public function scoreLead(array $leadData, ?string $intentSlug = null): int
     {
         $score = 0;
 
-        // Intent value (40 points max)
         if ($intentSlug) {
             $score += $this->scoreIntentValue($intentSlug);
         }
 
-        // Engagement level (30 points max)
         $score += $this->scoreEngagement($leadData);
-
-        // Budget range (20 points max)
         $score += $this->scoreBudget($leadData);
-
-        // Timeline (10 points max)
         $score += $this->scoreTimeline($leadData);
 
-        return min(100, $score); // Cap at 100
+        return min(100, $score);
     }
 
-    /**
-     * PHASE 2: Enhanced comprehensive scoring
-     */
     public function calculateScore(array $leadData): array
     {
-        // Calculate component scores
         $serviceClarity = $this->scoreServiceClarity($leadData);
         $budgetClarity = $this->scoreBudgetClarity($leadData);
         $timelineClarity = $this->scoreTimelineClarity($leadData);
         $engagementLevel = $this->scoreEngagementLevel($leadData);
         $decisionAuthority = $this->scoreDecisionAuthority($leadData);
 
-        // Total score
         $totalScore = $serviceClarity + $budgetClarity + $timelineClarity + $engagementLevel + $decisionAuthority;
 
         return [
@@ -76,46 +46,38 @@ class LeadScoringService
                 'engagement_level' => $engagementLevel,
                 'decision_authority' => $decisionAuthority,
             ],
-            'recommendations' => $this->getRecommendations($totalScore, $leadData)
+            'recommendations' => $this->getRecommendations($totalScore, $leadData),
         ];
     }
 
-    /**
-     * Score based on intent value
-     */
     protected function scoreIntentValue(string $intentSlug): int
     {
-        $intent = Intent::where('intent_slug', $intentSlug)->first();
+        $intent = ChatIntent::where('slug', $intentSlug)->with('service:id,name')->first();
 
-        if (!$intent) {
+        if (! $intent) {
             return 0;
         }
 
-        // High-value intents get more points
         if ($intent->is_high_value) {
             return 40;
         }
 
-        // Service vertical scoring
         $verticalScores = [
             'Construction' => 35,
             'Interiors' => 30,
             'Real Estate' => 25,
-            'Events' => 20,
-            'General' => 10
+            'Event' => 20,
+            'Land Development' => 20,
+            'General' => 10,
         ];
 
-        $baseScore = $verticalScores[$intent->service_vertical] ?? 15;
+        $serviceName = $intent->service?->name ?? 'General';
+        $baseScore = $verticalScores[$serviceName] ?? 15;
+        $conversionBoost = min(10, ((float) $intent->conversion_rate) / 2);
 
-        // Boost by conversion rate
-        $conversionBoost = min(10, $intent->conversion_rate / 2);
-
-        return (int)($baseScore + $conversionBoost);
+        return (int) ($baseScore + $conversionBoost);
     }
 
-    /**
-     * Score based on engagement level
-     */
     protected function scoreEngagement(array $leadData): int
     {
         $questionsAnswered = $leadData['questions_answered'] ?? 0;
@@ -131,9 +93,6 @@ class LeadScoringService
         return 0;
     }
 
-    /**
-     * Score based on budget range
-     */
     protected function scoreBudget(array $leadData): int
     {
         $budget = strtolower($leadData['budget'] ?? '');
@@ -151,9 +110,6 @@ class LeadScoringService
         return 0;
     }
 
-    /**
-     * Score based on timeline
-     */
     protected function scoreTimeline(array $leadData): int
     {
         $timeline = strtolower($leadData['timeline'] ?? '');
@@ -169,9 +125,6 @@ class LeadScoringService
         return 0;
     }
 
-    /**
-     * Determine lead status (Hot/Warm/Cold)
-     */
     public function determineLeadStatus(int $score): string
     {
         if ($score >= 70) {
@@ -183,9 +136,6 @@ class LeadScoringService
         return 'cold';
     }
 
-    /**
-     * Determine engagement level
-     */
     public function determineEngagementLevel(array $leadData): string
     {
         $questionsAnswered = $leadData['questions_answered'] ?? 0;
@@ -199,9 +149,6 @@ class LeadScoringService
         return 'low';
     }
 
-    /**
-     * Score and tag a lead
-     */
     public function scoreAndTagLead(Lead $lead, array $sessionData = []): Lead
     {
         $score = $this->scoreLead($sessionData, $lead->intent_slug);
@@ -211,100 +158,74 @@ class LeadScoringService
         $lead->update([
             'conversion_score' => $score,
             'lead_status' => $status,
-            'engagement_level' => $engagement
+            'engagement_level' => $engagement,
         ]);
 
         return $lead;
     }
 
-    /**
-     * Score: Service Clarity (0-25)
-     * Does the user know what service they need?
-     */
     private function scoreServiceClarity(array $data): int
     {
         $score = 0;
 
-        // Detected service
-        if (!empty($data['service'])) {
+        if (! empty($data['service'])) {
             $score += 15;
         }
 
-        // Service specified in message
-        if (!empty($data['mentioned_service'])) {
+        if (! empty($data['mentioned_service'])) {
             $score += 5;
         }
 
-        // Service tier specified
-        if (!empty($data['service_tier']) && in_array($data['service_tier'], ['budget', 'standard', 'premium', 'luxury', 'custom'])) {
+        if (! empty($data['service_tier']) && in_array($data['service_tier'], ['budget', 'standard', 'premium', 'luxury', 'custom'])) {
             $score += 5;
         }
 
         return min(25, $score);
     }
 
-    /**
-     * Score: Budget Clarity (0-25)
-     * Does the user know their budget?
-     */
     private function scoreBudgetClarity(array $data): int
     {
         $score = 0;
 
-        // Budget specified
-        if (!empty($data['budget'])) {
+        if (! empty($data['budget'])) {
             $score += 15;
         }
 
-        // Budget is specific (not "expensive" but actual amount)
-        if (!empty($data['budget_value']) && is_numeric($data['budget_value'])) {
+        if (! empty($data['budget_value']) && is_numeric($data['budget_value'])) {
             $score += 10;
         }
 
-        // Budget range provided
-        if (!empty($data['budget_min']) && !empty($data['budget_max'])) {
+        if (! empty($data['budget_min']) && ! empty($data['budget_max'])) {
             $score += 5;
         }
 
         return min(25, $score);
     }
 
-    /**
-     * Score: Timeline Clarity (0-25)
-     * Does the user have a clear timeline?
-     */
     private function scoreTimelineClarity(array $data): int
     {
         $score = 0;
 
-        // Timeline mentioned
-        if (!empty($data['timeline'])) {
+        if (! empty($data['timeline'])) {
             $score += 15;
         }
 
-        // Specific timeline (not "urgent" but months/dates)
-        if (!empty($data['timeline_months']) || !empty($data['start_date'])) {
+        if (! empty($data['timeline_months']) || ! empty($data['start_date'])) {
             $score += 10;
         }
 
-        // Urgency level specified
-        if (!empty($data['urgency']) && in_array($data['urgency'], ['low', 'medium', 'high', 'urgent'])) {
+        if (! empty($data['urgency']) && in_array($data['urgency'], ['low', 'medium', 'high', 'urgent'])) {
             $score += 5;
         }
 
         return min(25, $score);
     }
 
-    /**
-     * Score: Engagement Level (0-15)
-     * How engaged is the user?
-     */
     private function scoreEngagementLevel(array $data): int
     {
         $score = 0;
 
-        // Message count (conversation length)
-        if (!empty($data['message_count'])) {
+        if (! empty($data['message_count'])) {
             $messageCount = $data['message_count'];
 
             if ($messageCount >= 5) {
@@ -316,8 +237,7 @@ class LeadScoringService
             }
         }
 
-        // Enthusiasm indicators
-        if (!empty($data['enthusiasm_indicators'])) {
+        if (! empty($data['enthusiasm_indicators'])) {
             $enthusiasmCount = is_array($data['enthusiasm_indicators']) ? count($data['enthusiasm_indicators']) : 0;
             $score += min(5, $enthusiasmCount * 2);
         }
@@ -325,35 +245,25 @@ class LeadScoringService
         return min(15, $score);
     }
 
-    /**
-     * Score: Decision Authority (0-10)
-     * Is the user the decision maker?
-     */
     private function scoreDecisionAuthority(array $data): int
     {
         $score = 0;
 
-        // User is primary contact
-        if (!empty($data['contact_info']['name']) || !empty($data['contact_info']['phone'])) {
+        if (! empty($data['contact_info']['name']) || ! empty($data['contact_info']['phone'])) {
             $score += 5;
         }
 
-        // User mentioned being decision maker
-        if (!empty($data['is_decision_maker'])) {
+        if (! empty($data['is_decision_maker'])) {
             $score += 5;
         }
 
-        // Contact provided (likely decision maker)
-        if (!empty($data['contact_info']) && count($data['contact_info']) >= 2) {
+        if (! empty($data['contact_info']) && count($data['contact_info']) >= 2) {
             $score += 3;
         }
 
         return min(10, $score);
     }
 
-    /**
-     * Get lead grade from score
-     */
     private function getGrade(int $score): string
     {
         if ($score >= self::SCORE_HOT) {
@@ -362,14 +272,11 @@ class LeadScoringService
             return 'WARM';
         } elseif ($score >= self::SCORE_COLD) {
             return 'COLD';
-        } else {
-            return 'NOT_LEAD';
         }
+
+        return 'NOT_LEAD';
     }
 
-    /**
-     * Get recommendations for follow-up
-     */
     private function getRecommendations(int $score, array $data): array
     {
         $recommendations = [];
@@ -392,7 +299,6 @@ class LeadScoringService
             $recommendations[] = 'Check back in 3 months';
         }
 
-        // Add specific gaps to address
         if (empty($data['service'])) {
             $recommendations[] = 'Clarify which service best fits their need';
         }
@@ -408,9 +314,6 @@ class LeadScoringService
         return $recommendations;
     }
 
-    /**
-     * Get score breakdown description
-     */
     public function getScoreDescription(array $breakdown): string
     {
         $parts = [];
@@ -446,9 +349,6 @@ class LeadScoringService
         return implode(', ', $parts) ?: 'Insufficient information';
     }
 
-    /**
-     * Predict sales probability
-     */
     public function predictConversionProbability(int $score): string
     {
         if ($score >= 95) {
@@ -461,8 +361,8 @@ class LeadScoringService
             return '55-70% probability';
         } elseif ($score >= 60) {
             return '30-55% probability';
-        } else {
-            return '<30% probability';
         }
+
+        return '<30% probability';
     }
 }
