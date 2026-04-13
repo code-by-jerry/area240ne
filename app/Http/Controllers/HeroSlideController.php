@@ -3,12 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\HeroSlide;
+use App\Services\ImageKitService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Storage;
+use RuntimeException;
 
 class HeroSlideController extends Controller
 {
+    public function __construct(
+        protected ImageKitService $imageKitService
+    ) {
+    }
+
     public function index()
     {
         $slides = HeroSlide::orderBy('order')->orderBy('created_at', 'desc')->get();
@@ -20,7 +26,7 @@ class HeroSlideController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'image_url' => 'required|url',
+            'image' => 'required|image|max:5120',
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'button_text' => 'nullable|string|max:50',
@@ -29,8 +35,21 @@ class HeroSlideController extends Controller
             'order' => 'integer',
         ]);
 
+        try {
+            $upload = $this->imageKitService->upload(
+                $request->file('image'),
+                $request->file('image')->getClientOriginalName(),
+                config('services.imagekit.hero_slides_folder', '/hero-slides'),
+            );
+        } catch (RuntimeException $exception) {
+            return back()
+                ->withErrors(['image' => $exception->getMessage()])
+                ->withInput();
+        }
+
         HeroSlide::create([
-            'image_path' => $request->input('image_url'),
+            'image_path' => $upload['url'],
+            'imagekit_file_id' => $upload['file_id'],
             'title' => $request->title,
             'description' => $request->description,
             'button_text' => $request->button_text,
@@ -45,7 +64,7 @@ class HeroSlideController extends Controller
     public function update(Request $request, HeroSlide $heroSlide)
     {
         $request->validate([
-            'image_url' => 'nullable|url',
+            'image' => 'nullable|image|max:5120',
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'button_text' => 'nullable|string|max:50',
@@ -54,11 +73,28 @@ class HeroSlideController extends Controller
             'order' => 'integer',
         ]);
 
-        if ($request->filled('image_url')) {
-            $heroSlide->image_path = $request->input('image_url');
+        if ($request->hasFile('image')) {
+            try {
+                $upload = $this->imageKitService->upload(
+                    $request->file('image'),
+                    $request->file('image')->getClientOriginalName(),
+                    config('services.imagekit.hero_slides_folder', '/hero-slides'),
+                );
+            } catch (RuntimeException $exception) {
+                return back()
+                    ->withErrors(['image' => $exception->getMessage()])
+                    ->withInput();
+            }
+
+            $this->imageKitService->delete($heroSlide->imagekit_file_id);
+
+            $heroSlide->image_path = $upload['url'];
+            $heroSlide->imagekit_file_id = $upload['file_id'];
         }
 
         $heroSlide->update([
+            'image_path' => $heroSlide->image_path,
+            'imagekit_file_id' => $heroSlide->imagekit_file_id,
             'title' => $request->title,
             'description' => $request->description,
             'button_text' => $request->button_text,
@@ -72,13 +108,8 @@ class HeroSlideController extends Controller
 
     public function destroy(HeroSlide $heroSlide)
     {
-        if (str_starts_with($heroSlide->image_path, '/storage/')) {
-            $path = str_replace('/storage/', '', $heroSlide->image_path);
-            if (Storage::disk('public')->exists($path)) {
-                Storage::disk('public')->delete($path);
-            }
-        }
-        
+        $this->imageKitService->delete($heroSlide->imagekit_file_id);
+
         $heroSlide->delete();
         return redirect()->back()->with('success', 'Slide deleted successfully.');
     }

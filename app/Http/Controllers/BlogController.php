@@ -1,4 +1,4 @@
-?php
+<?php
 
 namespace App\Http\Controllers;
 
@@ -19,12 +19,18 @@ class BlogController extends Controller
             ->orderByDesc('published_at')
             ->get();
 
+        $canonicalUrl = url('/blogs');
+        $image = $featured?->featured_image_url ?: url('/favicon-512.png');
+
         return Inertia::render('Blogs/Index', [
             'featuredBlog' => $featured,
             'blogs' => $blogs,
             'seo' => [
                 'title' => 'Blogs | Area24One',
                 'description' => 'Insights, guides, and updates on construction, interiors, real estate, land development, and events.',
+                'canonical' => $canonicalUrl,
+                'image' => $image,
+                'type' => 'website',
             ],
         ]);
     }
@@ -41,14 +47,20 @@ class BlogController extends Controller
             ->limit(3)
             ->get();
 
+        $description = $blog->seo_description ?: ($blog->excerpt ?: str($blog->content)->stripTags()->limit(160)->toString());
+        $canonicalUrl = $blog->canonical_url ?: route('blogs.show', $blog->slug);
+        $image = $blog->featured_image_url ?: url('/favicon-512.png');
+
         return Inertia::render('Blogs/Show', [
             'blog' => $blog,
             'relatedBlogs' => $relatedBlogs,
             'seo' => [
-                'title' => $blog->seo_title ?: $blog->title,
-                'description' => $blog->seo_description ?: ($blog->excerpt ?: str($blog->content)->stripTags()->limit(160)->toString()),
+                'title' => $blog->seo_title ?: "{$blog->title} | Area24One",
+                'description' => $description,
                 'keywords' => $blog->seo_keywords,
-                'canonical' => $blog->canonical_url ?: url('/blogs/' . $blog->slug),
+                'canonical' => $canonicalUrl,
+                'image' => $image,
+                'type' => 'article',
             ],
         ]);
     }

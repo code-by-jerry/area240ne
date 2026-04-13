@@ -9,7 +9,23 @@ import {
 } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
-const stories = [
+const STORY_THUMBNAILS = [
+    '/image/hero/construction.jpg',
+    '/image/hero/interior.jpg',
+    '/image/hero/realty.jpg',
+    '/image/hero/developer.jpg',
+    '/image/hero/event.jpg',
+    '/image/build (1).jpeg',
+    '/image/build (2).jpeg',
+    '/image/build (3).jpeg',
+    '/image/build (4).jpeg',
+    '/image/build (5).jpeg',
+    '/image/build (6).jpeg',
+    '/image/build (7).jpeg',
+    '/image/build (8).jpeg',
+];
+
+const rawStories = [
     {
         id: 1,
         video: 'https://www.pexels.com/download/video/5824192/',
@@ -156,6 +172,11 @@ const stories = [
     },
 ];
 
+const stories = rawStories.map((story, index) => ({
+    ...story,
+    thumbnail: STORY_THUMBNAILS[index % STORY_THUMBNAILS.length],
+}));
+
 const INITIAL_STORY_COUNT = 8;
 const STORY_BATCH_SIZE = 8;
 
@@ -168,62 +189,17 @@ const StoryCard = memo(
         story: (typeof stories)[0];
         onClick: () => void;
     }) => {
-        const videoRef = useRef<HTMLVideoElement>(null);
-        const [isVisible, setIsVisible] = useState(false);
-        const cardRef = useRef<HTMLDivElement>(null);
-
-        // Intersection Observer for lazy loading
-        useEffect(() => {
-            const observer = new IntersectionObserver(
-                ([entry]) => {
-                    if (entry.isIntersecting) {
-                        setIsVisible(true);
-                        observer.disconnect();
-                    }
-                },
-                { rootMargin: '100px', threshold: 0.1 },
-            );
-
-            if (cardRef.current) {
-                observer.observe(cardRef.current);
-            }
-
-            return () => observer.disconnect();
-        }, []);
-
-        const handleMouseEnter = useCallback(() => {
-            if (videoRef.current && isVisible) {
-                videoRef.current.play().catch(() => {});
-            }
-        }, [isVisible]);
-
-        const handleMouseLeave = useCallback(() => {
-            if (videoRef.current) {
-                videoRef.current.pause();
-                videoRef.current.currentTime = 0;
-            }
-        }, []);
-
         return (
             <div
-                ref={cardRef}
                 onClick={onClick}
                 className="group relative aspect-[9/16] min-w-[180px] cursor-pointer snap-center overflow-hidden rounded-2xl bg-zinc-900 shadow-lg ring-1 ring-zinc-900/5 transition-transform hover:-translate-y-1 hover:shadow-xl md:min-w-[220px]"
             >
-                {isVisible ? (
-                    <video
-                        ref={videoRef}
-                        src={story.video}
-                        className="h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
-                        muted
-                        playsInline
-                        preload="none"
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}
-                    />
-                ) : (
-                    <div className="h-full w-full animate-pulse bg-zinc-800" />
-                )}
+                <img
+                    src={story.thumbnail}
+                    alt={story.title}
+                    loading="lazy"
+                    className="h-full w-full object-cover opacity-90 transition-transform duration-500 group-hover:scale-[1.03] group-hover:opacity-100"
+                />
 
                 {/* Overlay Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 transition-opacity group-hover:opacity-40" />

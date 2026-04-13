@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Blog;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class BlogModuleTest extends TestCase
@@ -70,5 +72,49 @@ class BlogModuleTest extends TestCase
             ->get('/admin/blogs')
             ->assertOk()
             ->assertInertia(fn ($page) => $page->component('Admin/Blogs'));
+    }
+
+    public function test_admin_can_create_blog_with_uploaded_featured_image(): void
+    {
+        Http::fake([
+            'https://upload.imagekit.io/api/v1/files/upload' => Http::response([
+                'fileId' => 'ik-blog-123',
+                'url' => 'https://ik.imagekit.io/demo/blog-images/feature.jpg',
+                'filePath' => '/blog-images/feature.jpg',
+                'name' => 'feature.jpg',
+            ], 200),
+        ]);
+
+        config()->set('services.imagekit.public_key', 'public_test_key');
+        config()->set('services.imagekit.private_key', 'private_test_key');
+        config()->set('services.imagekit.url_endpoint', 'https://ik.imagekit.io/demo');
+        config()->set('services.imagekit.blog_images_folder', '/blog-images');
+
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'email_verified_at' => now(),
+        ]);
+
+        $this->withoutMiddleware();
+
+        $this->actingAs($admin)
+            ->post('/admin/blogs', [
+                'title' => 'ImageKit Blog',
+                'slug' => 'imagekit-blog',
+                'excerpt' => 'Short excerpt',
+                'content' => '<p>Blog content</p>',
+                'featured_image' => UploadedFile::fake()->create('feature.jpg', 180, 'image/jpeg'),
+                'author_name' => 'Area24One Editorial',
+                'is_active' => true,
+                'is_featured' => false,
+            ])
+            ->assertRedirect();
+
+        $blog = Blog::first();
+
+        $this->assertNotNull($blog);
+        $this->assertSame('ImageKit Blog', $blog->title);
+        $this->assertSame('https://ik.imagekit.io/demo/blog-images/feature.jpg', $blog->featured_image_url);
+        $this->assertSame('ik-blog-123', $blog->imagekit_file_id);
     }
 }

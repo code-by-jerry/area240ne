@@ -13,6 +13,7 @@ class Blog extends Model
         'excerpt',
         'content',
         'featured_image_url',
+        'imagekit_file_id',
         'author_name',
         'is_active',
         'is_featured',

@@ -16,6 +16,7 @@ import {
     LayoutGrid,
     Calculator,
     Image as ImageIcon,
+    Images,
     Users,
     Sparkles,
     MessageCircleMore,
@@ -71,6 +72,11 @@ const mainNavGroups = [
                 title: 'Blogs',
                 href: '/admin/blogs',
                 icon: Newspaper,
+            },
+            {
+                title: 'Media Assets',
+                href: '/admin/media-assets',
+                icon: Images,
             },
         ],
     },
@@ -156,3 +162,4 @@ export function AppSidebar() {
         </Sidebar>
     );
 }
+

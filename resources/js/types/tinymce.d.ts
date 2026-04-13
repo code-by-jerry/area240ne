@@ -1,9 +1,10 @@
-﻿interface TinyMceEditorInstance {
+interface TinyMceEditorInstance {
     initialized: boolean;
     getContent: () => string;
     setContent: (content: string) => void;
     setMode: (mode: 'design' | 'readonly') => void;
-    remove: () => void;
+    remove?: () => void;
+    destroy?: () => void;
     on: (event: string, callback: () => void) => void;
 }
 
@@ -22,7 +23,8 @@ interface TinyMceInitOptions {
 }
 
 interface TinyMceGlobal {
-    init: (options: TinyMceInitOptions) => Promise<TinyMceEditorInstance>;
+    init: (options: TinyMceInitOptions) => Promise<TinyMceEditorInstance | TinyMceEditorInstance[]>;
+    remove?: (editor?: TinyMceEditorInstance) => void;
 }
 
 interface Window {

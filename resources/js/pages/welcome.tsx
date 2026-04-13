@@ -4,6 +4,7 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
     ArrowRight,
+    BookOpen,
     Building2,
     Calculator,
     CheckCircle2,
@@ -46,6 +47,28 @@ type DiscoveryOptions = {
         | '';
     timeline: 'immediate' | '1-3' | '3-6' | '6-12' | '';
     budget: 'under-10L' | '10-50L' | '50L-2Cr' | '2Cr+' | '';
+};
+
+type HomeSeo = {
+    title: string;
+    description: string;
+    keywords?: string | null;
+    canonical: string;
+    image: string;
+    type?: string | null;
+};
+
+type CompanyProfile = {
+    name?: string | null;
+    logo_url?: string | null;
+    intro_text?: string | null;
+    fallback_text?: string | null;
+    phone?: string[] | null;
+    email?: string | null;
+    website?: string | null;
+    instagram?: string | null;
+    facebook?: string | null;
+    linkedin?: string | null;
 };
 
 const staticHeroSlides = [
@@ -141,6 +164,7 @@ const NAV_ITEMS = [
     { label: 'Expertise', href: '#expertise', icon: ShieldCheck },
     { label: 'Process', href: '#process', icon: Zap },
     { label: 'Why Us', href: '#why-us', icon: Star },
+    { label: 'Blogs', href: '/blogs', icon: BookOpen },
     { label: 'FAQ', href: '#faq', icon: HelpCircle },
 ] as const;
 
@@ -252,6 +276,33 @@ const JOURNEY_STEPS = [
         title: 'Get Matched',
         desc: 'Share your project details. We validate your requirements and connect you to the perfect specialist.',
         icon: 'https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/match_up.png',
+    },
+] as const;
+
+const FAQ_ITEMS = [
+    {
+        q: 'What is Area 24 One?',
+        a: 'A single platform connecting you with five expert brands: Atha Construction, Nesthetix Design, Area24 Realty, Area24 Developers, and The Stage 365.',
+    },
+    {
+        q: 'How does consultation work?',
+        a: 'Chat with our AI consultant about your project, budget, and timeline. We clarify requirements and connect you to the right specialist.',
+    },
+    {
+        q: 'Is the consultation free?',
+        a: 'Yes. Initial consultation and guidance are completely free with no obligation.',
+    },
+    {
+        q: 'Which cities do you serve?',
+        a: 'We operate across Karnataka with strong presence in Bangalore, Mysore, and Ballari.',
+    },
+    {
+        q: 'Can I get a quote?',
+        a: 'Yes. Once we understand your project, we connect you with the right team for detailed quotes and package options.',
+    },
+    {
+        q: 'How do I get started?',
+        a: 'Click "Start Consultation" and tell us what you are planning. Our AI will guide you to the right expert.',
     },
 ] as const;
 
@@ -551,10 +602,14 @@ export default function Welcome({
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     canRegister = true,
     heroSlides = [],
+    companyProfile,
+    seo,
 }: {
     canLogin?: boolean;
     canRegister?: boolean;
     heroSlides?: HeroSlide[];
+    companyProfile?: CompanyProfile;
+    seo: HomeSeo;
 }) {
     const { auth } = usePage<{ auth: { user?: unknown } }>().props;
     const [scrolled, setScrolled] = useState(false);
@@ -574,6 +629,64 @@ export default function Welcome({
     const [selectedService, setSelectedService] = useState<string>('');
     const [openFaq, setOpenFaq] = useState<number | null>(0);
     const storiesRef = useRef<HTMLDivElement>(null);
+
+    const companyName = companyProfile?.name || 'Area24One';
+    const companyUrl = companyProfile?.website || seo.canonical;
+    const companyLogo = companyProfile?.logo_url || seo.image;
+    const sameAs = [
+        companyProfile?.instagram,
+        companyProfile?.facebook,
+        companyProfile?.linkedin,
+    ].filter(Boolean);
+    const schemaGraph = [
+        {
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: companyName,
+            url: companyUrl,
+            logo: companyLogo,
+            image: seo.image,
+            description: seo.description,
+            email: companyProfile?.email || undefined,
+            telephone: companyProfile?.phone?.[0] || undefined,
+            sameAs: sameAs.length > 0 ? sameAs : undefined,
+        },
+        {
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: companyName,
+            url: seo.canonical,
+            description: seo.description,
+            inLanguage: 'en-IN',
+        },
+        {
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            name: seo.title,
+            url: seo.canonical,
+            description: seo.description,
+            primaryImageOfPage: seo.image,
+            about: [
+                'Construction',
+                'Interior Design',
+                'Real Estate',
+                'Land Development',
+                'Event Management',
+            ],
+        },
+        {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: FAQ_ITEMS.map((item) => ({
+                '@type': 'Question',
+                name: item.q,
+                acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: item.a,
+                },
+            })),
+        },
+    ];
 
     useEffect(() => {
         if (isModalOpen) {
@@ -736,8 +849,7 @@ export default function Welcome({
                 icon: <Building2 className="h-6 w-6" />,
                 logo: '/image/atha.png',
                 images: [
-                    'https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/Atha.png?updatedAt=1770815540515',
-                    'https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg',
+                                        'https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg',
                     'https://images.pexels.com/photos/69483/pexels-photo-69483.jpeg',
                     'https://images.pexels.com/photos/29453302/pexels-photo-29453302.jpeg',
                     'https://images.pexels.com/photos/27195983/pexels-photo-27195983.jpeg',
@@ -753,7 +865,7 @@ export default function Welcome({
                 icon: <PaintBucket className="h-6 w-6" />,
                 logo: '/image/nesthetix.png',
                 images: [
-                    'https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/Nesthetix.png?updatedAt=1770815540561',
+                    
                     'https://images.pexels.com/photos/20285350/pexels-photo-20285350.jpeg',
                     'https://images.pexels.com/photos/20285351/pexels-photo-20285351.jpeg',
                     'https://images.pexels.com/photos/11701127/pexels-photo-11701127.jpeg',
@@ -770,7 +882,7 @@ export default function Welcome({
                 icon: <Home className="h-6 w-6" />,
                 logo: '/image/area 24 realty.png',
                 images: [
-                    'https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/area%2024%20realty.png?updatedAt=1770815540228',
+                    
                     'https://images.pexels.com/photos/8293778/pexels-photo-8293778.jpeg',
                     'https://images.pexels.com/photos/7937748/pexels-photo-7937748.jpeg',
                     'https://images.pexels.com/photos/8482871/pexels-photo-8482871.jpeg',
@@ -787,7 +899,7 @@ export default function Welcome({
                 icon: <Hammer className="h-6 w-6" />,
                 logo: '/image/hero/Area24 developers  logo mockup.png',
                 images: [
-                    'https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/Area%2024%20Developers.png?updatedAt=1770815541191',
+                    
                     'https://images.pexels.com/photos/392031/pexels-photo-392031.jpeg',
                     'https://images.pexels.com/photos/1579356/pexels-photo-1579356.jpeg',
                     'https://images.pexels.com/photos/2314021/pexels-photo-2314021.jpeg',
@@ -804,7 +916,7 @@ export default function Welcome({
                 icon: <Sparkles className="h-6 w-6" />,
                 logo: '/image/stage 365.png',
                 images: [
-                    'https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/stage%20365.png?updatedAt=1770815540783',
+                    
                     'https://images.pexels.com/photos/50675/banquet-wedding-society-deco-50675.jpeg',
                     'https://images.pexels.com/photos/169190/pexels-photo-169190.jpeg',
                     'https://images.pexels.com/photos/169190/pexels-photo-169190.jpeg',
@@ -822,14 +934,32 @@ export default function Welcome({
 
     return (
         <>
-            <Head title="Area 24 One | Intelligent Consultation" />
+            <Head>
+                <title>{seo.title}</title>
+                <meta name="description" content={seo.description} />
+                {seo.keywords && <meta name="keywords" content={seo.keywords} />}
+                <meta name="robots" content="index, follow, max-image-preview:large" />
+                <link rel="canonical" href={seo.canonical} />
+                <meta property="og:title" content={seo.title} />
+                <meta property="og:description" content={seo.description} />
+                <meta property="og:type" content={seo.type ?? 'website'} />
+                <meta property="og:url" content={seo.canonical} />
+                <meta property="og:image" content={seo.image} />
+                <meta property="og:site_name" content={companyName} />
+                <meta property="og:locale" content="en_IN" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={seo.title} />
+                <meta name="twitter:description" content={seo.description} />
+                <meta name="twitter:image" content={seo.image} />
+                <script type="application/ld+json">{JSON.stringify(schemaGraph)}</script>
+            </Head>
             <div className="font-inter min-h-screen scroll-smooth bg-brand-surface text-brand-text selection:bg-brand-primary selection:text-white dark:bg-brand-dark dark:text-slate-50">
                 {/* Navbar */}
                 <nav
-                    className={`fixed top-0 z-50 w-full border-b border-slate-200 bg-black/80 py-2 shadow-sm backdrop-blur-xl transition-transform duration-300 dark:border-slate-800 dark:bg-brand-dark/95 ${!isHeaderVisible ? '-translate-y-full' : 'translate-y-0'} md:fixed md:inset-x-0 md:translate-y-0 md:border-transparent md:shadow-none md:backdrop-blur-none md:transition-all md:duration-500 ${
+                    className={`fixed top-0 z-50 w-full border-b border-slate-200 bg-black/80 py-1.5 backdrop-blur-xl transition-transform duration-300 dark:border-slate-800 dark:bg-brand-dark/95 ${!isHeaderVisible ? '-translate-y-full' : 'translate-y-0'} md:fixed md:inset-x-0 md:translate-y-0 md:border-transparent md:shadow-none md:backdrop-blur-none md:transition-all md:duration-500 ${
                         scrolled
-                            ? 'md:border-slate-200 md:bg-white/80 md:py-2 md:shadow-sm md:backdrop-blur-xl md:dark:border-slate-800 md:dark:bg-brand-dark/80'
-                            : 'md:bg-black/40 md:py-3 md:backdrop-blur-xl md:dark:bg-black/60'
+                            ? 'md:border-slate-200 md:bg-white/78 md:py-1.5 md:backdrop-blur-xl md:dark:border-slate-800 md:dark:bg-brand-dark/78'
+                            : 'md:bg-black/40 md:py-2 md:backdrop-blur-xl md:dark:bg-black/60'
                     }`}
                 >
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -838,7 +968,7 @@ export default function Welcome({
                                 href="/"
                                 className="group flex cursor-pointer items-center gap-2 md:gap-3"
                             >
-                                <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-transparent p-1 shadow-lg shadow-brand-primary/10 transition-transform duration-500 group-hover:scale-105 md:h-20 md:w-20 md:rounded-xl dark:bg-transparent">
+                                <div className="flex h-12 w-12 items-center justify-center p-0 transition-transform duration-300 group-hover:scale-[1.02] md:h-14 md:w-14">
                                     {/* Mobile Logo: Always White */}
                                     <img
                                         src="/image/main logo (white).png"
@@ -859,12 +989,12 @@ export default function Welcome({
                             </Link>
 
                             {/* Desktop Navigation - Clean Design */}
-                            <div className="hidden items-center gap-0.5 md:flex">
+                            <div className="hidden items-center gap-px md:flex">
                                 {NAV_ITEMS.map((item) => (
                                     <a
                                         key={item.label}
                                         href={item.href}
-                                        className={`group flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium transition-all duration-200 hover:bg-white/10 ${scrolled ? 'text-slate-600 hover:bg-slate-100 hover:text-brand-primary dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' : 'text-white/90 hover:text-white'}`}
+                                        className={`group flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[13px] font-medium transition-all duration-200 hover:bg-white/10 ${scrolled ? 'text-slate-600 hover:bg-slate-100 hover:text-brand-primary dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' : 'text-white/90 hover:text-white'}`}
                                     >
                                         <span className="transition-transform duration-200 group-hover:-translate-y-0.5">
                                             <item.icon className="h-4 w-4" />
@@ -880,7 +1010,7 @@ export default function Welcome({
                                 {/* Cost Estimator */}
                                 <Link
                                     href="/cost-estimator"
-                                    className={`group flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium transition-all duration-200 hover:bg-white/10 ${scrolled ? 'text-slate-600 hover:bg-slate-100 hover:text-brand-primary dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' : 'text-white/90 hover:text-white'}`}
+                                    className={`group flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[13px] font-medium transition-all duration-200 hover:bg-white/10 ${scrolled ? 'text-slate-600 hover:bg-slate-100 hover:text-brand-primary dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' : 'text-white/90 hover:text-white'}`}
                                 >
                                     <Calculator className="h-4 w-4 transition-transform duration-200 group-hover:-translate-y-0.5" />
                                     <span>Estimate</span>
@@ -893,7 +1023,7 @@ export default function Welcome({
                                 {auth.user ? (
                                     <Link
                                         href="/dashboard"
-                                        className={`rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-all duration-200 ${scrolled ? 'bg-brand-primary text-white hover:bg-brand-primary/90' : 'bg-white/20 text-white backdrop-blur-sm hover:bg-white/30'}`}
+                                        className={`rounded-lg px-3 py-1 text-[13px] font-semibold transition-all duration-200 ${scrolled ? 'bg-brand-primary text-white hover:bg-brand-primary/90' : 'bg-white/20 text-white backdrop-blur-sm hover:bg-white/30'}`}
                                     >
                                         Dashboard
                                     </Link>
@@ -901,13 +1031,13 @@ export default function Welcome({
                                     <div className="flex items-center gap-1.5">
                                         <Link
                                             href="/login"
-                                            className={`rounded-lg px-2.5 py-1.5 text-[13px] font-medium transition-all duration-200 ${scrolled ? 'text-slate-600 hover:bg-slate-100 hover:text-brand-primary dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' : 'text-white/90 hover:bg-white/10 hover:text-white'}`}
+                                            className={`rounded-lg px-2.5 py-1 text-[13px] font-medium transition-all duration-200 ${scrolled ? 'text-slate-600 hover:bg-slate-100 hover:text-brand-primary dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' : 'text-white/90 hover:bg-white/10 hover:text-white'}`}
                                         >
                                             Sign In
                                         </Link>
                                         <Link
                                             href="/chat"
-                                            className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary px-3 py-1.5 text-[13px] font-semibold text-white transition-all duration-300 hover:bg-[#C7A14A] hover:shadow-lg hover:shadow-brand-primary/25 focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:outline-none"
+                                            className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary px-3 py-1 text-[13px] font-semibold text-white transition-all duration-300 hover:bg-[#C7A14A] focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:outline-none"
                                         >
                                             <MessageSquare className="h-3.5 w-3.5" />
                                             <span>Consult</span>
@@ -2012,32 +2142,7 @@ export default function Welcome({
 
                         {/* Compact Accordion */}
                         <div className="space-y-2">
-                            {[
-                                {
-                                    q: 'What is Area 24 One?',
-                                    a: 'A single platform connecting you with five expert brands: Atha Construction, Nesthetix Design, Area24 Realty, Area24 Developers, and The Stage 365.',
-                                },
-                                {
-                                    q: 'How does consultation work?',
-                                    a: 'Chat with our AI consultant about your project, budget, and timeline. We clarify requirements and connect you to the right specialist.',
-                                },
-                                {
-                                    q: 'Is the consultation free?',
-                                    a: 'Yes. Initial consultation and guidance are completely free with no obligation.',
-                                },
-                                {
-                                    q: 'Which cities do you serve?',
-                                    a: 'We operate across Karnataka with strong presence in Bangalore, Mysore, and Ballari.',
-                                },
-                                {
-                                    q: 'Can I get a quote?',
-                                    a: 'Yes. Once we understand your project, we connect you with the right team for detailed quotes and package options.',
-                                },
-                                {
-                                    q: 'How do I get started?',
-                                    a: 'Click "Start Consultation" and tell us what you are planning. Our AI will guide you to the right expert.',
-                                },
-                            ].map((item, i) => (
+                            {FAQ_ITEMS.map((item, i) => (
                                 <motion.div
                                     key={i}
                                     initial={{ opacity: 0, y: 10 }}

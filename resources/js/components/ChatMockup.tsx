@@ -137,7 +137,7 @@ export const ChatMockup = () => {
     };
 
     return (
-        <div className="flex h-[400px] w-full max-w-[340px] flex-col overflow-hidden rounded-[1.5rem] border border-white/20 bg-black/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] backdrop-blur-md ring-1 ring-white/20">
+        <div className="flex h-[468px] w-full max-w-[340px] flex-col overflow-hidden rounded-[1.5rem] border border-white/20 bg-black/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] backdrop-blur-md ring-1 ring-white/20 xl:h-[500px]">
             {/* Top Bar */}
             <div className="flex shrink-0 items-center justify-between border-b border-white/10 bg-black/40 px-4 py-3 backdrop-blur-xl">
                 <div className="flex items-center gap-3">
@@ -162,7 +162,7 @@ export const ChatMockup = () => {
             {/* Chat Body */}
             <div
                 ref={scrollRef}
-                className="scrollbar-thin scrollbar-thumb-white/10 flex-1 space-y-4 overflow-y-auto bg-transparent p-4"
+                className="scrollbar-thin scrollbar-thumb-white/10 flex-1 space-y-4 overflow-y-auto bg-transparent px-4 pb-5 pt-4"
             >
                 {messages.map((msg, idx) => (
                     <div

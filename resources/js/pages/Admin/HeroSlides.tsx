@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { Head, useForm, router } from '@inertiajs/react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,10 +22,9 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from '@/components/ui/dialog';
 import { store, update, destroy } from '@/routes/admin/hero-slides';
-import { Plus, Pencil, Trash2, Image as ImageIcon, GripVertical } from 'lucide-react';
+import { Pencil, Plus, Trash2, Upload } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 // Define type based on Model
@@ -43,6 +42,7 @@ interface HeroSlide {
 export default function HeroSlides({ slides }: { slides: HeroSlide[] }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingSlide, setEditingSlide] = useState<HeroSlide | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
 
     const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
         title: '',
@@ -51,12 +51,13 @@ export default function HeroSlides({ slides }: { slides: HeroSlide[] }) {
         button_link: '',
         order: 0,
         is_active: true,
-        image_url: '',
+        image: null as File | null,
     });
 
     const openCreateDialog = () => {
         setEditingSlide(null);
         reset();
+        setImagePreview(null);
         clearErrors();
         setIsDialogOpen(true);
     };
@@ -70,24 +71,49 @@ export default function HeroSlides({ slides }: { slides: HeroSlide[] }) {
             button_link: slide.button_link || '',
             order: slide.order,
             is_active: Boolean(slide.is_active),
-            image_url: slide.image_path || '',
+            image: null,
         });
+        setImagePreview(slide.image_path || null);
         clearErrors();
         setIsDialogOpen(true);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    useEffect(() => {
+        return () => {
+            if (imagePreview?.startsWith('blob:')) {
+                URL.revokeObjectURL(imagePreview);
+            }
+        };
+    }, [imagePreview]);
+
+    const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0] ?? null;
+        setData('image', file);
+
+        setImagePreview((currentPreview) => {
+            if (currentPreview?.startsWith('blob:')) {
+                URL.revokeObjectURL(currentPreview);
+            }
+
+            if (file) {
+                return URL.createObjectURL(file);
+            }
+
+            return editingSlide?.image_path ?? null;
+        });
+    };
+
+    const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        
+
         if (editingSlide) {
-            // Use post with _method: put if needed, or just post for FormData in Laravel
-            // Laravel Inertia file uploads with PUT/PATCH are tricky, usually easier to use POST with _method spoofing
-            // or just a dedicated route. Here I used POST in web.php for update as well.
             post(update.url(editingSlide.id), {
+                forceFormData: true,
                 onSuccess: () => setIsDialogOpen(false),
             });
         } else {
             post(store.url(), {
+                forceFormData: true,
                 onSuccess: () => setIsDialogOpen(false),
             });
         }
@@ -196,7 +222,7 @@ export default function HeroSlides({ slides }: { slides: HeroSlide[] }) {
                 </Card>
 
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogContent className="max-w-2xl overflow-y-auto max-h-[90vh]">
+                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
                             <DialogTitle>{editingSlide ? 'Edit Slide' : 'Create New Slide'}</DialogTitle>
                             <DialogDescription>
@@ -205,23 +231,29 @@ export default function HeroSlides({ slides }: { slides: HeroSlide[] }) {
                         </DialogHeader>
                         
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="image_url">Background Image URL {editingSlide ? '(Optional)' : '(Required)'}</Label>
-                                <div className="flex items-center gap-4">
-                                    {editingSlide && (
-                                        <div className="relative h-20 w-32 overflow-hidden rounded-md border">
-                                            <img src={editingSlide.image_path} alt="Current" className="h-full w-full object-cover" />
+                            <div className="space-y-3">
+                                <Label htmlFor="image">Background Image Upload {editingSlide ? '(Optional)' : '(Required)'}</Label>
+                                <Input
+                                    id="image"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                />
+                                <div className="overflow-hidden rounded-xl border bg-slate-50">
+                                    {imagePreview ? (
+                                        <img
+                                            src={imagePreview}
+                                            alt="Slide preview"
+                                            className="h-48 w-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="flex h-48 flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
+                                            <Upload className="h-5 w-5" />
+                                            <span>No image selected</span>
                                         </div>
                                     )}
-                                    <Input 
-                                        id="image_url" 
-                                        type="url" 
-                                        value={data.image_url}
-                                        onChange={(e) => setData('image_url', e.target.value)}
-                                        placeholder="https://example.com/your-image.jpg"
-                                    />
                                 </div>
-                                {errors.image_url && <p className="text-sm text-red-500">{errors.image_url}</p>}
+                                {errors.image && <p className="text-sm text-red-500">{errors.image}</p>}
                             </div>
 
                             <div className="grid gap-4 md:grid-cols-2">
@@ -241,7 +273,7 @@ export default function HeroSlides({ slides }: { slides: HeroSlide[] }) {
                                         id="order" 
                                         type="number"
                                         value={data.order} 
-                                        onChange={(e) => setData('order', parseInt(e.target.value))} 
+                                        onChange={(e) => setData('order', Number(e.target.value) || 0)} 
                                     />
                                 </div>
                             </div>

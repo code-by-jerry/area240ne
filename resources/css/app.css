@@ -143,15 +143,12 @@ html {
 
 :root {
     --background: oklch(1 0 0);
-    /* #FFFFFF */
     --foreground: oklch(0.20 0.09 265);
-    /* #1B2A41 */
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.20 0.09 265);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.20 0.09 265);
     --primary: oklch(0.20 0.09 265);
-    /* #0A2647 */
     --primary-foreground: oklch(1 0 0);
     --secondary: oklch(0.97 0.01 265);
     --secondary-foreground: oklch(0.20 0.09 265);
@@ -171,10 +168,8 @@ html {
     --chart-5: oklch(0.769 0.188 70.08);
     --radius: 0.625rem;
     --sidebar: oklch(0.98 0.005 240);
-    /* #F8FAFC */
     --sidebar-foreground: oklch(0.28 0.06 260);
     --sidebar-primary: oklch(0.13 0.03 264);
-    /* #0B1220 */
     --sidebar-primary-foreground: oklch(0.985 0 0);
     --sidebar-accent: oklch(0.97 0 0);
     --sidebar-accent-foreground: oklch(0.205 0 0);
@@ -184,11 +179,8 @@ html {
 
 .dark {
     --background: oklch(0.10 0.05 265);
-    /* #051025 */
     --foreground: oklch(0.98 0 0);
-    /* #FFFFFF */
     --card: oklch(0.14 0.06 265);
-    /* #0A2647 */
     --card-foreground: oklch(0.98 0 0);
     --popover: oklch(0.14 0.06 265);
     --popover-foreground: oklch(0.98 0 0);
@@ -211,7 +203,6 @@ html {
     --chart-4: oklch(0.627 0.265 303.9);
     --chart-5: oklch(0.645 0.246 16.439);
     --sidebar: oklch(0.13 0.03 264);
-    /* #0B1220 */
     --sidebar-foreground: oklch(0.985 0 0);
     --sidebar-primary: oklch(0.985 0 0);
     --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -231,31 +222,201 @@ html {
     }
 }
 
-/* Performance Optimizations */
+@layer components {
+    .blog-content {
+        color: #1e293b;
+        font-size: 1.0625rem;
+        line-height: 1.95;
+    }
+
+    .blog-content > :first-child {
+        margin-top: 0;
+    }
+
+    .blog-content > :last-child {
+        margin-bottom: 0;
+    }
+
+    .blog-content h1,
+    .blog-content h2,
+    .blog-content h3,
+    .blog-content h4,
+    .blog-content h5,
+    .blog-content h6 {
+        color: #020617;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+        margin-top: 2.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .blog-content h1 {
+        font-size: 2.5rem;
+    }
+
+    .blog-content h2 {
+        font-size: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .blog-content h3 {
+        font-size: 1.5rem;
+    }
+
+    .blog-content h4 {
+        font-size: 1.25rem;
+    }
+
+    .blog-content p,
+    .blog-content ul,
+    .blog-content ol,
+    .blog-content blockquote,
+    .blog-content table,
+    .blog-content pre,
+    .blog-content figure {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .blog-content ul,
+    .blog-content ol {
+        padding-left: 1.5rem;
+    }
+
+    .blog-content ul {
+        list-style: disc;
+    }
+
+    .blog-content ol {
+        list-style: decimal;
+    }
+
+    .blog-content li {
+        margin-top: 0.45rem;
+        margin-bottom: 0.45rem;
+        padding-left: 0.2rem;
+    }
+
+    .blog-content li > ul,
+    .blog-content li > ol {
+        margin-top: 0.6rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .blog-content a {
+        color: #c7a14a;
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+    }
+
+    .blog-content strong,
+    .blog-content b {
+        color: #020617;
+        font-weight: 700;
+    }
+
+    .blog-content em,
+    .blog-content i {
+        font-style: italic;
+    }
+
+    .blog-content blockquote {
+        border-left: 4px solid #c7a14a;
+        background: #f8fafc;
+        color: #334155;
+        padding: 1rem 1.25rem;
+        border-radius: 0 1rem 1rem 0;
+    }
+
+    .blog-content hr {
+        border: 0;
+        border-top: 1px solid #e2e8f0;
+        margin: 2rem 0;
+    }
+
+    .blog-content img {
+        width: 100%;
+        height: auto;
+        border-radius: 1rem;
+        margin: 1.5rem 0;
+    }
+
+    .blog-content figure img {
+        margin-bottom: 0.75rem;
+    }
+
+    .blog-content figcaption {
+        color: #64748b;
+        font-size: 0.925rem;
+        text-align: center;
+    }
+
+    .blog-content table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .blog-content th,
+    .blog-content td {
+        border: 1px solid #e2e8f0;
+        padding: 0.85rem 1rem;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .blog-content th {
+        background: #f8fafc;
+        color: #0f172a;
+        font-weight: 700;
+    }
+
+    .blog-content pre {
+        overflow-x: auto;
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 1.25rem;
+        border-radius: 1rem;
+        line-height: 1.7;
+    }
+
+    .blog-content code {
+        font-size: 0.95em;
+        border-radius: 0.35rem;
+    }
+
+    .blog-content :not(pre) > code {
+        background: #eff6ff;
+        color: #0f172a;
+        padding: 0.18rem 0.42rem;
+    }
+}
+
 @layer utilities {
-    /* Hardware acceleration for animated elements */
     .gpu-accelerated {
         transform: translateZ(0);
         backface-visibility: hidden;
         perspective: 1000px;
     }
-    
-    /* Optimized will-change for scroll animations */
+
     .will-change-transform {
         will-change: transform;
     }
-    
+
     .will-change-opacity {
         will-change: opacity;
     }
-    
-    /* Content visibility for off-screen sections */
+
     .content-visibility-auto {
         content-visibility: auto;
         contain-intrinsic-size: 0 500px;
     }
-    
-    /* Reduce motion for users who prefer it */
+
     @media (prefers-reduced-motion: reduce) {
         *,
         *::before,
@@ -265,21 +426,5 @@ html {
             transition-duration: 0.01ms !important;
             scroll-behavior: auto !important;
         }
-    }
-    
-    /* Optimize image rendering */
-    .optimize-image {
-        image-rendering: -webkit-optimize-contrast;
-        image-rendering: crisp-edges;
-    }
-    
-    /* Contain layout for complex components */
-    .contain-layout {
-        contain: layout style paint;
-    }
-    
-    /* Prevent layout shift */
-    .aspect-ratio-box {
-        aspect-ratio: attr(data-ratio);
     }
 }

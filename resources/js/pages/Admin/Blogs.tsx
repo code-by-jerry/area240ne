@@ -1,6 +1,6 @@
-﻿import AppLayout from '@/layouts/app-layout';
+import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
-import { useMemo, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { TinyMceEditor } from '@/components/tinymce-editor';
 import { Textarea } from '@/components/ui/textarea';
-import { Pencil, Plus, Search, Star, ToggleLeft, ToggleRight, Trash2 } from 'lucide-react';
+import { Pencil, Plus, Search, Star, ToggleLeft, ToggleRight, Trash2, Upload } from 'lucide-react';
 
 interface Blog {
     id: number;
@@ -34,13 +34,30 @@ interface Props {
     blogs: Blog[];
 }
 
-const EMPTY_FORM = {
+type FormState = {
+    title: string;
+    slug: string;
+    excerpt: string;
+    content: string;
+    featured_image: File | null;
+    author_name: string;
+    is_published: boolean;
+    is_active: boolean;
+    is_featured: boolean;
+    seo_title: string;
+    seo_description: string;
+    seo_keywords: string;
+    canonical_url: string;
+};
+
+const EMPTY_FORM: FormState = {
     title: '',
     slug: '',
     excerpt: '',
     content: '',
-    featured_image_url: '',
+    featured_image: null,
     author_name: '',
+    is_published: false,
     is_active: true,
     is_featured: false,
     seo_title: '',
@@ -49,17 +66,24 @@ const EMPTY_FORM = {
     canonical_url: '',
 };
 
-type FormState = typeof EMPTY_FORM;
-
 export default function Blogs({ blogs }: Props) {
     const [open, setOpen] = useState(false);
     const [editing, setEditing] = useState<Blog | null>(null);
     const [form, setForm] = useState<FormState>(EMPTY_FORM);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [processing, setProcessing] = useState(false);
     const [q, setQ] = useState('');
 
-    const set = (key: keyof FormState, value: string | boolean) => {
+    useEffect(() => {
+        return () => {
+            if (imagePreview?.startsWith('blob:')) {
+                URL.revokeObjectURL(imagePreview);
+            }
+        };
+    }, [imagePreview]);
+
+    const set = <K extends keyof FormState>(key: K, value: FormState[K]) => {
         setForm((current) => ({ ...current, [key]: value }));
     };
 
@@ -78,6 +102,7 @@ export default function Blogs({ blogs }: Props) {
     const openCreate = () => {
         setEditing(null);
         setForm(EMPTY_FORM);
+        setImagePreview(null);
         setErrors({});
         setOpen(true);
     };
@@ -89,8 +114,9 @@ export default function Blogs({ blogs }: Props) {
             slug: blog.slug ?? '',
             excerpt: blog.excerpt ?? '',
             content: blog.content ?? '',
-            featured_image_url: blog.featured_image_url ?? '',
+            featured_image: null,
             author_name: blog.author_name ?? '',
+            is_published: Boolean(blog.published_at),
             is_active: blog.is_active ?? true,
             is_featured: blog.is_featured ?? false,
             seo_title: blog.seo_title ?? '',
@@ -98,8 +124,26 @@ export default function Blogs({ blogs }: Props) {
             seo_keywords: blog.seo_keywords ?? '',
             canonical_url: blog.canonical_url ?? '',
         });
+        setImagePreview(blog.featured_image_url ?? null);
         setErrors({});
         setOpen(true);
+    };
+
+    const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0] ?? null;
+        set('featured_image', file);
+
+        setImagePreview((currentPreview) => {
+            if (currentPreview?.startsWith('blob:')) {
+                URL.revokeObjectURL(currentPreview);
+            }
+
+            if (file) {
+                return URL.createObjectURL(file);
+            }
+
+            return editing?.featured_image_url ?? null;
+        });
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -109,12 +153,15 @@ export default function Blogs({ blogs }: Props) {
         const url = editing ? `/admin/blogs/${editing.id}` : '/admin/blogs';
 
         router.post(url, form, {
+            forceFormData: true,
             onError: (incomingErrors) => {
-                setErrors(incomingErrors);
-                setProcessing(false);
+                setErrors(incomingErrors as Record<string, string>);
             },
             onSuccess: () => {
                 setOpen(false);
+                setErrors({});
+            },
+            onFinish: () => {
                 setProcessing(false);
             },
         });
@@ -274,10 +321,20 @@ export default function Blogs({ blogs }: Props) {
                                     <Input id="author_name" value={form.author_name} onChange={(e) => set('author_name', e.target.value)} placeholder="Area24One Editorial" />
                                     {errors.author_name && <p className="text-sm text-red-500">{errors.author_name}</p>}
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="featured_image_url">Featured Image URL</Label>
-                                    <Input id="featured_image_url" value={form.featured_image_url} onChange={(e) => set('featured_image_url', e.target.value)} placeholder="https://..." />
-                                    {errors.featured_image_url && <p className="text-sm text-red-500">{errors.featured_image_url}</p>}
+                                <div className="space-y-3">
+                                    <Label htmlFor="featured_image">Featured Image Upload</Label>
+                                    <Input id="featured_image" type="file" accept="image/*" onChange={handleImageChange} />
+                                    <div className="overflow-hidden rounded-xl border bg-slate-50">
+                                        {imagePreview ? (
+                                            <img src={imagePreview} alt="Featured preview" className="h-44 w-full object-cover" />
+                                        ) : (
+                                            <div className="flex h-44 flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
+                                                <Upload className="h-5 w-5" />
+                                                <span>No featured image selected</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {errors.featured_image && <p className="text-sm text-red-500">{errors.featured_image}</p>}
                                 </div>
                             </div>
 
@@ -319,7 +376,16 @@ export default function Blogs({ blogs }: Props) {
                                 </div>
                             </div>
 
-                            <div className="grid gap-4 md:grid-cols-2">
+                            <div className="grid gap-4 md:grid-cols-3">
+                                <div className="flex items-center justify-between rounded-lg border p-4">
+                                    <div className="space-y-1">
+                                        <Label htmlFor="is_published">Live Status</Label>
+                                        <p className="text-sm text-muted-foreground">Published blogs appear on the public blog pages. Draft blogs stay hidden.</p>
+                                    </div>
+                                    <button id="is_published" type="button" onClick={() => set('is_published', !form.is_published)} className="flex items-center gap-2">
+                                        {form.is_published ? <><ToggleRight className="h-6 w-6 text-green-500" /><span className="text-sm font-medium">Published</span></> : <><ToggleLeft className="h-6 w-6 text-zinc-400" /><span className="text-sm font-medium">Draft</span></>}
+                                    </button>
+                                </div>
                                 <div className="flex items-center justify-between rounded-lg border p-4">
                                     <div className="space-y-1">
                                         <Label htmlFor="is_active">Active</Label>
@@ -351,4 +417,3 @@ export default function Blogs({ blogs }: Props) {
         </AppLayout>
     );
 }
-

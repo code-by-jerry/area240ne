@@ -4,21 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class HeroSlide extends Model
+class MediaAsset extends Model
 {
     protected $fillable = [
         'title',
-        'description',
         'image_path',
         'imagekit_file_id',
-        'button_text',
-        'button_link',
-        'order',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'order' => 'integer',
     ];
 }

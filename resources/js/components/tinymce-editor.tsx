@@ -1,4 +1,4 @@
-﻿import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 
 const TINYMCE_SCRIPT_ID = 'tiny-mce-script';
 const TINYMCE_API_KEY = import.meta.env.VITE_TINYMCE_API_KEY ?? 'yuyg8kxxy8yo1i8fixyi16cur59a75hij0jrnonghc0oss65';
@@ -46,6 +46,28 @@ function loadTinyMceScript() {
     return scriptPromise;
 }
 
+function resolveEditor(instance: TinyMceEditorInstance | TinyMceEditorInstance[]): TinyMceEditorInstance | null {
+    return Array.isArray(instance) ? instance[0] ?? null : instance;
+}
+
+function destroyEditor(editor: TinyMceEditorInstance | null) {
+    if (!editor) {
+        return;
+    }
+
+    if (typeof editor.remove === 'function') {
+        editor.remove();
+        return;
+    }
+
+    if (typeof editor.destroy === 'function') {
+        editor.destroy();
+        return;
+    }
+
+    window.tinymce?.remove?.(editor);
+}
+
 export function TinyMceEditor({ value, onChange, disabled = false, height = 420 }: TinyMceEditorProps) {
     const textareaId = useId();
     const hostRef = useRef<HTMLTextAreaElement | null>(null);
@@ -59,13 +81,16 @@ export function TinyMceEditor({ value, onChange, disabled = false, height = 420 
     useEffect(() => {
         let cancelled = false;
 
+        setLoading(true);
+        setLoadError(null);
+
         loadTinyMceScript()
             .then(async () => {
                 if (cancelled || !hostRef.current || !window.tinymce) {
                     return;
                 }
 
-                const editor = await window.tinymce.init({
+                const initializedEditor = resolveEditor(await window.tinymce.init({
                     target: hostRef.current,
                     branding: false,
                     promotion: false,
@@ -88,14 +113,18 @@ export function TinyMceEditor({ value, onChange, disabled = false, height = 420 
                             latestOnChangeRef.current(instance.getContent());
                         });
                     },
-                });
+                }));
+
+                if (!initializedEditor) {
+                    throw new Error('TinyMCE editor instance was not created.');
+                }
 
                 if (cancelled) {
-                    editor.remove();
+                    destroyEditor(initializedEditor);
                     return;
                 }
 
-                editorRef.current = editor;
+                editorRef.current = initializedEditor;
             })
             .catch((error: unknown) => {
                 if (!cancelled) {
@@ -106,7 +135,7 @@ export function TinyMceEditor({ value, onChange, disabled = false, height = 420 
 
         return () => {
             cancelled = true;
-            editorRef.current?.remove();
+            destroyEditor(editorRef.current);
             editorRef.current = null;
         };
     }, [height]);
@@ -158,4 +187,3 @@ export function TinyMceEditor({ value, onChange, disabled = false, height = 420 
         </div>
     );
 }
-

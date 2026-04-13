@@ -306,7 +306,7 @@ export const HeroCarousel = memo(function HeroCarousel({
 
     return (
         <div
-            className="relative h-[320px] w-full overflow-hidden bg-brand-dark pt-[88px] sm:h-[450px] md:h-screen md:pt-[80px]"
+            className="relative h-[100svh] min-h-[100svh] w-full overflow-hidden bg-brand-dark pt-[72px] sm:pt-[76px] md:h-screen md:min-h-screen md:pt-[72px]"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
         >

@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\ChatResponseTemplatesController;
 use App\Http\Controllers\Admin\ChatImportsController;
 use App\Http\Controllers\Admin\ChatSessionsController;
 use App\Http\Controllers\Admin\BlogsController;
+use App\Http\Controllers\Admin\MediaAssetsController;
 use App\Models\User;
 use App\Models\Lead;
 use App\Models\CostEstimation;
@@ -113,6 +114,11 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::post('admin/blogs/{blog}/feature', [BlogsController::class, 'toggleFeatured'])->name('admin.blogs.feature');
     Route::delete('admin/blogs/{blog}', [BlogsController::class, 'destroy'])->name('admin.blogs.destroy');
 
+    Route::get('admin/media-assets', [MediaAssetsController::class, 'index'])->name('admin.media-assets.index');
+    Route::post('admin/media-assets', [MediaAssetsController::class, 'store'])->name('admin.media-assets.store');
+    Route::post('admin/media-assets/{mediaAsset}', [MediaAssetsController::class, 'update'])->name('admin.media-assets.update');
+    Route::delete('admin/media-assets/{mediaAsset}', [MediaAssetsController::class, 'destroy'])->name('admin.media-assets.destroy');
+
     Route::get('admin/users', [UsersController::class, 'index'])->name('admin.users.index');
     Route::post('admin/users', [UsersController::class, 'store'])->name('admin.users.store');
     Route::post('admin/users/{user}', [UsersController::class, 'update'])->name('admin.users.update');
@@ -186,3 +192,4 @@ Route::get('/chat', function () {
 Route::get('/test', function () {
     return view('test');
 });
+
