@@ -181,6 +181,8 @@ Route::get('auth/google/callback', [App\Http\Controllers\Auth\SocialiteControlle
 
 require __DIR__ . '/settings.php';
 
+Route::post('/leads', [App\Http\Controllers\LeadController::class, 'store'])->name('leads.store');
+
 Route::post('/chat', [ChatController::class, 'sendMessage']);
 Route::get('/chat/history', [ChatController::class, 'getHistory']);
 Route::get('/chat/session/{id}', [ChatController::class, 'loadSession']);

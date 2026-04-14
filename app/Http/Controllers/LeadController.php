@@ -16,4 +16,19 @@ class LeadController extends Controller
             'leads' => $leads
         ]);
     }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name'    => ['required', 'string', 'max:255'],
+            'phone'   => ['required', 'string', 'max:50'],
+            'email'   => ['nullable', 'email', 'max:255'],
+            'service' => ['nullable', 'string', 'max:100'],
+            'message' => ['nullable', 'string'],
+        ]);
+
+        Lead::create($validated);
+
+        return response()->json(['success' => true]);
+    }
 }

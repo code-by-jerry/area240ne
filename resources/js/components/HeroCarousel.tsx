@@ -193,9 +193,7 @@ const SlideContent = memo(
                             className="hidden w-full max-w-md lg:block xl:max-w-lg"
                         >
                             <div className="group relative">
-                                <div className="absolute -inset-4 rounded-[2.5rem] bg-brand-primary/20 blur-3xl transition-colors duration-700 group-hover:bg-[#C7A14A]/20" />
-                                <div className="absolute -inset-8 rounded-[3rem] bg-[#C7A14A]/10 opacity-50 blur-3xl transition-opacity duration-700 group-hover:opacity-100" />
-                                <div className="relative scale-95 transform-gpu transition-transform duration-700 hover:scale-105 xl:scale-100">
+                                <div className="relative scale-95 transform-gpu xl:scale-100">
                                     <ChatMockup />
                                 </div>
                             </div>
@@ -225,27 +223,16 @@ export const HeroCarousel = memo(function HeroCarousel({
         return [DEFAULT_SLIDE, ...sortedDynamicSlides];
     }, [slides]);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [isLoaded, setIsLoaded] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     const prefersReducedMotion = useReducedMotion();
 
-    // Preload only the current and next slide to reduce startup bandwidth.
+    // Preload only the next slide image to reduce startup bandwidth.
     useEffect(() => {
         if (!slidesWithDefault || slidesWithDefault.length <= 1) return;
-
-        const currentSlide = slidesWithDefault[currentIndex];
-        const nextSlide =
-            slidesWithDefault[(currentIndex + 1) % slidesWithDefault.length];
-
-        const currentImage = new Image();
-        currentImage.src = currentSlide.image_path;
-        currentImage.onload = () => setIsLoaded(true);
-
-        if (nextSlide.image_path !== currentSlide.image_path) {
-            const nextImage = new Image();
-            nextImage.src = nextSlide.image_path;
-        }
+        const nextSlide = slidesWithDefault[(currentIndex + 1) % slidesWithDefault.length];
+        const img = new Image();
+        img.src = nextSlide.image_path;
     }, [currentIndex, slidesWithDefault]);
 
     const startTimer = useCallback(() => {
@@ -346,12 +333,13 @@ export const HeroCarousel = memo(function HeroCarousel({
                         {/* Background Filler Layer - Only for large screens and non-first slides */}
                         {currentIndex !== 0 && (
                             <div
-                                className="absolute inset-0 hidden h-full w-full opacity-60 blur-3xl lg:block"
+                                className="absolute inset-0 hidden h-full w-full opacity-50 blur-2xl lg:block"
                                 style={{
                                     backgroundImage: `url(${currentSlide.image_path})`,
                                     backgroundSize: 'cover',
                                     backgroundPosition: 'center',
-                                    transform: 'scale(1.2)', // Prevent white edges from blur
+                                    transform: 'scale(1.1)',
+                                    willChange: 'auto',
                                 }}
                             />
                         )}
@@ -365,10 +353,6 @@ export const HeroCarousel = memo(function HeroCarousel({
                                     currentIndex === 0 ? 'cover' : 'contain',
                                 backgroundPosition: 'center',
                                 backgroundRepeat: 'no-repeat',
-                                transform: isLoaded
-                                    ? 'scale(1.02)'
-                                    : 'scale(1)',
-                                transition: 'transform 8s ease-out',
                             }}
                         />
 

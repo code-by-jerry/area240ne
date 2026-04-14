@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class HeroSlide extends Model
 {
@@ -21,4 +22,10 @@ class HeroSlide extends Model
         'is_active' => 'boolean',
         'order' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::saved(fn() => Cache::forget('hero_slides_active'));
+        static::deleted(fn() => Cache::forget('hero_slides_active'));
+    }
 }

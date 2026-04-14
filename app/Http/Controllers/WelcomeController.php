@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CompanyProfile;
 use App\Models\HeroSlide;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
@@ -11,12 +12,19 @@ class WelcomeController extends Controller
 {
     public function index()
     {
-        $heroSlides = HeroSlide::where('is_active', true)
-            ->orderBy('order')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // Cache hero slides for 5 minutes — they rarely change
+        $heroSlides = Cache::remember('hero_slides_active', 300, fn() =>
+            HeroSlide::where('is_active', true)
+                ->orderBy('order')
+                ->orderBy('created_at', 'desc')
+                ->get()
+        );
 
-        $companyProfile = CompanyProfile::getSingleton();
+        // Cache company profile for 10 minutes
+        $companyProfile = Cache::remember('company_profile', 600, fn() =>
+            CompanyProfile::getSingleton()
+        );
+
         $canonicalUrl = url('/');
         $primaryImage = $heroSlides->first()?->image_path ?: url('/favicon-512.png');
 

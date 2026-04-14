@@ -1,21 +1,16 @@
 import { HeroCarousel, HeroSlide } from '@/components/HeroCarousel';
+import { HomeNavbar } from '@/components/HomeNavbar';
 import { Marquee } from '@/components/MagicMarquee';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
     ArrowRight,
-    BookOpen,
     Building2,
-    Calculator,
     CheckCircle2,
+    ChevronDown,
     ChevronLeft,
     ChevronRight,
-    ChevronDown,
     Hammer,
-    HelpCircle,
     Home,
-    Layers,
-    Menu,
     MessageSquare,
     PaintBucket,
     ShieldCheck,
@@ -24,30 +19,18 @@ import {
     Target,
     TrendingUp,
     Users,
-    X,
     Zap,
 } from 'lucide-react';
 import {
     Suspense,
     lazy,
     memo,
+    useCallback,
     useEffect,
     useMemo,
     useRef,
     useState,
 } from 'react';
-
-type DiscoveryOptions = {
-    service:
-        | 'construction'
-        | 'interiors'
-        | 'real-estate'
-        | 'development'
-        | 'events'
-        | '';
-    timeline: 'immediate' | '1-3' | '3-6' | '6-12' | '';
-    budget: 'under-10L' | '10-50L' | '50L-2Cr' | '2Cr+' | '';
-};
 
 type HomeSeo = {
     title: string;
@@ -71,78 +54,6 @@ type CompanyProfile = {
     linkedin?: string | null;
 };
 
-const staticHeroSlides = [
-    {
-        tag: 'The Future of Consultation',
-        title: 'One Platform. Five Expert Brands.',
-        highlight: 'One Smart Consultant.',
-        description:
-            'Plan, validate, and execute your property decisions — construction, interiors, real estate, development, and events — through one intelligent platform.',
-        image: '/image/area 24 one.png',
-        hero: '/image/hero/area 24 one.png',
-        color: 'brand-primary',
-        cta: (
-            <Link
-                href="/cost-estimator"
-                className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand-primary px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-brand-primary/90"
-            >
-                <Calculator className="h-4 w-4" />
-                Estimate Cost
-            </Link>
-        ),
-    },
-    {
-        tag: 'Construction Excellence',
-        title: 'Built to Last. Precision Engineered.',
-        highlight: 'Atha Construction',
-        description:
-            'From foundation to finish, we deliver construction excellence with modern techniques and transparent workflows.',
-        image: '/image/atha.png',
-        hero: '/image/hero/atha  logo mockup.png',
-        color: 'amber-500',
-    },
-    {
-        tag: 'Luxury Interiors',
-        title: 'Spaces that Inspire. Designs that Speak.',
-        highlight: 'Nesthetix Design',
-        description:
-            'Bespoke interior design solutions that blend luxury, functionality, and your unique personality.',
-        image: '/image/nesthetix.png',
-        hero: '/image/hero/Nesthetix logo mockup.png',
-        color: 'purple-500',
-    },
-    {
-        tag: 'Premium Real Estate',
-        title: 'Find Your Future. Own Your Legacy.',
-        highlight: 'Area24 Realty',
-        description:
-            'Expert real estate consulting to help you find the perfect property that aligns with your lifestyle and goals.',
-        image: '/image/area 24 realty.png',
-        hero: '/image/hero/Area24 realty  logo mockup.png',
-        color: 'blue-500',
-    },
-    {
-        tag: 'Visionary Development',
-        title: 'Developing Dreams. Shaping Communities.',
-        highlight: 'Area24 Developers',
-        description:
-            'Innovative residential and commercial development projects that redefine the standards of modern living.',
-        image: '/image/hero/Area24 developers  logo mockup.png',
-        hero: '/image/hero/Area24 developers  logo mockup.png',
-        color: 'emerald-500',
-    },
-    {
-        tag: 'Memorable Experiences',
-        title: 'Stages that Captivate. Moments that Matter.',
-        highlight: 'The Stage 365',
-        description:
-            'Creating extraordinary events and immersive experiences that leave a lasting impression.',
-        image: '/image/STAGE 365.png',
-        hero: '/image/hero/The stage 365  logo mockup.png',
-        color: 'rose-500',
-    },
-];
-
 const LazyConsultationModal = lazy(() =>
     import('@/components/ConsultationModal').then((module) => ({
         default: module.ConsultationModal,
@@ -158,15 +69,6 @@ const LazyStoriesSection = lazy(() =>
         default: module.StoriesSection,
     })),
 );
-
-const NAV_ITEMS = [
-    { label: 'Services', href: '#what-we-do', icon: Layers },
-    { label: 'Expertise', href: '#expertise', icon: ShieldCheck },
-    { label: 'Process', href: '#process', icon: Zap },
-    { label: 'Why Us', href: '#why-us', icon: Star },
-    { label: 'Blogs', href: '/blogs', icon: BookOpen },
-    { label: 'FAQ', href: '#faq', icon: HelpCircle },
-] as const;
 
 const TRUST_ITEMS = [
     {
@@ -370,45 +272,28 @@ const BRANDS_IMAGE_BASE = '/image/brands%20material';
 
 type MarqueeBrand = { name: string; logo: string };
 
-function MarqueeBrandCard({
-    brand,
-    isLast,
-}: {
-    brand: MarqueeBrand;
-    isLast?: boolean;
-}) {
-    const [imgError, setImgError] = useState(false);
-    const showLogo = brand.logo && !imgError;
+function MarqueeBrandCard({ brand }: { brand: MarqueeBrand }) {
     return (
         <div className="flex items-center">
             <div
-                className="flex h-20 w-28 shrink-0 items-center justify-center p-4 drop-shadow-sm"
+                className="flex h-16 w-24 shrink-0 items-center justify-center p-3"
                 title={brand.name}
             >
-                {showLogo ? (
-                    <img
-                        src={brand.logo}
-                        alt=""
-                        className="max-h-full max-w-full object-contain"
-                        onError={() => setImgError(true)}
-                    />
-                ) : (
-                    <span className="text-xl font-bold text-slate-400">
-                        {brand.name.charAt(0)}
-                    </span>
-                )}
+                <img
+                    src={brand.logo}
+                    alt={brand.name}
+                    loading="lazy"
+                    decoding="async"
+                    className="max-h-full max-w-full object-contain drop-shadow-sm"
+                />
             </div>
-            {/* Vertical Divider */}
-            {!isLast && (
-                <div className="h-10 w-px bg-slate-200 dark:bg-slate-700" />
-            )}
+            <div className="h-8 w-px bg-slate-200 dark:bg-slate-700" />
         </div>
     );
 }
 
 /** Brand logos from public/image/brands material/ — logo only, no name/category. */
-const MARQUEE_BRANDS: MarqueeBrand[] = [
-    { name: 'TATA TMT', logo: `${BRANDS_IMAGE_BASE}/tata-tiscon-logo.png` },
+const MARQUEE_BRANDS: MarqueeBrand[] = [    { name: 'TATA TMT', logo: `${BRANDS_IMAGE_BASE}/tata-tiscon-logo.png` },
     { name: 'JSW', logo: `${BRANDS_IMAGE_BASE}/jsw-steel.jpeg` },
     { name: 'Ultratech', logo: `${BRANDS_IMAGE_BASE}/ultratech-cement.png` },
     { name: 'ACC', logo: `${BRANDS_IMAGE_BASE}/ACC.svg` },
@@ -435,6 +320,22 @@ const MARQUEE_BRANDS: MarqueeBrand[] = [
     { name: 'Vguard', logo: `${BRANDS_IMAGE_BASE}/vguard-logo.jpg` },
 ];
 
+// Reduced to 12 images (was 35) — repeat={2} gives 24 nodes total, smooth scroll
+const GALLERY_IMAGES = [
+    '/image/storyset/2.1.svg',
+    '/image/storyset/3.1.svg',
+    '/image/storyset/3.3.svg',
+    '/image/storyset/3.5.svg',
+    '/image/storyset/4.1.svg',
+    '/image/storyset/4.3.svg',
+    '/image/storyset/5.2.svg',
+    '/image/storyset/6.0.svg',
+    '/image/storyset/7.2.svg',
+    '/image/storyset/7.4.svg',
+    '/image/storyset/8.2.svg',
+    '/image/storyset/9.2.svg',
+];
+
 interface ServiceCardProps {
     service: {
         id: string;
@@ -453,39 +354,24 @@ interface ServiceCardProps {
 
 // ServiceCard is defined below as a memoized component
 
-// Memoized ServiceCard for better performance
-const ServiceCard = memo(
-    ({ service, index, onClick }: ServiceCardProps) => {
-        const [currentImageIndex, setCurrentImageIndex] = useState(0);
-        const prefersReducedMotion = useReducedMotion();
+const ServiceCard = memo(({ service, index, onClick }: ServiceCardProps) => {
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-        const handlePrevImage = (e: React.MouseEvent<HTMLButtonElement>) => {
-            e.stopPropagation();
-            setCurrentImageIndex(
-                (prev) => (prev - 1 + service.images.length) % service.images.length,
-            );
-        };
+    const handlePrevImage = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        setCurrentImageIndex((prev) => (prev - 1 + service.images.length) % service.images.length);
+    };
 
-        const handleNextImage = (e: React.MouseEvent<HTMLButtonElement>) => {
-            e.stopPropagation();
-            setCurrentImageIndex((prev) => (prev + 1) % service.images.length);
-        };
+    const handleNextImage = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        setCurrentImageIndex((prev) => (prev + 1) % service.images.length);
+    };
 
-        const motionProps = prefersReducedMotion
-            ? { initial: { opacity: 1, y: 0 }, whileInView: undefined }
-            : {
-                  initial: { opacity: 0, y: 20 },
-                  whileInView: { opacity: 1, y: 0 },
-                  viewport: { once: true, margin: '-24px' },
-                  transition: { duration: 0.35, delay: index * 0.06 },
-              };
-
-        return (
-            <motion.div
-                {...motionProps}
-                onClick={onClick}
-                className="group relative flex cursor-pointer flex-col overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/90 shadow-[0_16px_42px_-28px_rgba(15,23,42,0.42)] transition-all duration-300 hover:-translate-y-1 hover:border-[#C7A14A]/45 hover:shadow-[0_22px_55px_-26px_rgba(15,23,42,0.38)] dark:border-slate-800 dark:bg-slate-950/90 dark:hover:border-[#C7A14A]/45"
-            >
+    return (
+        <div
+            onClick={onClick}
+            className="group relative flex cursor-pointer flex-col overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.3)] hover:border-[#C7A14A]/45 hover:shadow-[0_16px_40px_-12px_rgba(15,23,42,0.3)] dark:border-slate-800 dark:bg-slate-950/90 dark:hover:border-[#C7A14A]/45"
+        >
                 <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#C7A14A]/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
                 <div className="relative overflow-hidden border-b border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(199,161,74,0.18),_transparent_45%),linear-gradient(180deg,_rgba(248,250,252,0.96),_rgba(241,245,249,0.92))] px-5 pb-5 pt-4 dark:border-slate-800 dark:bg-[radial-gradient(circle_at_top_left,_rgba(199,161,74,0.18),_transparent_42%),linear-gradient(180deg,_rgba(15,23,42,0.96),_rgba(2,6,23,0.98))]">
@@ -499,21 +385,15 @@ const ServiceCard = memo(
                         </div>
                     </div>
 
-                    <div className="relative flex h-44 items-center justify-center overflow-hidden rounded-[20px] border border-white/70 bg-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900">
+                    <div className="relative flex h-44 items-center justify-center overflow-hidden rounded-[20px] border border-white/70 bg-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] dark:border-slate-800 dark:bg-slate-900">
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 via-slate-900/4 to-white/5 dark:from-slate-950/35 dark:via-slate-950/8 dark:to-white/5" />
-                        <AnimatePresence mode="wait" initial={false}>
-                            <motion.img
-                                key={`${service.id}-${currentImageIndex}`}
-                                src={service.images[currentImageIndex]}
-                                alt={service.title}
-                                loading="lazy"
-                                initial={{ opacity: 0.25, scale: 0.985 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0.25, scale: 1.015 }}
-                                transition={{ duration: 0.22, ease: 'easeOut' }}
-                                className="relative z-10 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-                            />
-                        </AnimatePresence>
+                        <img
+                            src={service.images[currentImageIndex]}
+                            alt={service.title}
+                            loading="lazy"
+                            decoding="async"
+                            className="relative z-10 h-full w-full object-cover transition-opacity duration-200 group-hover:scale-[1.04] transition-transform"
+                        />
 
                         {service.images.length > 1 && (
                             <>
@@ -589,46 +469,52 @@ const ServiceCard = memo(
                         </div>
                     </div>
                 </div>
-            </motion.div>
+            </div>
         );
-    },
-);
+});
 
 ServiceCard.displayName = 'ServiceCard';
 
+// Skeleton that matches StoriesSection height/layout — prevents layout shift on lazy load
+function StoriesSkeleton() {
+    return (
+        <section className="bg-zinc-50 py-16 dark:bg-black/20">
+            <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                <div className="mb-10">
+                    <div className="mb-3 h-3 w-24 rounded-full bg-zinc-200 dark:bg-zinc-800" />
+                    <div className="h-6 w-72 rounded-full bg-zinc-200 dark:bg-zinc-800" />
+                </div>
+                <div className="flex gap-4 overflow-hidden">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <div
+                            key={i}
+                            className="aspect-[9/16] min-w-[180px] shrink-0 rounded-2xl bg-zinc-200 md:min-w-[220px] dark:bg-zinc-800"
+                        />
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
 export default function Welcome({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    canLogin = true,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    canRegister = true,
     heroSlides = [],
     companyProfile,
     seo,
 }: {
-    canLogin?: boolean;
-    canRegister?: boolean;
     heroSlides?: HeroSlide[];
     companyProfile?: CompanyProfile;
     seo: HomeSeo;
 }) {
-    const { auth } = usePage<{ auth: { user?: unknown } }>().props;
-    const [scrolled, setScrolled] = useState(false);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [isHeaderVisible, setIsHeaderVisible] = useState(true);
-    const lastScrollY = useRef(0);
-    const [discovery, setDiscovery] = useState<DiscoveryOptions>({
-        service: '',
-        timeline: '',
-        budget: '',
-    });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [shouldRenderModal, setShouldRenderModal] = useState(false);
     const [shouldLoadStories, setShouldLoadStories] = useState(false);
-    const [shouldLoadContactWidget, setShouldLoadContactWidget] =
-        useState(false);
+    const [shouldLoadContactWidget, setShouldLoadContactWidget] = useState(false);
     const [selectedService, setSelectedService] = useState<string>('');
     const [openFaq, setOpenFaq] = useState<number | null>(0);
     const storiesRef = useRef<HTMLDivElement>(null);
+
+    const { auth } = usePage<{ auth: { user?: unknown } }>().props;
 
     const companyName = companyProfile?.name || 'Area24One';
     const companyUrl = companyProfile?.website || seo.canonical;
@@ -706,7 +592,7 @@ export default function Welcome({
                     observer.disconnect();
                 }
             },
-            { rootMargin: '600px 0px' },
+            { rootMargin: '1200px 0px' }, // load well before user reaches it
         );
 
         observer.observe(storiesRef.current);
@@ -736,109 +622,10 @@ export default function Welcome({
         };
     }, []);
 
-    const processRef = useRef(null);
-    const whyUsRef = useRef(null);
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleDiscoveryChange = (
-        _key: keyof DiscoveryOptions,
-        _value: string,
-    ) => {
-        // Discovery functionality temporarily disabled for performance
-        // const updated = { ...discovery, [key]: value };
-        // setDiscovery(updated);
-        // if (Object.values(updated).every(Boolean)) {
-        //     router.visit(`/chat?service=${updated.service}&timeline=${updated.timeline}&budget=${updated.budget}`);
-        // }
-    };
-
-    // Throttled scroll handler for better performance
-    useEffect(() => {
-        let ticking = false;
-
-        const handleScroll = () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    const currentScrollY = window.scrollY;
-
-                    // Only update if value changes
-                    const isScrolled = currentScrollY > 20;
-                    setScrolled((prev) =>
-                        prev !== isScrolled ? isScrolled : prev,
-                    );
-
-                    // Mobile Smart Header Logic - only update if actually changed
-                    if (
-                        currentScrollY > lastScrollY.current &&
-                        currentScrollY > 50
-                    ) {
-                        setIsHeaderVisible((prev) =>
-                            prev === false ? prev : false,
-                        );
-                    } else {
-                        setIsHeaderVisible((prev) =>
-                            prev === true ? prev : true,
-                        );
-                    }
-
-                    lastScrollY.current = currentScrollY;
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    // CTA Auto-Popup Logic - scheduled once instead of polling
-    useEffect(() => {
-        const POPUP_STORAGE_KEY = 'area24one_last_popup_time';
-        const SESSION_KEY = 'area24one_popup_shown_in_session';
-        const RECURRING_INTERVAL = 180000; // 3 minutes in milliseconds
-
-        let initialTimeoutId: number | null = null;
-        let recurringTimeoutId: number | null = null;
-
-        const showPopup = () => {
-            setShouldRenderModal(true);
-            setIsModalOpen(true);
-            sessionStorage.setItem(SESSION_KEY, 'true');
-            localStorage.setItem(POPUP_STORAGE_KEY, Date.now().toString());
-        };
-
-        const scheduleRecurringPopup = (delay: number) => {
-            recurringTimeoutId = window.setTimeout(() => {
-                showPopup();
-                scheduleRecurringPopup(RECURRING_INTERVAL);
-            }, delay);
-        };
-
-        const sessionShown = sessionStorage.getItem(SESSION_KEY);
-        const lastPopupTime = Number(
-            localStorage.getItem(POPUP_STORAGE_KEY) ?? '0',
-        );
-
-        if (!sessionShown) {
-            initialTimeoutId = window.setTimeout(() => {
-                showPopup();
-                scheduleRecurringPopup(RECURRING_INTERVAL);
-            }, 5000);
-        } else {
-            const elapsed = lastPopupTime ? Date.now() - lastPopupTime : 0;
-            const nextDelay = Math.max(RECURRING_INTERVAL - elapsed, 1000);
-            scheduleRecurringPopup(nextDelay);
-        }
-
-        return () => {
-            if (initialTimeoutId !== null) {
-                window.clearTimeout(initialTimeoutId);
-            }
-            if (recurringTimeoutId !== null) {
-                window.clearTimeout(recurringTimeoutId);
-            }
-        };
+    const openModal = useCallback((service = '') => {
+        setSelectedService(service);
+        setShouldRenderModal(true);
+        setIsModalOpen(true);
     }, []);
 
     // Memoized services array to prevent unnecessary re-renders
@@ -953,202 +740,10 @@ export default function Welcome({
                 <meta name="twitter:image" content={seo.image} />
                 <script type="application/ld+json">{JSON.stringify(schemaGraph)}</script>
             </Head>
-            <div className="font-inter min-h-screen scroll-smooth bg-brand-surface text-brand-text selection:bg-brand-primary selection:text-white dark:bg-brand-dark dark:text-slate-50">
-                {/* Navbar */}
-                <nav
-                    className={`fixed top-0 z-50 w-full border-b border-slate-200 bg-black/80 py-1.5 backdrop-blur-xl transition-transform duration-300 dark:border-slate-800 dark:bg-brand-dark/95 ${!isHeaderVisible ? '-translate-y-full' : 'translate-y-0'} md:fixed md:inset-x-0 md:translate-y-0 md:border-transparent md:shadow-none md:backdrop-blur-none md:transition-all md:duration-500 ${
-                        scrolled
-                            ? 'md:border-slate-200 md:bg-white/78 md:py-1.5 md:backdrop-blur-xl md:dark:border-slate-800 md:dark:bg-brand-dark/78'
-                            : 'md:bg-black/40 md:py-2 md:backdrop-blur-xl md:dark:bg-black/60'
-                    }`}
-                >
-                    <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                        <div className="flex items-center justify-between gap-3">
-                            <Link
-                                href="/"
-                                className="group flex cursor-pointer items-center gap-2 md:gap-3"
-                            >
-                                <div className="flex h-12 w-12 items-center justify-center p-0 transition-transform duration-300 group-hover:scale-[1.02] md:h-14 md:w-14">
-                                    {/* Mobile Logo: Always White */}
-                                    <img
-                                        src="/image/main logo (white).png"
-                                        alt="Logo Mobile"
-                                        className="h-full w-full object-contain md:hidden"
-                                    />
-                                    {/* Desktop Logo: Switches on Scroll */}
-                                    <img
-                                        src={
-                                            scrolled
-                                                ? '/image/main logo.png'
-                                                : '/image/main logo (white).png'
-                                        }
-                                        alt="Logo Desktop"
-                                        className="hidden h-full w-full object-contain md:block"
-                                    />
-                                </div>
-                            </Link>
+            <div className="min-h-screen bg-brand-surface text-brand-text selection:bg-brand-primary selection:text-white dark:bg-brand-dark dark:text-slate-50">
+                <HomeNavbar auth={auth as any} onConsultClick={() => openModal()} />
 
-                            {/* Desktop Navigation - Clean Design */}
-                            <div className="hidden items-center gap-px md:flex">
-                                {NAV_ITEMS.map((item) => (
-                                    <a
-                                        key={item.label}
-                                        href={item.href}
-                                        className={`group flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[13px] font-medium transition-all duration-200 hover:bg-white/10 ${scrolled ? 'text-slate-600 hover:bg-slate-100 hover:text-brand-primary dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' : 'text-white/90 hover:text-white'}`}
-                                    >
-                                        <span className="transition-transform duration-200 group-hover:-translate-y-0.5">
-                                            <item.icon className="h-4 w-4" />
-                                        </span>
-                                        <span>{item.label}</span>
-                                    </a>
-                                ))}
-
-                                <div
-                                    className={`mx-2 h-4 w-px ${scrolled ? 'bg-slate-200 dark:bg-slate-700' : 'bg-white/30'}`}
-                                />
-
-                                {/* Cost Estimator */}
-                                <Link
-                                    href="/cost-estimator"
-                                    className={`group flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[13px] font-medium transition-all duration-200 hover:bg-white/10 ${scrolled ? 'text-slate-600 hover:bg-slate-100 hover:text-brand-primary dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' : 'text-white/90 hover:text-white'}`}
-                                >
-                                    <Calculator className="h-4 w-4 transition-transform duration-200 group-hover:-translate-y-0.5" />
-                                    <span>Estimate</span>
-                                </Link>
-
-                                <div
-                                    className={`mx-2 h-4 w-px ${scrolled ? 'bg-slate-200 dark:bg-slate-700' : 'bg-white/30'}`}
-                                />
-
-                                {auth.user ? (
-                                    <Link
-                                        href="/dashboard"
-                                        className={`rounded-lg px-3 py-1 text-[13px] font-semibold transition-all duration-200 ${scrolled ? 'bg-brand-primary text-white hover:bg-brand-primary/90' : 'bg-white/20 text-white backdrop-blur-sm hover:bg-white/30'}`}
-                                    >
-                                        Dashboard
-                                    </Link>
-                                ) : (
-                                    <div className="flex items-center gap-1.5">
-                                        <Link
-                                            href="/login"
-                                            className={`rounded-lg px-2.5 py-1 text-[13px] font-medium transition-all duration-200 ${scrolled ? 'text-slate-600 hover:bg-slate-100 hover:text-brand-primary dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' : 'text-white/90 hover:bg-white/10 hover:text-white'}`}
-                                        >
-                                            Sign In
-                                        </Link>
-                                        <Link
-                                            href="/chat"
-                                            className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary px-3 py-1 text-[13px] font-semibold text-white transition-all duration-300 hover:bg-[#C7A14A] focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:outline-none"
-                                        >
-                                            <MessageSquare className="h-3.5 w-3.5" />
-                                            <span>Consult</span>
-                                        </Link>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="flex items-center gap-2 md:hidden">
-                                <Link
-                                    href="/chat"
-                                    className="inline-flex h-9 items-center justify-center rounded-full bg-brand-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-[#C7A14A] dark:bg-white dark:text-brand-primary dark:hover:bg-[#C7A14A] dark:hover:text-white"
-                                >
-                                    Start
-                                </Link>
-                                <button
-                                    aria-label="Toggle menu"
-                                    className={`rounded-lg p-2 transition-colors hover:bg-slate-100/10 ${scrolled ? 'text-brand-primary md:text-white' : 'text-white'}`}
-                                    onClick={() =>
-                                        setMobileMenuOpen(!mobileMenuOpen)
-                                    }
-                                >
-                                    {mobileMenuOpen ? (
-                                        <X
-                                            size={22}
-                                            className="text-white md:text-inherit"
-                                        />
-                                    ) : (
-                                        <Menu
-                                            size={22}
-                                            className="text-white md:text-inherit"
-                                        />
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </nav>
-                {/* Mobile Menu - Clean Design */}
-                {mobileMenuOpen && (
-                    <div className="fixed inset-0 z-40 md:hidden">
-                        <div
-                            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-                            onClick={() => setMobileMenuOpen(false)}
-                        />
-                        <div className="absolute inset-x-4 top-20 rounded-2xl bg-white p-4 shadow-2xl dark:bg-slate-900">
-                            <div className="flex flex-col gap-1">
-                                {NAV_ITEMS.map((item) => (
-                                    <a
-                                        key={item.label}
-                                        href={item.href}
-                                        onClick={() => setMobileMenuOpen(false)}
-                                        className="flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
-                                    >
-                                        <span className="text-brand-primary dark:text-[#C7A14A]">
-                                            <item.icon className="h-5 w-5" />
-                                        </span>
-                                        <span>{item.label}</span>
-                                    </a>
-                                ))}
-
-                                <div className="my-2 h-px bg-slate-200 dark:bg-slate-800" />
-
-                                <Link
-                                    href="/cost-estimator"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
-                                >
-                                    <Calculator className="h-5 w-5 text-brand-primary dark:text-[#C7A14A]" />
-                                    <span>Cost Estimator</span>
-                                </Link>
-
-                                <div className="my-2 h-px bg-slate-200 dark:bg-slate-800" />
-
-                                {auth.user ? (
-                                    <Link
-                                        href="/dashboard"
-                                        className="flex items-center justify-center gap-2 rounded-xl bg-brand-primary px-4 py-3 text-center text-base font-semibold text-white transition-colors hover:bg-brand-primary/90"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        <span>Dashboard</span>
-                                    </Link>
-                                ) : (
-                                    <div className="flex flex-col gap-2">
-                                        <Link
-                                            href="/login"
-                                            className="flex items-center justify-center gap-2 rounded-xl bg-slate-100 px-4 py-3 text-center text-base font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200"
-                                            onClick={() =>
-                                                setMobileMenuOpen(false)
-                                            }
-                                        >
-                                            <span>Sign In</span>
-                                        </Link>
-                                        <Link
-                                            href="/chat"
-                                            className="flex items-center justify-center gap-2 rounded-xl bg-brand-primary px-4 py-3 text-center text-base font-semibold text-white transition-colors hover:bg-[#C7A14A]"
-                                            onClick={() =>
-                                                setMobileMenuOpen(false)
-                                            }
-                                        >
-                                            <MessageSquare className="h-4 w-4" />
-                                            <span>Start Consultation</span>
-                                        </Link>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* New Hero Carousel */}
+                {/* Hero Carousel */}
                 <HeroCarousel slides={heroSlides} />
 
                 {/* Trust/Authority Strip */}
@@ -1173,6 +768,7 @@ export default function Welcome({
                         <Marquee
                             className="[--duration:60s] [--gap:0rem]"
                             pauseOnHover
+                            repeat={2}
                         >
                             {TRUST_ITEMS.map((item, i) => (
                                 <div key={i} className="flex items-center">
@@ -1185,9 +781,11 @@ export default function Welcome({
                                             ) : (
                                                 <img
                                                     src={item.logoSrc}
-                                                    className="h-20 w-auto brightness-0 invert"
+                                                    className="h-16 w-auto opacity-80"
                                                     alt={item.logoAlt}
                                                     loading="lazy"
+                                                    decoding="async"
+                                                    style={{ filter: 'brightness(0) invert(1)' }}
                                                 />
                                             )}
                                         </div>
@@ -1204,74 +802,57 @@ export default function Welcome({
                     </div>
                 </section>
 
-                {/* What We Do & Who It's For - Customer-driven, compact bento */}
+                {/* What We Do & Who It's For */}
                 <section
                     id="what-we-do"
                     className="relative overflow-hidden border-y border-slate-100 bg-white py-14 md:py-16 dark:border-slate-800 dark:bg-brand-dark/50"
                 >
-                    <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_rgba(199,161,74,0.04),_transparent_50%)]" />
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-16">
-                            {/* Left Column: Context + Grid */}
                             <div className="flex w-full flex-col justify-center lg:flex-1">
-                                <div className="mb-8 flex flex-col gap-6">
-                                    <div className="max-w-2xl">
-                                        <div className="mb-3 inline-flex items-center gap-2">
-                                            <div className="h-px w-6 bg-[#C7A14A]" />
-                                            <span className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A] uppercase">
-                                                What we're building for you
-                                            </span>
-                                            <div className="h-px w-6 bg-[#C7A14A]" />
-                                        </div>
-                                        <h2 className="text-xl font-medium tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                                            One conversation.{' '}
-                                            <span className="text-[#C7A14A]">
-                                                Five brands. Zero runaround.
-                                            </span>
-                                        </h2>
-                                        <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                                            Tell us once — vision, budget,
-                                            timeline — we connect you to the
-                                            right specialist.
-                                        </p>
+                                <div className="mb-8">
+                                    <div className="mb-3 inline-flex items-center gap-2">
+                                        <div className="h-px w-6 bg-[#C7A14A]" />
+                                        <span className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A] uppercase">
+                                            What we're building for you
+                                        </span>
+                                        <div className="h-px w-6 bg-[#C7A14A]" />
                                     </div>
+                                    <h2 className="text-xl font-medium tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                                        One conversation.{' '}
+                                        <span className="text-[#C7A14A]">Five brands. Zero runaround.</span>
+                                    </h2>
+                                    <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                                        Tell us once — vision, budget, timeline — we connect you to the right specialist.
+                                    </p>
                                 </div>
 
-                                {/* Who Is This For – bento grid: left col 2 stacked, right 2x2 */}
-                                <div className="relative grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                     {WHO_ITS_FOR_ITEMS.map((item, i) => (
-                                        <motion.div
+                                        <div
                                             key={i}
-                                            initial={{ opacity: 0, y: 12 }}
-                                            whileInView={{ opacity: 1, y: 0 }}
-                                            viewport={{
-                                                once: true,
-                                                margin: '-20px',
-                                            }}
-                                            transition={{
-                                                duration: 0.35,
-                                                delay: i * 0.05,
-                                            }}
-                                            className={`group flex items-center gap-4 rounded-xl border border-slate-100 bg-white p-4 transition-all duration-300 hover:border-[#C7A14A]/40 hover:shadow-md dark:border-slate-800 dark:bg-slate-900/80 dark:hover:border-[#C7A14A]/40`}
+                                            className="flex items-center gap-4 rounded-xl border border-slate-100 bg-white p-4 dark:border-slate-800 dark:bg-slate-900/80"
                                         >
                                             <div className="flex h-12 w-12 shrink-0 items-center justify-center">
                                                 <img
                                                     src={item.image}
                                                     alt={item.title}
-                                                    className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-110"
+                                                    loading="lazy"
+                                                    decoding="async"
+                                                    className="h-full w-full object-contain"
                                                 />
                                             </div>
-                                            <h3 className="font-display text-sm font-bold text-brand-primary dark:text-white">
+                                            <h3 className="text-sm font-bold text-brand-primary dark:text-white">
                                                 {item.title}
                                             </h3>
-                                        </motion.div>
+                                        </div>
                                     ))}
                                 </div>
 
                                 <div className="mt-8">
                                     <Link
                                         href="/chat"
-                                        className="inline-flex items-center gap-2 rounded-full border-2 border-brand-primary bg-transparent px-6 py-3 text-sm font-semibold text-brand-primary transition-all duration-300 hover:bg-brand-primary hover:text-white focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:outline-none dark:border-[#C7A14A] dark:text-[#C7A14A] dark:hover:bg-[#C7A14A] dark:hover:text-white"
+                                        className="inline-flex items-center gap-2 rounded-full border-2 border-brand-primary px-6 py-3 text-sm font-semibold text-brand-primary hover:bg-brand-primary hover:text-white dark:border-[#C7A14A] dark:text-[#C7A14A] dark:hover:bg-[#C7A14A] dark:hover:text-white"
                                     >
                                         Start conversation
                                         <ArrowRight className="h-4 w-4" />
@@ -1279,23 +860,18 @@ export default function Welcome({
                                 </div>
                             </div>
 
-                            {/* Right Column: Video */}
+                            {/* Right: Video — poster prevents autoplay decode on scroll */}
                             <div className="flex w-full justify-center lg:w-auto lg:justify-end">
-                                <div className="relative h-auto w-72 rotate-0 transform overflow-hidden rounded-2xl shadow-2xl ring-1 ring-slate-900/10 transition-all duration-500 hover:scale-105">
+                                <div className="relative h-auto w-72 overflow-hidden rounded-2xl shadow-2xl ring-1 ring-slate-900/10">
                                     <video
                                         autoPlay
                                         loop
                                         muted
                                         playsInline
-                                        preload="none"
+                                        preload="metadata"
                                         className="h-auto w-full"
                                     >
-                                        <source
-                                            src="/video/section.mp4"
-                                            type="video/mp4"
-                                        />
-                                        Your browser does not support the video
-                                        tag.
+                                        <source src="/video/section.mp4" type="video/mp4" />
                                     </video>
                                 </div>
                             </div>
@@ -1306,10 +882,11 @@ export default function Welcome({
                 {/* Expertise Section */}
                 <section
                     id="expertise"
-                    className="relative overflow-hidden bg-zinc-50 py-10 md:py-12 dark:bg-black/20"
+                    className="relative overflow-hidden bg-zinc-50 py-10 md:py-12 section-offscreen dark:bg-black/20"
                 >
-                    <div className="absolute top-0 right-0 -z-10 h-[320px] w-[320px] rounded-full bg-brand-primary/5 blur-[80px]" />
-                    <div className="absolute bottom-1/4 left-0 -z-10 h-[240px] w-[240px] rounded-full bg-[#C7A14A]/5 blur-[60px]" />
+                    {/* Decorative orbs — pointer-events-none, no blur on mobile */}
+                    <div className="absolute top-0 right-0 -z-10 hidden h-[320px] w-[320px] rounded-full bg-brand-primary/5 blur-[80px] lg:block" />
+                    <div className="absolute bottom-1/4 left-0 -z-10 hidden h-[240px] w-[240px] rounded-full bg-[#C7A14A]/5 blur-[60px] lg:block" />
 
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <div className="mb-8 text-center md:mb-10">
@@ -1341,10 +918,7 @@ export default function Welcome({
                                         key={service.id}
                                         service={service}
                                         index={i}
-                                        onClick={() => {
-                                            setSelectedService(service.id);
-                                            setIsModalOpen(true);
-                                        }}
+                                        onClick={() => openModal(service.id)}
                                     />
                                 ))}
                             </div>
@@ -1359,10 +933,7 @@ export default function Welcome({
                                         <ServiceCard
                                             service={service}
                                             index={i + 3}
-                                            onClick={() => {
-                                                setSelectedService(service.id);
-                                                setIsModalOpen(true);
-                                            }}
+                                            onClick={() => openModal(service.id)}
                                         />
                                     </div>
                                 ))}
@@ -1394,10 +965,7 @@ export default function Welcome({
                             {/* Action Buttons */}
                             <div className="flex flex-wrap items-center justify-center gap-3">
                                 <button
-                                    onClick={() => {
-                                        setSelectedService('');
-                                        setIsModalOpen(true);
-                                    }}
+                                    onClick={() => openModal()}
                                     className="group inline-flex items-center gap-2 rounded-full bg-brand-primary px-8 py-3.5 text-sm font-semibold text-white transition-all hover:bg-[#C7A14A] hover:shadow-lg hover:shadow-brand-primary/25"
                                 >
                                     <MessageSquare className="h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
@@ -1417,8 +985,8 @@ export default function Welcome({
                 </section>
 
                 {/* Your Journey - How It Works */}
-                <section className="relative overflow-hidden bg-[#0A1628] py-16 lg:py-20">
-                    {/* Background Pattern */}
+                <section className="relative overflow-hidden bg-[#0A1628] py-16 section-offscreen lg:py-20">
+                    {/* Background Pattern — static, no animation */}
                     <div className="absolute inset-0 opacity-[0.02]">
                         <div
                             className="absolute inset-0"
@@ -1452,21 +1020,13 @@ export default function Welcome({
                             </p>
                         </div>
 
-                        {/* Steps */}
+                        {/* Steps — no motion.div, no backdrop-blur */}
                         <div className="grid gap-6 md:grid-cols-3">
                             {JOURNEY_STEPS.map((item, i) => (
-                                <motion.div
+                                <div
                                     key={i}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{
-                                        duration: 0.4,
-                                        delay: i * 0.1,
-                                    }}
-                                    className="relative rounded-xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm"
+                                    className="relative rounded-xl border border-slate-800 bg-slate-900 p-6"
                                 >
-                                    {/* Step Number */}
                                     <div className="absolute -top-3 left-6">
                                         <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#C7A14A] text-xs font-bold text-[#0A1628]">
                                             {item.step}
@@ -1478,6 +1038,8 @@ export default function Welcome({
                                             <img
                                                 src={item.icon}
                                                 alt={item.title}
+                                                loading="lazy"
+                                                decoding="async"
                                                 className="h-full w-full object-contain"
                                             />
                                         </div>
@@ -1489,22 +1051,15 @@ export default function Welcome({
                                         </p>
                                     </div>
 
-                                    {/* Connector Line (not on last item) */}
                                     {i < 2 && (
                                         <div className="absolute top-1/2 -right-3 hidden h-px w-6 bg-[#C7A14A]/30 md:block" />
                                     )}
-                                </motion.div>
+                                </div>
                             ))}
                         </div>
 
                         {/* CTA */}
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.3 }}
-                            className="mt-10 text-center"
-                        >
+                        <div className="mt-10 text-center">
                             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                                 <Link
                                     href="/chat"
@@ -1514,25 +1069,22 @@ export default function Welcome({
                                     Start with AI Assistant
                                 </Link>
                                 <button
-                                    onClick={() => {
-                                        setSelectedService('');
-                                        setIsModalOpen(true);
-                                    }}
+                                    onClick={() => openModal()}
                                     className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 transition-colors hover:text-[#C7A14A]"
                                 >
                                     Request Direct Consultation
                                     <ArrowRight className="h-4 w-4" />
                                 </button>
                             </div>
-                        </motion.div>
+                        </div>
                     </div>
                 </section>
 
-                <div ref={storiesRef} className="min-h-[12rem]">
+                <div ref={storiesRef} className="min-h-[520px]">
                     {shouldLoadStories ? (
                         <Suspense
                             fallback={
-                                <div className="h-48 bg-zinc-50 dark:bg-black/20" />
+                                <StoriesSkeleton />
                             }
                         >
                             <LazyStoriesSection />
@@ -1541,25 +1093,7 @@ export default function Welcome({
                 </div>
 
                 {/* Auto Sliding Images Section */}
-                <section className="relative overflow-hidden bg-zinc-50 py-12 dark:bg-black/20">
-                    {/* Decorative Background Elements */}
-                    <div className="absolute inset-0 -z-10">
-                        {/* Grid Pattern */}
-                        <div
-                            className="absolute inset-0 opacity-[0.03]"
-                            style={{
-                                backgroundImage: `
-                                    linear-gradient(#C7A14A 1px, transparent 1px),
-                                    linear-gradient(90deg, #C7A14A 1px, transparent 1px)
-                                `,
-                                backgroundSize: '50px 50px',
-                            }}
-                        />
-                        {/* Gradient Orbs */}
-                        <div className="pointer-events-none absolute top-1/4 left-0 h-96 w-96 rounded-full bg-brand-primary/5 blur-[150px]" />
-                        <div className="pointer-events-none absolute right-0 bottom-1/4 h-96 w-96 rounded-full bg-[#C7A14A]/5 blur-[150px]" />
-                    </div>
-
+                <section className="relative overflow-hidden bg-zinc-50 py-12 section-offscreen dark:bg-black/20">
                     <div className="relative z-10 mx-auto mb-8 max-w-7xl px-6 lg:px-8">
                         <div className="mx-auto max-w-2xl text-center">
                             <div className="mb-3 inline-flex items-center gap-2">
@@ -1571,119 +1105,56 @@ export default function Welcome({
                             </div>
                             <h2 className="text-xl font-medium tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                 Our Services{' '}
-                                <span className="text-[#C7A14A]">
-                                    in Motion
-                                </span>
+                                <span className="text-[#C7A14A]">in Motion</span>
                             </h2>
-                            <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                                Explore the comprehensive range of services we
-                                offer through our platform.
-                            </p>
                         </div>
                     </div>
 
                     <div className="relative overflow-hidden">
-                        {/* Enhanced Gradient Masks */}
-                        <div className="pointer-events-none absolute top-0 bottom-0 left-0 z-30 w-32 bg-gradient-to-r from-zinc-50 via-zinc-50/50 to-transparent md:w-48 dark:from-black/20 dark:via-black/10" />
-                        <div className="pointer-events-none absolute top-0 right-0 bottom-0 z-30 w-32 bg-gradient-to-l from-zinc-50 via-zinc-50/50 to-transparent md:w-48 dark:from-black/20 dark:via-black/10" />
+                        {/* Fade masks */}
+                        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-zinc-50 to-transparent dark:from-black/20" />
+                        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-zinc-50 to-transparent dark:from-black/20" />
 
-                        <style>{`
-                            @keyframes slide-left {
-                                0% {
-                                    transform: translateX(0);
-                                }
-                                100% {
-                                    transform: translateX(-100%);
-                                }
-                            }
-
-                            .slide-container {
-                                animation: slide-left 150s linear infinite;
-                            }
-
-                            .slide-container:hover {
-                                animation-play-state: paused;
-                            }
-                        `}</style>
-
-                        {/* Slide Wrapper */}
-                        <div className="mx-auto max-w-7xl overflow-hidden px-6 lg:px-8">
-                            <div className="slide-container flex gap-12">
-                                {[
-                                    '/image/storyset/2.1.svg',
-                                    '/image/storyset/2.2 .svg',
-                                    '/image/storyset/2.3.svg',
-                                    '/image/storyset/2.4.svg',
-                                    '/image/storyset/3.0 .svg',
-                                    '/image/storyset/3.1.svg',
-                                    '/image/storyset/3.2.svg',
-                                    '/image/storyset/3.3.svg',
-                                    '/image/storyset/3.4.svg',
-                                    '/image/storyset/3.5.svg',
-                                    '/image/storyset/3.6.svg',
-                                    '/image/storyset/3.7.svg',
-                                    '/image/storyset/4.0 .svg',
-                                    '/image/storyset/4.1.svg',
-                                    '/image/storyset/4.2.svg',
-                                    '/image/storyset/4.3.svg',
-                                    '/image/storyset/5.0 .svg',
-                                    '/image/storyset/5.1 .svg',
-                                    '/image/storyset/5.2.svg',
-                                    '/image/storyset/5.3.svg',
-                                    '/image/storyset/6.0.svg',
-                                    '/image/storyset/6.1.svg',
-                                    '/image/storyset/6.2.svg',
-                                    '/image/storyset/7.1.svg',
-                                    '/image/storyset/7.2.svg',
-                                    '/image/storyset/7.3.svg',
-                                    '/image/storyset/7.4.svg',
-                                    '/image/storyset/7.5.svg',
-                                    '/image/storyset/8.1.svg',
-                                    '/image/storyset/8.2.svg',
-                                    '/image/storyset/8.3.svg',
-                                    '/image/storyset/9.1.svg',
-                                    '/image/storyset/9.2.svg',
-                                    '/image/storyset/9.3.svg',
-                                    '/image/storyset/9.4.svg',
-                                ].map((src, idx) => (
-                                    <div
-                                        key={idx}
-                                        className="h-48 w-56 flex-shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white transition-all duration-300 hover:border-brand-primary/50 sm:h-52 sm:w-60 md:h-56 md:w-64 dark:border-slate-800 dark:bg-zinc-900"
-                                    >
-                                        <img
-                                            src={src}
-                                            alt={`Gallery item ${idx + 1}`}
-                                            className="h-full w-full object-cover"
-                                            loading="lazy"
-                                            onError={(e) => {
-                                                e.currentTarget.style.background =
-                                                    'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)';
-                                                e.currentTarget.src = '';
-                                            }}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                        {/* Use the existing CSS marquee animation — no inline style tag */}
+                        <Marquee
+                            className="[--duration:80s] [--gap:1rem]"
+                            pauseOnHover
+                            repeat={2}
+                        >
+                            {GALLERY_IMAGES.map((src, idx) => (
+                                <div
+                                    key={idx}
+                                    className="h-48 w-56 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-zinc-900"
+                                >
+                                    <img
+                                        src={src}
+                                        alt=""
+                                        aria-hidden="true"
+                                        width={224}
+                                        height={192}
+                                        loading="lazy"
+                                        decoding="async"
+                                        className="h-full w-full object-contain p-2"
+                                    />
+                                </div>
+                            ))}
+                        </Marquee>
                     </div>
                 </section>
 
                 {/* The Area24One Strategic Framework - Fixed Background Image */}
                 <section
-                    ref={processRef}
                     id="process"
-                    className="relative min-h-[600px] overflow-hidden"
+                    className="relative min-h-[600px] overflow-hidden section-offscreen"
                 >
-                    {/* Fixed Background Image - Optimized */}
-                    <div
-                        className="absolute inset-0 bg-cover bg-center"
-                        style={{
-                            backgroundImage:
-                                'url(https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/pexels-ivan-s-8962803.jpg)',
-                        }}
+                    <img
+                        src="https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/pexels-ivan-s-8962803.jpg"
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 h-full w-full object-cover"
                     />
-
-                    {/* Dark Overlay for Text Visibility */}
                     <div className="absolute inset-0 bg-gradient-to-b from-[#0A1628]/90 via-[#0A1628]/85 to-[#0A1628]/90" />
 
                     {/* Content Stacked Over Image */}
@@ -1751,20 +1222,13 @@ export default function Welcome({
                                             align: 'left',
                                         },
                                     ].map((phase, i) => (
-                                        <motion.div
+                                        <div
                                             key={i}
-                                            initial={{ opacity: 0, y: 15 }}
-                                            whileInView={{ opacity: 1, y: 0 }}
-                                            viewport={{ once: true }}
-                                            transition={{
-                                                duration: 0.4,
-                                                delay: i * 0.1,
-                                            }}
                                             className={`relative flex items-start gap-5 lg:grid lg:grid-cols-2 lg:gap-8 ${phase.align === 'right' ? 'lg:text-right' : ''}`}
                                         >
                                             {/* Node */}
                                             <div
-                                                className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-[#C7A14A] bg-[#0A1628]/80 backdrop-blur-sm lg:absolute lg:left-1/2 lg:-translate-x-1/2 ${phase.align === 'right' ? 'lg:order-2' : ''}`}
+                                                className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-[#C7A14A] bg-[#0A1628] lg:absolute lg:left-1/2 lg:-translate-x-1/2 ${phase.align === 'right' ? 'lg:order-2' : ''}`}
                                             >
                                                 <span className="text-sm font-bold text-[#C7A14A]">
                                                     {i + 1}
@@ -1809,19 +1273,13 @@ export default function Welcome({
                                             <div
                                                 className={`hidden lg:block ${phase.align === 'right' ? 'lg:order-2' : 'lg:order-1'}`}
                                             />
-                                        </motion.div>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
 
                             {/* Compact CTA */}
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                whileInView={{ opacity: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.4, delay: 0.3 }}
-                                className="mt-10 flex flex-col items-center gap-3 border-t border-white/10 pt-6 lg:flex-row lg:justify-between"
-                            >
+                            <div className="mt-10 flex flex-col items-center gap-3 border-t border-white/10 pt-6 lg:flex-row lg:justify-between">
                                 <p className="text-xs text-slate-400">
                                     Framework by{' '}
                                     <span className="text-[#C7A14A]">
@@ -1830,16 +1288,13 @@ export default function Welcome({
                                 </p>
 
                                 <button
-                                    onClick={() => {
-                                        setSelectedService('');
-                                        setIsModalOpen(true);
-                                    }}
+                                    onClick={() => openModal()}
                                     className="group inline-flex items-center gap-2 text-sm font-semibold text-white transition-colors hover:text-[#C7A14A]"
                                 >
                                     Request Strategic Review
                                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                                 </button>
-                            </motion.div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -1847,17 +1302,10 @@ export default function Welcome({
                 {/* Materials & brands we use — Clean Marquee */}
                 <section
                     id="materials-brands"
-                    className="relative overflow-hidden bg-white py-16 dark:bg-white"
+                    className="relative overflow-hidden bg-white py-16 section-offscreen dark:bg-white"
                 >
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                        {/* Compact Header */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 12 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.4 }}
-                            className="mb-10 text-center"
-                        >
+                        <div className="mb-10 text-center">
                             <div className="mb-3 inline-flex items-center gap-2">
                                 <div className="h-px w-6 bg-[#C7A14A]" />
                                 <span className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A] uppercase">
@@ -1869,20 +1317,19 @@ export default function Welcome({
                                 Trusted partners across our construction
                                 packages
                             </h3>
-                        </motion.div>
+                        </div>
 
-                        {/* Clean Marquee - No wrapper, mild shadow, vertical dividers */}
+                        {/* Clean Marquee */}
                         <div className="relative overflow-hidden">
                             <Marquee
-                                className="py-4 [--duration:40s] [--gap:0px]"
+                                className="py-4 [--duration:50s] [--gap:0px]"
                                 pauseOnHover
-                                repeat={6}
+                                repeat={3}
                             >
                                 {MARQUEE_BRANDS.map((brand, i) => (
                                     <MarqueeBrandCard
                                         key={i}
                                         brand={brand}
-                                        isLast={false}
                                     />
                                 ))}
                             </Marquee>
@@ -1892,21 +1339,17 @@ export default function Welcome({
 
                 {/* Founder-Led Elite Advisory - Clean Modern Design */}
                 <section
-                    ref={whyUsRef}
                     id="why-us"
                     className="relative overflow-hidden bg-[#0A1628]"
                 >
-                    {/* Fixed Background Image - Optimized */}
-                    <div
-                        className="absolute inset-0 bg-cover bg-center"
-                        style={{
-                            backgroundImage:
-                                'url(https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/pexels-ivan-s-8962803.jpg)',
-                        }}
+                    <img
+                        src="https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/pexels-ivan-s-8962803.jpg"
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 h-full w-full object-cover opacity-20"
                     />
-
-                    {/* Dark Overlay */}
-                    <div className="absolute inset-0 bg-[#0A1628]/92" />
 
                     <div className="relative z-10 py-20 lg:py-24">
                         <div className="mx-auto max-w-6xl px-6 lg:px-8">
@@ -1952,16 +1395,9 @@ export default function Welcome({
                                         desc: 'All stakeholders operate within one unified decision chain.',
                                     },
                                 ].map((layer, i) => (
-                                    <motion.div
+                                    <div
                                         key={i}
-                                        initial={{ opacity: 0, y: 15 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{
-                                            duration: 0.4,
-                                            delay: i * 0.08,
-                                        }}
-                                        className="group rounded-xl border border-slate-800/50 bg-slate-900/30 p-6 backdrop-blur-sm transition-all duration-300 hover:border-[#C7A14A]/30 hover:bg-slate-900/50"
+                                        className="group rounded-xl border border-slate-800/50 bg-slate-900/30 p-6 transition-all duration-300 hover:border-[#C7A14A]/30 hover:bg-slate-900/50"
                                     >
                                         <div className="flex items-start gap-4">
                                             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#C7A14A]/30 text-xs font-bold text-[#C7A14A]">
@@ -1976,18 +1412,12 @@ export default function Welcome({
                                                 </p>
                                             </div>
                                         </div>
-                                    </motion.div>
+                                    </div>
                                 ))}
                             </div>
 
-                            {/* Authority Metrics - Inline Row */}
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                whileInView={{ opacity: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: 0.2 }}
-                                className="mt-8 flex flex-wrap justify-center gap-8 border-y border-slate-800/50 py-6 lg:gap-12"
-                            >
+                            {/* Authority Metrics */}
+                            <div className="mt-8 flex flex-wrap justify-center gap-8 border-y border-slate-800/50 py-6 lg:gap-12">
                                 {[
                                     { value: '₹120Cr+', label: 'Reviewed' },
                                     {
@@ -2008,16 +1438,10 @@ export default function Welcome({
                                         </div>
                                     </div>
                                 ))}
-                            </motion.div>
+                            </div>
 
-                            {/* Compact Quote & Attribution */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 15 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: 0.3 }}
-                                className="mt-10 text-center"
-                            >
+                            {/* Compact Quote */}
+                            <div className="mt-10 text-center">
                                 <p className="mx-auto max-w-2xl text-base leading-relaxed font-light text-slate-300">
                                     "A project is not approved because it looks
                                     promising. It is approved because it
@@ -2030,7 +1454,7 @@ export default function Welcome({
                                     </span>
                                     <div className="h-px w-8 bg-[#C7A14A]/50" />
                                 </div>
-                            </motion.div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -2123,7 +1547,7 @@ export default function Welcome({
                 {/* FAQ Section - Compact Modern Design */}
                 <section
                     id="faq"
-                    className="relative overflow-hidden bg-slate-50 py-16 dark:bg-[#0A0F1C]"
+                    className="relative overflow-hidden bg-slate-50 py-16 section-offscreen dark:bg-[#0A0F1C]"
                 >
                     <div className="mx-auto max-w-3xl px-6 lg:px-8">
                         {/* Compact Header */}
@@ -2143,15 +1567,8 @@ export default function Welcome({
                         {/* Compact Accordion */}
                         <div className="space-y-2">
                             {FAQ_ITEMS.map((item, i) => (
-                                <motion.div
+                                <div
                                     key={i}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{
-                                        duration: 0.3,
-                                        delay: i * 0.05,
-                                    }}
                                     className="rounded-lg border border-slate-200 bg-white transition-all duration-200 dark:border-slate-800 dark:bg-slate-900/50"
                                 >
                                     <button
@@ -2179,18 +1596,12 @@ export default function Welcome({
                                             </p>
                                         </div>
                                     </div>
-                                </motion.div>
+                                </div>
                             ))}
                         </div>
 
                         {/* Compact CTA */}
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.3 }}
-                            className="mt-8 text-center"
-                        >
+                        <div className="mt-8 text-center">
                             <p className="mb-2 text-xs text-slate-500 dark:text-slate-400">
                                 Still have questions?
                             </p>
@@ -2201,107 +1612,50 @@ export default function Welcome({
                                 Start a conversation
                                 <ArrowRight className="h-3.5 w-3.5" />
                             </Link>
-                        </motion.div>
+                        </div>
                     </div>
                 </section>
 
-                {/* One Platform CTA - Fixed Background Image */}
-                <section className="relative overflow-hidden">
-                    {/* Fixed Background Image - Optimized */}
-                    <div
-                        className="absolute inset-0 bg-cover bg-center"
-                        style={{
-                            backgroundImage:
-                                'url(https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/pexels-ivan-s-8962803.jpg)',
-                        }}
-                    />
-
-                    {/* Light Overlay */}
-                    <div className="absolute inset-0 bg-white/95 dark:bg-[#0A1628]/95" />
-
-                    {/* Content */}
-                    <div className="relative z-10 py-16 lg:py-20">
-                        <div className="mx-auto max-w-4xl px-6 text-center lg:px-8">
-                            {/* Micro Label */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                className="mb-4 inline-flex items-center gap-2"
-                            >
+                {/* One Platform CTA */}
+                <section className="relative overflow-hidden bg-white py-16 section-offscreen dark:bg-[#0A1628] lg:py-20">
+                    <div className="mx-auto max-w-4xl px-6 text-center lg:px-8">
+                            <div className="mb-4 inline-flex items-center gap-2">
                                 <div className="h-px w-6 bg-[#C7A14A]" />
                                 <span className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A] uppercase">
                                     One platform. Five experts. Better outcomes.
                                 </span>
                                 <div className="h-px w-6 bg-[#C7A14A]" />
-                            </motion.div>
+                            </div>
 
-                            {/* Headline */}
-                            <motion.h2
-                                initial={{ opacity: 0, y: 15 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.1 }}
-                                className="mb-3 text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl dark:text-white"
-                            >
+                            <h2 className="mb-3 text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl dark:text-white">
                                 Clarity before commitment.
                                 <br />
                                 <span className="text-[#C7A14A]">
                                     The right expert, the right decision.
                                 </span>
-                            </motion.h2>
+                            </h2>
 
-                            {/* Description */}
-                            <motion.p
-                                initial={{ opacity: 0, y: 15 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.15 }}
-                                className="mx-auto mb-6 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400"
-                            >
+                            <p className="mx-auto mb-6 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                                 One conversation connects you to construction,
                                 interiors, real estate, development, or events.
                                 Compare options and move forward with
                                 confidence.
-                            </motion.p>
+                            </p>
 
-                            {/* Benefits - Compact Row */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 15 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.2 }}
-                                className="mb-8 flex flex-wrap items-center justify-center gap-6"
-                            >
+                            <div className="mb-8 flex flex-wrap items-center justify-center gap-6">
                                 {[
-                                    {
-                                        icon: TrendingUp,
-                                        text: 'Informed decisions',
-                                    },
+                                    { icon: TrendingUp, text: 'Informed decisions' },
                                     { icon: Zap, text: 'Time & cost saved' },
-                                    {
-                                        icon: ShieldCheck,
-                                        text: 'Trusted partners',
-                                    },
+                                    { icon: ShieldCheck, text: 'Trusted partners' },
                                 ].map((item, i) => (
-                                    <div
-                                        key={i}
-                                        className="flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-400"
-                                    >
+                                    <div key={i} className="flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-400">
                                         <item.icon className="h-3.5 w-3.5 text-[#C7A14A]" />
                                         {item.text}
                                     </div>
                                 ))}
-                            </motion.div>
+                            </div>
 
-                            {/* CTA Buttons */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 15 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.25 }}
-                                className="flex flex-col items-center justify-center gap-3 sm:flex-row"
-                            >
+                            <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
                                 <Link
                                     href="/chat"
                                     className="group inline-flex items-center gap-2 rounded-full bg-[#0A1628] px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-[#0A1628]/90 hover:shadow-lg dark:bg-[#C7A14A] dark:text-[#0A1628]"
@@ -2310,14 +1664,13 @@ export default function Welcome({
                                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                                 </Link>
                                 <button
-                                    onClick={() => setIsModalOpen(true)}
+                                    onClick={() => openModal()}
                                     className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors hover:text-[#C7A14A] dark:text-slate-400"
                                 >
                                     Talk to an expert
                                 </button>
-                            </motion.div>
+                            </div>
                         </div>
-                    </div>
                 </section>
 
                 {/* Footer */}

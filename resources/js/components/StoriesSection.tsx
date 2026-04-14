@@ -384,7 +384,8 @@ export const StoriesSection = memo(function StoriesSection() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-4 backdrop-blur-xl"
+                        transition={{ duration: 0.2 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-4"
                         onClick={closeStory}
                     >
                         <button
@@ -410,24 +411,19 @@ export const StoriesSection = memo(function StoriesSection() {
                                     preload="auto"
                                 />
 
-                                {/* Progress Bar (Visual only for now) */}
+                                {/* Progress Bar */}
                                 <div className="absolute top-4 right-4 left-4 z-20 flex gap-1">
                                     {stories.map((_, idx) => (
                                         <div
                                             key={idx}
-                                            className="h-1 flex-1 overflow-hidden rounded-full bg-white/20"
-                                        >
-                                            <div
-                                                className={`h-full bg-white transition-all duration-300 ${
-                                                    idx === selectedStoryIndex
-                                                        ? 'w-full'
-                                                        : idx <
-                                                            selectedStoryIndex
-                                                          ? 'w-full'
-                                                          : 'w-0'
-                                                }`}
-                                            />
-                                        </div>
+                                            className={`h-1 flex-1 rounded-full transition-colors duration-200 ${
+                                                idx === selectedStoryIndex
+                                                    ? 'bg-white'
+                                                    : idx < selectedStoryIndex
+                                                      ? 'bg-white/60'
+                                                      : 'bg-white/20'
+                                            }`}
+                                        />
                                     ))}
                                 </div>
 

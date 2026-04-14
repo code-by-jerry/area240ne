@@ -8,21 +8,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-    --animate-gradient-x: gradient-x 15s ease infinite;
-
-    @keyframes gradient-x {
-
-        0%,
-        100% {
-            background-size: 200% 200%;
-            background-position: left center;
-        }
-
-        50% {
-            background-size: 200% 200%;
-            background-position: right center;
-        }
-    }
+    /* gradient-x removed — was causing constant GPU repaints on every page load */
 
     --font-sans: 'Plus Jakarta Sans',
     ui-sans-serif,
@@ -93,9 +79,7 @@
     --color-brand-dark: #051025;
 }
 
-html {
-    scroll-behavior: smooth;
-}
+/* scroll-behavior: smooth removed — Lenis handles smooth scroll; having both causes double-scroll jank */
 
 @keyframes marquee {
     from {
@@ -130,14 +114,23 @@ html {
 @layer utilities {
     .animate-marquee {
         animation: marquee var(--duration) linear infinite;
+        will-change: transform;
     }
 
     .animate-marquee-vertical {
         animation: marquee-vertical var(--duration) linear infinite;
+        will-change: transform;
     }
 
     .animate-marquee-reverse {
         animation: marquee-reverse var(--duration) linear infinite;
+        will-change: transform;
+    }
+
+    /* Apply to page sections below the fold for faster paint */
+    .section-offscreen {
+        content-visibility: auto;
+        contain-intrinsic-size: 0 600px;
     }
 }
 

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class CompanyProfile extends Model
 {
@@ -24,6 +25,11 @@ class CompanyProfile extends Model
     protected $casts = [
         'phone' => 'array',
     ];
+
+    protected static function booted(): void
+    {
+        static::saved(fn() => Cache::forget('company_profile'));
+    }
 
     /**
      * Get the singleton company profile, or a new empty instance.
