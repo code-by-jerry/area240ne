@@ -71,72 +71,18 @@ const LazyStoriesSection = lazy(() =>
 );
 
 const TRUST_ITEMS = [
-    {
-        type: 'badge',
-        text: 'Decade-Backed Domain Expertise',
-        icon: ShieldCheck,
-    },
-    {
-        type: 'logo',
-        logoSrc:
-            'https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/area%2024%20one.png?updatedAt=1770815540578',
-        logoAlt: 'Area 24 One',
-    },
-    {
-        type: 'badge',
-        text: 'Consultation Before Commitment',
-        icon: MessageSquare,
-    },
-    {
-        type: 'logo',
-        logoSrc:
-            'https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/Atha.png?updatedAt=1770815540515',
-        logoAlt: 'Atha',
-    },
-    {
-        type: 'badge',
-        text: 'Verified Specialists, Not Middlemen',
-        icon: CheckCircle2,
-    },
-    {
-        type: 'logo',
-        logoSrc:
-            'https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/Nesthetix.png?updatedAt=1770815540561',
-        logoAlt: 'Nesthetix',
-    },
-    {
-        type: 'badge',
-        text: 'Right Expert, First Time',
-        icon: Users,
-    },
-    {
-        type: 'logo',
-        logoSrc:
-            'https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/area%2024%20realty.png?updatedAt=1770815540228',
-        logoAlt: 'Area 24 Realty',
-    },
-    {
-        type: 'badge',
-        text: 'Reduced Decision & Planning Time',
-        icon: Zap,
-    },
-    {
-        type: 'logo',
-        logoSrc:
-            'https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/Area%2024%20Developers.png?updatedAt=1770815541191',
-        logoAlt: 'Area 24 Developers',
-    },
-    {
-        type: 'badge',
-        text: 'Premium Execution Partners',
-        icon: Star,
-    },
-    {
-        type: 'logo',
-        logoSrc:
-            'https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/stage%20365.png?updatedAt=1770815540783',
-        logoAlt: 'Stage 365',
-    },
+    { type: 'badge', text: 'Decade-Backed Domain Expertise', icon: ShieldCheck },
+    { type: 'logo', logoSrc: ik('https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/area%2024%20one.png?updatedAt=1770815540578'), logoAlt: 'Area 24 One' },
+    { type: 'badge', text: 'Consultation Before Commitment', icon: MessageSquare },
+    { type: 'logo', logoSrc: ik('https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/Atha.png?updatedAt=1770815540515'), logoAlt: 'Atha' },
+    { type: 'badge', text: 'Verified Specialists, Not Middlemen', icon: CheckCircle2 },
+    { type: 'logo', logoSrc: ik('https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/Nesthetix.png?updatedAt=1770815540561'), logoAlt: 'Nesthetix' },
+    { type: 'badge', text: 'Right Expert, First Time', icon: Users },
+    { type: 'logo', logoSrc: ik('https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/area%2024%20realty.png?updatedAt=1770815540228'), logoAlt: 'Area 24 Realty' },
+    { type: 'badge', text: 'Reduced Decision & Planning Time', icon: Zap },
+    { type: 'logo', logoSrc: ik('https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/Area%2024%20Developers.png?updatedAt=1770815541191'), logoAlt: 'Area 24 Developers' },
+    { type: 'badge', text: 'Premium Execution Partners', icon: Star },
+    { type: 'logo', logoSrc: ik('https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/stage%20365.png?updatedAt=1770815540783'), logoAlt: 'Stage 365' },
 ] as const;
 
 const WHO_ITS_FOR_ITEMS = [
@@ -165,19 +111,19 @@ const JOURNEY_STEPS = [
         step: '01',
         title: 'Explore & Analyse',
         desc: 'Visit the site, browse our services, and understand how Area24One connects you to the right experts.',
-        icon: 'https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/analysis.png',
+        icon: ik('https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/analysis.png', 'f-webp,q-80,w-96'),
     },
     {
         step: '02',
         title: 'Choose Your Path',
         desc: 'Select direct consultation for immediate guidance or use our AI Chat Assistant for instant answers.',
-        icon: 'https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/choose_path.png',
+        icon: ik('https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/choose_path.png', 'f-webp,q-80,w-96'),
     },
     {
         step: '03',
         title: 'Get Matched',
         desc: 'Share your project details. We validate your requirements and connect you to the perfect specialist.',
-        icon: 'https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/match_up.png',
+        icon: ik('https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/match_up.png', 'f-webp,q-80,w-96'),
     },
 ] as const;
 
@@ -269,6 +215,12 @@ const CLIENT_REVIEWS = [
 
 /** Base path for brand logos (public/image/brands material/) */
 const BRANDS_IMAGE_BASE = '/image/brands%20material';
+
+/** Add ImageKit WebP + quality transformation to any ImageKit URL */
+function ik(url: string, opts = 'f-webp,q-80') {
+    // Insert /tr:... before the filename
+    return url.replace(/(https:\/\/ik\.imagekit\.io\/[^/]+\/)/, `$1tr:${opts}/`);
+}
 
 type MarqueeBrand = { name: string; logo: string };
 
@@ -636,10 +588,10 @@ export default function Welcome({
                 icon: <Building2 className="h-6 w-6" />,
                 logo: '/image/atha.png',
                 images: [
-                                        'https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg',
-                    'https://images.pexels.com/photos/69483/pexels-photo-69483.jpeg',
-                    'https://images.pexels.com/photos/29453302/pexels-photo-29453302.jpeg',
-                    'https://images.pexels.com/photos/27195983/pexels-photo-27195983.jpeg',
+                    'https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+                    'https://images.pexels.com/photos/69483/pexels-photo-69483.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+                    'https://images.pexels.com/photos/29453302/pexels-photo-29453302.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+                    'https://images.pexels.com/photos/27195983/pexels-photo-27195983.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
                 ],
                 title: 'Atha Construction',
                 desc: 'Specializing in high-end residential and commercial projects, we offer a seamless journey from architectural blueprints to turnkey construction solutions.',
@@ -652,11 +604,10 @@ export default function Welcome({
                 icon: <PaintBucket className="h-6 w-6" />,
                 logo: '/image/nesthetix.png',
                 images: [
-                    
-                    'https://images.pexels.com/photos/20285350/pexels-photo-20285350.jpeg',
-                    'https://images.pexels.com/photos/20285351/pexels-photo-20285351.jpeg',
-                    'https://images.pexels.com/photos/11701127/pexels-photo-11701127.jpeg',
-                    'https://images.pexels.com/photos/439227/pexels-photo-439227.jpeg',
+                    'https://images.pexels.com/photos/20285350/pexels-photo-20285350.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+                    'https://images.pexels.com/photos/20285351/pexels-photo-20285351.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+                    'https://images.pexels.com/photos/11701127/pexels-photo-11701127.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+                    'https://images.pexels.com/photos/439227/pexels-photo-439227.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
                 ],
                 title: 'Nesthetix Design',
                 desc: 'Our award-winning designers craft bespoke interiors that blend opulence with functionality. We tailor every detail to your lifestyle.',
@@ -669,11 +620,10 @@ export default function Welcome({
                 icon: <Home className="h-6 w-6" />,
                 logo: '/image/area 24 realty.png',
                 images: [
-                    
-                    'https://images.pexels.com/photos/8293778/pexels-photo-8293778.jpeg',
-                    'https://images.pexels.com/photos/7937748/pexels-photo-7937748.jpeg',
-                    'https://images.pexels.com/photos/8482871/pexels-photo-8482871.jpeg',
-                    'https://images.pexels.com/photos/29726512/pexels-photo-29726512.jpeg',
+                    'https://images.pexels.com/photos/8293778/pexels-photo-8293778.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+                    'https://images.pexels.com/photos/7937748/pexels-photo-7937748.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+                    'https://images.pexels.com/photos/8482871/pexels-photo-8482871.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+                    'https://images.pexels.com/photos/29726512/pexels-photo-29726512.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
                 ],
                 title: 'Area24 Realty',
                 desc: 'Access exclusive listings and data-driven market insights. Our consultants provide strategic advice for discerning buyers, sellers, and investors.',
@@ -686,11 +636,10 @@ export default function Welcome({
                 icon: <Hammer className="h-6 w-6" />,
                 logo: '/image/hero/Area24 developers  logo mockup.png',
                 images: [
-                    
-                    'https://images.pexels.com/photos/392031/pexels-photo-392031.jpeg',
-                    'https://images.pexels.com/photos/1579356/pexels-photo-1579356.jpeg',
-                    'https://images.pexels.com/photos/2314021/pexels-photo-2314021.jpeg',
-                    'https://images.pexels.com/photos/29141362/pexels-photo-29141362.jpeg',
+                    'https://images.pexels.com/photos/392031/pexels-photo-392031.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+                    'https://images.pexels.com/photos/1579356/pexels-photo-1579356.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+                    'https://images.pexels.com/photos/2314021/pexels-photo-2314021.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+                    'https://images.pexels.com/photos/29141362/pexels-photo-29141362.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
                 ],
                 title: 'Area24 Developers',
                 desc: 'We conceptualize and execute landmark residential and commercial developments. Our focus is on creating sustainable communities.',
@@ -701,13 +650,12 @@ export default function Welcome({
             {
                 id: 'events',
                 icon: <Sparkles className="h-6 w-6" />,
-                logo: '/image/stage 365.png',
+                logo: ik('https://ik.imagekit.io/area24onestorage/Area24%20one%20logos/stage%20365.png?updatedAt=1770815540783', 'f-webp,q-80,w-200'),
                 images: [
-                    
-                    'https://images.pexels.com/photos/50675/banquet-wedding-society-deco-50675.jpeg',
-                    'https://images.pexels.com/photos/169190/pexels-photo-169190.jpeg',
-                    'https://images.pexels.com/photos/169190/pexels-photo-169190.jpeg',
-                    'https://images.pexels.com/photos/1047442/pexels-photo-1047442.jpeg',
+                    'https://images.pexels.com/photos/50675/banquet-wedding-society-deco-50675.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+                    'https://images.pexels.com/photos/169190/pexels-photo-169190.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+                    'https://images.pexels.com/photos/169190/pexels-photo-169190.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
+                    'https://images.pexels.com/photos/1047442/pexels-photo-1047442.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
                 ],
                 title: 'The Stage 365',
                 desc: 'From corporate galas to immersive brand activations, we produce extraordinary events. Our team handles everything from conceptual design to execution.',
@@ -1148,7 +1096,7 @@ export default function Welcome({
                     className="relative min-h-[600px] overflow-hidden section-offscreen"
                 >
                     <img
-                        src="https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/pexels-ivan-s-8962803.jpg"
+                        src={ik('https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/pexels-ivan-s-8962803.jpg', 'f-webp,q-70,w-1400')}
                         alt=""
                         aria-hidden="true"
                         loading="lazy"
@@ -1343,7 +1291,7 @@ export default function Welcome({
                     className="relative overflow-hidden bg-[#0A1628]"
                 >
                     <img
-                        src="https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/pexels-ivan-s-8962803.jpg"
+                        src={ik('https://ik.imagekit.io/area24onestorage/area24one%20layout%20images/pexels-ivan-s-8962803.jpg', 'f-webp,q-70,w-1400')}
                         alt=""
                         aria-hidden="true"
                         loading="lazy"

@@ -30,12 +30,10 @@ export default defineConfig({
         chunkSizeWarningLimit: 1000,
         rollupOptions: {
             output: {
-                // Manual chunk splitting for better caching
                 manualChunks: {
                     'vendor': [
                         'react',
                         'react-dom',
-                        'framer-motion',
                         '@inertiajs/react',
                     ],
                     'ui': [
@@ -52,7 +50,6 @@ export default defineConfig({
         include: [
             'react',
             'react-dom',
-            'framer-motion',
             '@inertiajs/react',
             'lucide-react',
             'lenis',

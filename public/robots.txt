@@ -1,2 +1,9 @@
 User-agent: *
-Disallow:
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /login
+Disallow: /register
+Disallow: /chat/session/
+Disallow: /cost-estimation/
+
+Sitemap: https://area24one.com/sitemap.xml

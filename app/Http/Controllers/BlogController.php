@@ -26,11 +26,12 @@ class BlogController extends Controller
             'featuredBlog' => $featured,
             'blogs' => $blogs,
             'seo' => [
-                'title' => 'Blogs | Area24One',
-                'description' => 'Insights, guides, and updates on construction, interiors, real estate, land development, and events.',
+                'title' => 'Blogs | Area24One — Construction, Interiors & Real Estate Insights',
+                'description' => 'Insights, guides, and updates on construction, interiors, real estate, land development, and events in Karnataka.',
                 'canonical' => $canonicalUrl,
                 'image' => $image,
                 'type' => 'website',
+                'twitter_card' => 'summary_large_image',
             ],
         ]);
     }
@@ -61,6 +62,14 @@ class BlogController extends Controller
                 'canonical' => $canonicalUrl,
                 'image' => $image,
                 'type' => 'article',
+                'twitter_card' => 'summary_large_image',
+                'published_time' => $blog->published_at?->toIso8601String(),
+                'modified_time' => $blog->updated_at?->toIso8601String(),
+                'breadcrumbs' => [
+                    ['name' => 'Home',  'url' => url('/')],
+                    ['name' => 'Blogs', 'url' => route('blogs.index')],
+                    ['name' => $blog->title, 'url' => $canonicalUrl],
+                ],
             ],
         ]);
     }

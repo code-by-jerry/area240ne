@@ -33,9 +33,9 @@ class WelcomeController extends Controller
             'heroSlides' => $heroSlides,
             'companyProfile' => $companyProfile,
             'seo' => [
-                'title' => 'Area24One | Construction, Interiors, Real Estate & Consultation Platform',
-                'description' => 'Area24One connects you to trusted experts across construction, interiors, real estate, development, and events through one intelligent consultation platform.',
-                'keywords' => 'construction services, interior design, real estate consulting, land development, event management, property consultation, Karnataka, Bangalore, Mysore, Ballari',
+                'title' => 'Area24One | Construction, Interiors & Real Estate',
+                'description' => 'One platform connecting you to expert brands across construction, interiors, real estate, development, and events in Bangalore, Mysore & Karnataka.',
+                'keywords' => 'construction Bangalore, interior design Bangalore, real estate Karnataka, land development, event management, property consultation, Mysore, Ballari',
                 'canonical' => $canonicalUrl,
                 'image' => $primaryImage,
                 'type' => 'website',
