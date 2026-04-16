@@ -19,6 +19,10 @@ interface SeoProps {
     canonical?: string | null;
     image?: string | null;
     type?: string | null;
+    twitter_card?: string | null;
+    published_time?: string | null;
+    modified_time?: string | null;
+    breadcrumbs?: { name: string; url: string }[] | null;
 }
 
 export default function BlogShow({
@@ -30,6 +34,34 @@ export default function BlogShow({
     relatedBlogs: Blog[];
     seo: SeoProps;
 }) {
+    const breadcrumbSchema = seo.breadcrumbs ? {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: seo.breadcrumbs.map((crumb, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            name: crumb.name,
+            item: crumb.url,
+        })),
+    } : null;
+
+    const articleSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: blog.title,
+        description: seo.description,
+        image: seo.image ?? undefined,
+        datePublished: seo.published_time ?? blog.published_at ?? undefined,
+        dateModified: seo.modified_time ?? undefined,
+        author: { '@type': 'Person', name: blog.author_name || 'Area24One' },
+        publisher: {
+            '@type': 'Organization',
+            name: 'Area24One',
+            url: 'https://area24one.com',
+        },
+        url: seo.canonical ?? undefined,
+    };
+
     return (
         <>
             <Head>
@@ -42,10 +74,16 @@ export default function BlogShow({
                 <meta property="og:type" content={seo.type ?? 'article'} />
                 {seo.canonical && <meta property="og:url" content={seo.canonical} />}
                 {seo.image && <meta property="og:image" content={seo.image} />}
-                <meta name="twitter:card" content="summary_large_image" />
+                {seo.published_time && <meta property="article:published_time" content={seo.published_time} />}
+                {seo.modified_time && <meta property="article:modified_time" content={seo.modified_time} />}
+                <meta name="twitter:card" content={seo.twitter_card ?? 'summary_large_image'} />
                 <meta name="twitter:title" content={seo.title} />
                 <meta name="twitter:description" content={seo.description} />
                 {seo.image && <meta name="twitter:image" content={seo.image} />}
+                <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
+                {breadcrumbSchema && (
+                    <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
+                )}
             </Head>
 
             <PublicSiteLayout>
@@ -58,7 +96,7 @@ export default function BlogShow({
                         <header className="mt-6 rounded-[2rem] border border-slate-200 bg-white p-8 shadow-[0_20px_80px_-45px_rgba(15,23,42,0.3)] sm:p-10 lg:p-12">
                             <div className="text-xs uppercase tracking-[0.24em] text-slate-500">
                                 {blog.author_name || 'Area24One'}
-                                {blog.published_at ? ` · ${new Date(blog.published_at).toLocaleDateString()}` : ''}
+                                {blog.published_at ? ` ï¿½ ${new Date(blog.published_at).toLocaleDateString()}` : ''}
                             </div>
                             <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
                                 {blog.title}

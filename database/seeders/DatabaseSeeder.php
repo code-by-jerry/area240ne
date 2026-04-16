@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ChatAssistantStarterSeeder::class,
             ChatIntentStarterSeeder::class,
+            BlogSeeder::class,
         ]);
     }
 }

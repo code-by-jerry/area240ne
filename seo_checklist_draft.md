@@ -83,23 +83,39 @@
 - ⚠️ Internal links from homepage to service pages — not yet added (add later)
 
 ### 🧭 Crawlability
-- ❌ No sitemap.xml — needs to be created
-- ✔ robots.txt exists — but needs Sitemap line added
-- ✔ All important pages are linked from homepage
-- ⚠️ `/chat`, `/cost-estimator` are public but not in sitemap
+- ✔ sitemap.xml created — `/sitemap.xml` route live, auto-generates XML
+- ✔ Sitemap includes: `/`, `/blogs`, `/cost-estimator`, `/chat`, all 9 service landing pages, all published blog posts
+- ✔ robots.txt updated — Sitemap line added: `Sitemap: https://area24one.com/sitemap.xml`
+- ✔ robots.txt blocks: `/dashboard`, `/admin`, `/login`, `/register`, `/chat/session/`, `/cost-estimation/`
+- ✔ All important pages linked from homepage
+- ✔ `/chat` and `/cost-estimator` included in sitemap at priority 0.6 and 0.7
+- ❌ Sitemap not yet submitted to GSC — requires deployment first
 
 ### 🔒 Security
-- ✔ HTTPS / SSL
-- ✔ CSRF token in blade layout
-- ✔ No mixed content issues (all assets use HTTPS)
+- ✔ HTTPS / SSL — enforced at server/Cloudflare level
+- ✔ CSRF token — in `app.blade.php`, enforced by Laravel on all POST/PUT/DELETE
+- ✔ No mixed content — all assets use HTTPS (ImageKit CDN, Pexels, fonts)
+- ✔ `X-Content-Type-Options: nosniff` — added via SecurityHeaders middleware
+- ✔ `X-Frame-Options: SAMEORIGIN` — prevents clickjacking
+- ✔ `X-XSS-Protection: 1; mode=block` — legacy XSS filter
+- ✔ `Referrer-Policy: strict-origin-when-cross-origin` — controls referrer leakage
+- ✔ `Permissions-Policy` — camera, microphone, geolocation blocked
+- ✔ `Strict-Transport-Security` — added when request is HTTPS (auto-skipped on local dev)
+- ✔ Cookies — `http_only: true`, `same_site: lax` set in session config
+- ⚠️ `SESSION_SECURE_COOKIE` not set in `.env` — must set to `true` in production `.env`
+- ⚠️ `APP_URL=http://localhost:8000` in dev `.env` — must be `https://area24one.com` in production
+- ❌ No `TrustProxies` middleware — needed if running behind Cloudflare or a load balancer to correctly detect HTTPS
 
 ### 🧠 Advanced Technical
-- ✔ Canonical tags — set per page in WelcomeController, BlogController
+- ✔ Canonical tags — set per page in WelcomeController, BlogController, ServiceLandingController
 - ✔ Schema.org structured data — Organization, WebSite, WebPage, FAQPage on homepage
-- ✔ Article schema — blog show page renders via Inertia with SEO props
-- ❌ Breadcrumb schema — not implemented
-- ❌ Custom 404 page — not found
-- ❌ Broken links audit — not done
+- ✔ Article schema — blog show page renders Article schema with headline, datePublished, dateModified, author
+- ✔ Service schema — all 9 service landing pages render Service schema with areaServed
+- ✔ Breadcrumb schema — added to blog show page (Home → Blogs → Post) and all service landing pages (Home → Services → Page)
+- ✔ OG article:published_time and article:modified_time — added to blog show page
+- ✔ Custom 404 page — `resources/js/pages/errors/404.tsx` with Home + Chat CTAs, registered in exception handler
+- ✔ Broken links audit — all internal hrefs checked, no broken links found (`/`, `/chat`, `/login`, `/blogs`, `/#expertise`)
+- ⚠️ External link audit (Pexels, ImageKit, social URLs) — not checked, low priority
 
 ---
 

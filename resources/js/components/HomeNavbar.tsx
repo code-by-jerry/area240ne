@@ -42,12 +42,8 @@ export const HomeNavbar = memo(function HomeNavbar({ auth, onConsultClick }: Hom
 
     return (
         <nav
-            className={`fixed top-0 z-50 w-full border-b transition-transform duration-300 ${
+            className={`fixed top-0 z-50 w-full border-b border-slate-200 bg-white py-1.5 transition-transform duration-300 dark:border-slate-800 dark:bg-brand-dark ${
                 visible ? 'translate-y-0' : '-translate-y-full'
-            } ${
-                scrolled
-                    ? 'border-slate-200 bg-white/90 py-1.5 backdrop-blur-md dark:border-slate-800 dark:bg-brand-dark/90'
-                    : 'border-transparent bg-black/40 py-2 backdrop-blur-sm'
             }`}
         >
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -55,7 +51,7 @@ export const HomeNavbar = memo(function HomeNavbar({ auth, onConsultClick }: Hom
                     <Link href="/" className="flex items-center gap-2">
                         <div className="flex h-12 w-12 items-center justify-center md:h-14 md:w-14">
                             <img
-                                src={scrolled ? '/image/main logo.png' : '/image/main logo (white).png'}
+                                src="/image/main logo.png"
                                 alt="Area24One"
                                 className="h-full w-full object-contain"
                             />
@@ -68,11 +64,7 @@ export const HomeNavbar = memo(function HomeNavbar({ auth, onConsultClick }: Hom
                             <Link
                                 key={item.label}
                                 href={item.href}
-                                className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
-                                    scrolled
-                                        ? 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800'
-                                        : 'text-white/80 hover:text-white'
-                                }`}
+                                className="rounded-full px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
                             >
                                 {item.label}
                             </Link>
@@ -83,29 +75,28 @@ export const HomeNavbar = memo(function HomeNavbar({ auth, onConsultClick }: Hom
                         {auth.user ? (
                             <Link
                                 href="/dashboard"
-                                className={`hidden rounded-full px-4 py-1.5 text-sm font-semibold transition-colors md:inline-flex ${
-                                    scrolled
-                                        ? 'bg-brand-primary text-white hover:bg-brand-primary/90'
-                                        : 'bg-white/20 text-white hover:bg-white/30'
-                                }`}
+                                className="hidden rounded-full bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white hover:bg-brand-primary/90 md:inline-flex"
                             >
                                 Dashboard
                             </Link>
                         ) : (
                             <button
                                 onClick={onConsultClick}
-                                className={`hidden rounded-full px-4 py-1.5 text-sm font-semibold transition-colors md:inline-flex ${
-                                    scrolled
-                                        ? 'bg-brand-primary text-white hover:bg-brand-primary/90'
-                                        : 'bg-white/20 text-white hover:bg-white/30'
-                                }`}
+                                className="hidden rounded-full bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white hover:bg-brand-primary/90 md:inline-flex"
                             >
                                 Consult
                             </button>
                         )}
+                        {/* Mobile consult button */}
+                        <button
+                            onClick={onConsultClick}
+                            className="rounded-full bg-brand-primary px-3 py-1.5 text-xs font-semibold text-white md:hidden"
+                        >
+                            Consult
+                        </button>
                         <button
                             onClick={() => setMobileOpen(!mobileOpen)}
-                            className="rounded-md p-2 text-white md:hidden"
+                            className="rounded-md p-2 text-slate-700 md:hidden dark:text-white"
                             aria-label="Toggle menu"
                         >
                             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -114,59 +105,47 @@ export const HomeNavbar = memo(function HomeNavbar({ auth, onConsultClick }: Hom
                 </div>
             </div>
 
-            {/* Mobile menu */}
+            {/* Mobile menu — full-screen solid, no overlay */}
             {mobileOpen && (
-                <div className="fixed inset-0 z-40 md:hidden">
-                    <div
-                        className="absolute inset-0 bg-black/50"
-                        onClick={() => setMobileOpen(false)}
-                    />
-                    <div className="absolute top-0 right-0 h-full w-72 bg-white p-6 shadow-xl dark:bg-brand-dark">
-                        <div className="mb-6 flex items-center justify-between">
-                            <span className="font-bold text-brand-primary dark:text-white">Menu</span>
-                            <button onClick={() => setMobileOpen(false)}>
-                                <X className="h-5 w-5" />
-                            </button>
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            {NAV_ITEMS.map((item) => (
+                <div className="absolute left-0 right-0 top-full z-50 border-t border-slate-100 bg-white shadow-xl md:hidden dark:border-slate-800 dark:bg-brand-dark">
+                    <div className="flex flex-col px-4 py-3">
+                        {NAV_ITEMS.map((item) => (
+                            <Link
+                                key={item.label}
+                                href={item.href}
+                                onClick={() => setMobileOpen(false)}
+                                className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                            >
+                                <item.icon className="h-4 w-4 text-[#C7A14A]" />
+                                {item.label}
+                            </Link>
+                        ))}
+                        <div className="mt-2 border-t border-slate-100 pt-3 dark:border-slate-800">
+                            {auth.user ? (
+                                <>
+                                    <Link
+                                        href="/dashboard"
+                                        onClick={() => setMobileOpen(false)}
+                                        className="block rounded-lg px-3 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-200"
+                                    >
+                                        Dashboard
+                                    </Link>
+                                    <button
+                                        onClick={() => router.post('/logout')}
+                                        className="mt-1 block w-full rounded-lg px-3 py-3 text-left text-sm font-medium text-red-500 hover:bg-red-50"
+                                    >
+                                        Logout
+                                    </button>
+                                </>
+                            ) : (
                                 <Link
-                                    key={item.label}
-                                    href={item.href}
+                                    href="/login"
                                     onClick={() => setMobileOpen(false)}
-                                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                                    className="block rounded-lg px-3 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-200"
                                 >
-                                    <item.icon className="h-4 w-4 text-[#C7A14A]" />
-                                    {item.label}
+                                    Login
                                 </Link>
-                            ))}
-                            <div className="mt-4 border-t pt-4 dark:border-slate-700">
-                                {auth.user ? (
-                                    <>
-                                        <Link href="/dashboard" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200">
-                                            Dashboard
-                                        </Link>
-                                        <button
-                                            onClick={() => router.post('/logout')}
-                                            className="mt-1 block w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-500 hover:bg-red-50"
-                                        >
-                                            Logout
-                                        </button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Link href="/login" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200">
-                                            Login
-                                        </Link>
-                                        <button
-                                            onClick={() => { setMobileOpen(false); onConsultClick(); }}
-                                            className="mt-2 w-full rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white"
-                                        >
-                                            Start Consultation
-                                        </button>
-                                    </>
-                                )}
-                            </div>
+                            )}
                         </div>
                     </div>
                 </div>

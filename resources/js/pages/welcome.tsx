@@ -1,4 +1,3 @@
-import { HeroCarousel, HeroSlide } from '@/components/HeroCarousel';
 import { HomeNavbar } from '@/components/HomeNavbar';
 import { Marquee } from '@/components/MagicMarquee';
 import { Head, Link, usePage } from '@inertiajs/react';
@@ -7,8 +6,6 @@ import {
     Building2,
     CheckCircle2,
     ChevronDown,
-    ChevronLeft,
-    ChevronRight,
     Hammer,
     Home,
     MessageSquare,
@@ -16,7 +13,6 @@ import {
     ShieldCheck,
     Sparkles,
     Star,
-    Target,
     TrendingUp,
     Users,
     Zap,
@@ -167,7 +163,7 @@ const CLIENT_REVIEWS = [
         location: 'Mysore',
         rating: 5,
         comment:
-            'Direct consultation with ArunAR helped me avoid a bad investment. Their validation process is thorough.',
+            'Direct consultation with AARUN helped me avoid a bad investment. Their validation process is thorough.',
     },
     {
         name: 'Vikram S.',
@@ -298,137 +294,54 @@ interface ServiceCardProps {
         images: string[];
         title: string;
         desc: string;
-        accent: string;
         step: string;
         url: string;
     };
-    index: number;
     onClick: () => void;
+    isLast?: boolean;
 }
 
 // ServiceCard is defined below as a memoized component
 
-const ServiceCard = memo(({ service, index, onClick }: ServiceCardProps) => {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+const ServiceCard = memo(({ service, onClick, isLast }: ServiceCardProps) => (
+    <div
+        onClick={onClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === 'Enter' && onClick()}
+        className={`group flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 hover:border-[#C7A14A]/50 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:hover:border-[#C7A14A]/50${isLast ? ' col-span-2 lg:col-span-1' : ''}`}
+    >
+        {/* Image */}
+        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-100 dark:bg-slate-800">
+            <img
+                src={service.images[0]}
+                alt={service.title}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover"
+            />
+        </div>
 
-    const handlePrevImage = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.stopPropagation();
-        setCurrentImageIndex((prev) => (prev - 1 + service.images.length) % service.images.length);
-    };
-
-    const handleNextImage = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.stopPropagation();
-        setCurrentImageIndex((prev) => (prev + 1) % service.images.length);
-    };
-
-    return (
-        <div
-            onClick={onClick}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && onClick()}
-            className="group relative flex cursor-pointer flex-col overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.3)] hover:border-[#C7A14A]/45 hover:shadow-[0_16px_40px_-12px_rgba(15,23,42,0.3)] dark:border-slate-800 dark:bg-slate-950/90 dark:hover:border-[#C7A14A]/45"
-        >
-                <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#C7A14A]/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
-                <div className="relative overflow-hidden border-b border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(199,161,74,0.18),_transparent_45%),linear-gradient(180deg,_rgba(248,250,252,0.96),_rgba(241,245,249,0.92))] px-5 pb-5 pt-4 dark:border-slate-800 dark:bg-[radial-gradient(circle_at_top_left,_rgba(199,161,74,0.18),_transparent_42%),linear-gradient(180deg,_rgba(15,23,42,0.96),_rgba(2,6,23,0.98))]">
-                    <div className="mb-3 flex items-start justify-between gap-3">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-3 py-1 text-[10px] font-semibold tracking-[0.22em] text-slate-500 uppercase shadow-sm dark:border-slate-700/80 dark:bg-slate-900/75 dark:text-slate-300">
-                            <span className="text-[#C7A14A]">{service.step}</span>
-                            Expertise
-                        </div>
-                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-primary text-white shadow-lg shadow-brand-primary/20 dark:bg-[#C7A14A] dark:text-slate-950">
-                            {service.icon}
-                        </div>
-                    </div>
-
-                    <div className="relative flex h-44 items-center justify-center overflow-hidden rounded-[20px] border border-white/70 bg-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] dark:border-slate-800 dark:bg-slate-900">
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 via-slate-900/4 to-white/5 dark:from-slate-950/35 dark:via-slate-950/8 dark:to-white/5" />
-                        <img
-                            src={service.images[currentImageIndex]}
-                            alt={service.title}
-                            loading="lazy"
-                            decoding="async"
-                            className="relative z-10 h-full w-full object-cover transition-opacity duration-200 group-hover:scale-[1.04] transition-transform"
-                        />
-
-                        {service.images.length > 1 && (
-                            <>
-                                <div className="absolute right-3 top-3 z-20 flex items-center gap-1.5">
-                                    <button
-                                        type="button"
-                                        onClick={handlePrevImage}
-                                        className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/45 bg-white/85 text-slate-700 shadow-sm backdrop-blur-sm transition hover:border-[#C7A14A]/70 hover:bg-[#C7A14A] hover:text-slate-950 dark:border-slate-700/80 dark:bg-slate-950/75 dark:text-slate-200"
-                                        aria-label={`Previous ${service.title} image`}
-                                    >
-                                        <ChevronLeft className="h-3.5 w-3.5" />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleNextImage}
-                                        className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/45 bg-white/85 text-slate-700 shadow-sm backdrop-blur-sm transition hover:border-[#C7A14A]/70 hover:bg-[#C7A14A] hover:text-slate-950 dark:border-slate-700/80 dark:bg-slate-950/75 dark:text-slate-200"
-                                        aria-label={`Next ${service.title} image`}
-                                    >
-                                        <ChevronRight className="h-3.5 w-3.5" />
-                                    </button>
-                                </div>
-
-                                <div className="absolute bottom-3 left-4 z-20 flex gap-1.5">
-                                    {service.images.map((_, dotIndex) => (
-                                        <span
-                                            key={`${service.id}-dot-${dotIndex}`}
-                                            className={`h-1.5 rounded-full transition-all ${
-                                                dotIndex === currentImageIndex
-                                                    ? 'w-4 bg-[#C7A14A]'
-                                                    : 'w-1.5 bg-white/80 dark:bg-white/55'
-                                            }`}
-                                        />
-                                    ))}
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
-
-                <div className="flex flex-1 flex-col gap-3 p-5">
-                    <div className="space-y-2.5">
-                        <h3 className="font-display text-lg leading-tight font-bold text-slate-950 dark:text-white">
-                            {service.title}
-                        </h3>
-                        <p className="line-clamp-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                            {service.desc}
-                        </p>
-                    </div>
-
-                    <div className="mt-auto flex items-center justify-between gap-3 border-t border-slate-200/80 pt-3.5 dark:border-slate-800">
-                        <div className="flex min-w-0 items-center gap-3">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-2 dark:border-slate-800 dark:bg-slate-900">
-                                <img
-                                    src={service.logo}
-                                    alt=""
-                                    loading="lazy"
-                                    className="h-full w-full object-contain"
-                                />
-                            </div>
-                            <div className="min-w-0">
-                                <p className="truncate text-xs font-semibold tracking-[0.18em] text-slate-400 uppercase dark:text-slate-500">
-                                    Brand
-                                </p>
-                                <p className="truncate text-xs font-medium text-slate-700 dark:text-slate-200">
-                                    {service.title}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-3.5 py-2 text-[10px] font-semibold tracking-[0.16em] text-white uppercase transition-colors duration-300 group-hover:bg-[#C7A14A] group-hover:text-slate-950 dark:bg-white dark:text-slate-950 dark:group-hover:bg-[#C7A14A]">
-                            Consult
-                            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-                        </div>
-                    </div>
-                </div>
+        {/* Content */}
+        <div className="min-w-0 flex-1">
+            <div className="mb-0.5 flex items-center gap-1.5">
+                <span className="text-brand-primary dark:text-[#C7A14A]">{service.icon}</span>
+                <span className="text-[9px] font-semibold tracking-widest text-slate-400 uppercase dark:text-slate-500">
+                    {service.step}
+                </span>
             </div>
-        );
-});
+            <h3 className="truncate text-sm font-bold text-slate-900 dark:text-white">
+                {service.title}
+            </h3>
+            <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                {service.desc}
+            </p>
+        </div>
+
+        {/* Arrow */}
+        <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition-colors group-hover:text-[#C7A14A] dark:text-slate-600" />
+    </div>
+));
 
 ServiceCard.displayName = 'ServiceCard';
 
@@ -454,12 +367,78 @@ function StoriesSkeleton() {
     );
 }
 
+const FLOW_SLIDES = [
+    'https://ik.imagekit.io/area24onestorage/media-assets/ChatGPT%20Image%20Apr%2016,%202026,%2003_18_22%20PM.png',
+    'https://ik.imagekit.io/area24onestorage/media-assets/ChatGPT%20Image%20Apr%2016,%202026,%2003_18_15%20PM.png',
+    'https://ik.imagekit.io/area24onestorage/media-assets/ChatGPT%20Image%20Apr%2016,%202026,%2003_17_42%20PM.png',
+    'https://ik.imagekit.io/area24onestorage/media-assets/ChatGPT%20Image%20Apr%2016,%202026,%2003_17_47%20PM.png',
+    'https://ik.imagekit.io/area24onestorage/media-assets/ChatGPT%20Image%20Apr%2016,%202026,%2003_17_37%20PM.png',
+    'https://ik.imagekit.io/area24onestorage/media-assets/ChatGPT%20Image%20Apr%2016,%202026,%2003_17_29%20PM.png',
+    
+];
+
+function FlowBannerSlider() {
+    const [current, setCurrent] = useState(0);
+    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    const startTimer = () => {
+        if (timerRef.current) clearInterval(timerRef.current);
+        timerRef.current = setInterval(() => {
+            setCurrent(prev => (prev + 1) % FLOW_SLIDES.length);
+        }, 4000);
+    };
+
+    useEffect(() => {
+        startTimer();
+        return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    }, []);
+
+    const goTo = (i: number) => {
+        setCurrent(i);
+        startTimer();
+    };
+
+    return (
+        <div className="relative w-full overflow-hidden">
+            {/* Slides */}
+            <div
+                className="flex transition-transform duration-700 ease-in-out"
+                style={{ transform: `translateX(-${current * 100}%)` }}
+            >
+                {FLOW_SLIDES.map((src, i) => (
+                    <img
+                        key={i}
+                        src={src}
+                        alt={`Area24One flow step ${i + 1}`}
+                        loading={i === 0 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        className="w-full shrink-0 object-cover"
+                        style={{ minWidth: '100%' }}
+                    />
+                ))}
+            </div>
+
+            {/* Dot indicators */}
+            <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-2">
+                {FLOW_SLIDES.map((_, i) => (
+                    <button
+                        key={i}
+                        onClick={() => goTo(i)}
+                        aria-label={`Go to slide ${i + 1}`}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${i === current ? 'w-6 bg-white' : 'w-1.5 bg-white/40'}`}
+                    />
+                ))}
+            </div>
+        </div>
+    );
+}
+
 export default function Welcome({
     heroSlides = [],
     companyProfile,
     seo,
 }: {
-    heroSlides?: HeroSlide[];
+    heroSlides?: unknown[];
     companyProfile?: CompanyProfile;
     seo: HomeSeo;
 }) {
@@ -696,28 +675,17 @@ export default function Welcome({
             <div className="min-h-screen bg-brand-surface text-brand-text selection:bg-brand-primary selection:text-white dark:bg-brand-dark dark:text-slate-50">
                 <HomeNavbar auth={auth as any} onConsultClick={() => openModal()} />
 
-                {/* Hero Carousel */}
-                <HeroCarousel slides={heroSlides} />
+                {/* Hero — Flow Banner Slider */}
+                <div className="pt-14">
+                    <FlowBannerSlider />
+                </div>
 
                 {/* Trust/Authority Strip */}
-                <section className="relative overflow-hidden bg-black py-4">
-                    {/* Textured Background Pattern */}
-                    <div className="absolute inset-0 opacity-10">
-                        <div
-                            className="absolute inset-0"
-                            style={{
-                                backgroundImage:
-                                    'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.2) 1px, transparent 0)',
-                                backgroundSize: '24px 24px',
-                            }}
-                        />
-                    </div>
+                <section className="relative overflow-hidden bg-black py-2">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-black to-transparent" />
+                    <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-black to-transparent" />
 
-                    {/* Gradient Overlays */}
-                    <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-black to-transparent" />
-                    <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-black to-transparent" />
-
-                    <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8">
+                    <div className="relative z-20">
                         <Marquee
                             className="[--duration:60s] [--gap:0rem]"
                             pauseOnHover
@@ -725,30 +693,26 @@ export default function Welcome({
                         >
                             {TRUST_ITEMS.map((item, i) => (
                                 <div key={i} className="flex items-center">
-                                    <div className="flex items-center gap-4 px-6 md:gap-8 md:px-14">
-                                        <div
-                                            className={`flex h-14 w-auto items-center justify-center opacity-90 md:h-24 ${item.type === 'badge' ? 'text-white' : ''}`}
-                                        >
-                                            {item.type === 'badge' ? (
-                                                <item.icon className="h-10 w-10 stroke-[1.5]" />
-                                            ) : (
-                                                <img
-                                                    src={item.logoSrc}
-                                                    className="h-16 w-auto opacity-80"
-                                                    alt={item.logoAlt}
-                                                    loading="lazy"
-                                                    decoding="async"
-                                                    style={{ filter: 'brightness(0) invert(1)' }}
-                                                />
-                                            )}
-                                        </div>
-                                        {item.type === 'badge' && (
-                                            <span className="font-display text-sm font-bold tracking-wide whitespace-nowrap text-white uppercase">
-                                                {item.text}
-                                            </span>
+                                    <div className="flex items-center gap-2 px-4">
+                                        {item.type === 'badge' ? (
+                                            <>
+                                                <item.icon className="h-3.5 w-3.5 shrink-0 text-[#C7A14A]" />
+                                                <span className="text-[10px] font-semibold tracking-widest whitespace-nowrap text-white/80 uppercase">
+                                                    {item.text}
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <img
+                                                src={item.logoSrc}
+                                                className="h-5 w-auto opacity-70"
+                                                alt={item.logoAlt}
+                                                loading="lazy"
+                                                decoding="async"
+                                                style={{ filter: 'brightness(0) invert(1)' }}
+                                            />
                                         )}
                                     </div>
-                                    <div className="h-8 w-px bg-white/30" />
+                                    <div className="h-3 w-px bg-white/20" />
                                 </div>
                             ))}
                         </Marquee>
@@ -835,14 +799,10 @@ export default function Welcome({
                 {/* Expertise Section */}
                 <section
                     id="expertise"
-                    className="relative overflow-hidden bg-zinc-50 py-10 md:py-12 section-offscreen dark:bg-black/20"
+                    className="bg-zinc-50 py-10 md:py-12 section-offscreen dark:bg-black/20"
                 >
-                    {/* Decorative orbs — pointer-events-none, no blur on mobile */}
-                    <div className="absolute top-0 right-0 -z-10 hidden h-[320px] w-[320px] rounded-full bg-brand-primary/5 blur-[80px] lg:block" />
-                    <div className="absolute bottom-1/4 left-0 -z-10 hidden h-[240px] w-[240px] rounded-full bg-[#C7A14A]/5 blur-[60px] lg:block" />
-
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                        <div className="mb-8 text-center md:mb-10">
+                        <div className="mb-8 text-center">
                             <div className="mb-3 inline-flex items-center gap-2">
                                 <div className="h-px w-6 bg-[#C7A14A]" />
                                 <span className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A] uppercase">
@@ -852,87 +812,40 @@ export default function Welcome({
                             </div>
                             <h2 className="text-xl font-medium tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                 Five brands.{' '}
-                                <span className="text-[#C7A14A]">
-                                    One platform.
-                                </span>
+                                <span className="text-[#C7A14A]">One platform.</span>
                             </h2>
-                            <p className="mx-auto mt-3 max-w-xl text-sm text-slate-600 dark:text-slate-400">
-                                Construction, interiors, real estate,
-                                development, and events — start a consultation
-                                from any card.
+                            <p className="mx-auto mt-2 max-w-xl text-sm text-slate-500 dark:text-slate-400">
+                                Construction, interiors, real estate, development, and events — start a consultation from any card.
                             </p>
                         </div>
 
-                        <div className="space-y-4">
-                            {/* First Row: 3 Cards */}
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                                {services.slice(0, 3).map((service, i) => (
-                                    <ServiceCard
-                                        key={service.id}
-                                        service={service}
-                                        index={i}
-                                        onClick={() => openModal(service.id)}
-                                    />
-                                ))}
-                            </div>
-
-                            {/* Second Row: 2 Cards (Centered) */}
-                            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-                                {services.slice(3, 5).map((service, i) => (
-                                    <div
-                                        key={service.id}
-                                        className="w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.75rem)]"
-                                    >
-                                        <ServiceCard
-                                            service={service}
-                                            index={i + 3}
-                                            onClick={() => openModal(service.id)}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
+                        <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
+                            {services.map((service, i) => (
+                                <ServiceCard
+                                    key={service.id}
+                                    service={service}
+                                    onClick={() => openModal(service.id)}
+                                    isLast={i === services.length - 1}
+                                />
+                            ))}
                         </div>
 
-                        {/* Minimal CTA Section */}
-                        <div className="mt-10 flex flex-col items-center gap-5 text-center">
-                            {/* Trust Indicators */}
-                            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2.5">
-                                {[
-                                    {
-                                        icon: CheckCircle2,
-                                        text: 'Free consultation',
-                                    },
-                                    { icon: Zap, text: 'Expert matching' },
-                                    { icon: Target, text: 'Quick response' },
-                                ].map((item, i) => (
-                                    <span
-                                        key={i}
-                                        className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400"
-                                    >
-                                        <item.icon className="h-4 w-4 text-[#C7A14A]" />
-                                        {item.text}
-                                    </span>
-                                ))}
-                            </div>
-
-                            {/* Action Buttons */}
-                            <div className="flex flex-wrap items-center justify-center gap-3">
-                                <button
-                                    onClick={() => openModal()}
-                                    className="group inline-flex items-center gap-2 rounded-full bg-brand-primary px-8 py-3.5 text-sm font-semibold text-white transition-all hover:bg-[#C7A14A] hover:shadow-lg hover:shadow-brand-primary/25"
-                                >
-                                    <MessageSquare className="h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
-                                    Start consultation
-                                </button>
-                                <Link
-                                    href="/chat"
-                                    className="group inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors hover:text-brand-primary dark:text-slate-400 dark:hover:text-white"
-                                >
-                                    <Sparkles className="h-4 w-4" />
-                                    Open chat
-                                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                                </Link>
-                            </div>
+                        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+                            <button
+                                onClick={() => openModal()}
+                                className="inline-flex items-center gap-2 rounded-full bg-brand-primary px-6 py-3 text-sm font-semibold text-white hover:bg-[#C7A14A]"
+                            >
+                                <MessageSquare className="h-4 w-4" />
+                                Start consultation
+                            </button>
+                            <Link
+                                href="/chat"
+                                className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-brand-primary dark:text-slate-400 dark:hover:text-white"
+                            >
+                                <Sparkles className="h-4 w-4" />
+                                Open chat
+                                <ArrowRight className="h-4 w-4" />
+                            </Link>
                         </div>
                     </div>
                 </section>
@@ -1032,6 +945,8 @@ export default function Welcome({
                         </div>
                     </div>
                 </section>
+
+               
 
                 <div ref={storiesRef} className="min-h-[520px]">
                     {shouldLoadStories ? (
@@ -1236,7 +1151,7 @@ export default function Welcome({
                                 <p className="text-xs text-slate-400">
                                     Framework by{' '}
                                     <span className="text-[#C7A14A]">
-                                        ArunAR
+                                        AARUN
                                     </span>
                                 </p>
 
@@ -1311,7 +1226,7 @@ export default function Welcome({
                                 <div className="mb-4 inline-flex items-center gap-3">
                                     <div className="h-px w-8 bg-[#C7A14A]" />
                                     <span className="text-[10px] font-semibold tracking-[0.25em] text-[#C7A14A] uppercase">
-                                        The ArunAR Decision Model
+                                        The AARUN Decision Model
                                     </span>
                                     <div className="h-px w-8 bg-[#C7A14A]" />
                                 </div>
@@ -1403,7 +1318,7 @@ export default function Welcome({
                                 <div className="mt-4 flex items-center justify-center gap-3">
                                     <div className="h-px w-8 bg-[#C7A14A]/50" />
                                     <span className="text-sm font-medium text-[#C7A14A]">
-                                        ArunAR
+                                        AARUN
                                     </span>
                                     <div className="h-px w-8 bg-[#C7A14A]/50" />
                                 </div>
@@ -1648,6 +1563,12 @@ export default function Welcome({
                                 for Premium Consultation.
                             </p>
                             <div className="flex items-center gap-6">
+                                <Link
+                                    href="/about/ceo"
+                                    className="text-xs font-bold tracking-widest text-slate-400 uppercase transition-colors hover:text-black dark:hover:text-white"
+                                >
+                                    About AARUN
+                                </Link>
                                 <a
                                     href="#"
                                     className="text-xs font-bold tracking-widest text-slate-400 uppercase transition-colors hover:text-black dark:hover:text-white"

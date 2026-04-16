@@ -116,6 +116,16 @@ export default function ServiceLanding({ slug, service, seo }: Props) {
         url: seo.canonical,
     };
 
+    const breadcrumbSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://area24one.com/' },
+            { '@type': 'ListItem', position: 2, name: 'Services', item: 'https://area24one.com/#expertise' },
+            { '@type': 'ListItem', position: 3, name: service.h1, item: seo.canonical },
+        ],
+    };
+
     return (
         <>
             <Head>
@@ -129,6 +139,7 @@ export default function ServiceLanding({ slug, service, seo }: Props) {
                 <meta property="og:type" content="website" />
                 <meta name="robots" content="index, follow" />
                 <script type="application/ld+json">{JSON.stringify(schema)}</script>
+                <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
             </Head>
 
             <div className="min-h-screen bg-white dark:bg-brand-dark">

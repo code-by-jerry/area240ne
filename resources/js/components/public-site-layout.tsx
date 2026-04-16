@@ -195,6 +195,12 @@ export function PublicSiteLayout({ children }: PropsWithChildren) {
                             © 2025 Area24One. All rights reserved. Designed for Premium Consultation.
                         </p>
                         <div className="flex items-center gap-6">
+                            <Link
+                                href="/about/ceo"
+                                className="text-xs font-bold uppercase tracking-widest text-slate-400 transition-colors hover:text-black dark:hover:text-white"
+                            >
+                                About AARUN
+                            </Link>
                             <a
                                 href="#"
                                 className="text-xs font-bold uppercase tracking-widest text-slate-400 transition-colors hover:text-black dark:hover:text-white"
