@@ -27,20 +27,60 @@
 - ✔ Pexels images — compressed via `?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop` (~60% smaller)
 - ✔ ImageKit images — WebP + quality transform applied via `ik()` helper (`f-webp,q-80`)
 - ✔ Background section images — WebP at `q-70,w-1400` via ImageKit
-- ⚠️ Local public images (PNG/JPEG in `/public/image/`) — not yet converted to WebP
+- ⚠️ Local public images (PNG/JPEG in `/public/image/`) — partially addressed (see table below)
 - ⚠️ No srcset / responsive images on local assets
 
+#### 📋 Local Image Audit (by size)
+
+| File | Size | Used In | Status |
+|---|---|---|---|
+| `hero/interior.jpg` | **4.2 MB** | StoriesSection | ❌ Upload to ImageKit |
+| `hero/event.jpg` | **2.8 MB** | StoriesSection | ❌ Upload to ImageKit |
+| `hero/Area24 developers logo mockup.png` | **2.5 MB** | Service card logo | ❌ Upload to ImageKit |
+| `hero/developer.jpg` | **2.4 MB** | StoriesSection | ❌ Upload to ImageKit |
+| `CTA-image.png` | **1.4 MB** | ConsultationModal | ❌ Upload to ImageKit |
+| `hero/construction.jpg` | **1.4 MB** | StoriesSection | ❌ Upload to ImageKit |
+| `build (1–8).jpeg` | 700KB–1.1MB each | StoriesSection | ❌ Upload to ImageKit |
+| `hero/realty.jpg` | 597 KB | StoriesSection | ❌ Upload to ImageKit |
+| `nesthetix.png`, `atha.png`, logos | 50–73 KB | Service card logos | ✔ Acceptable size |
+| `brands material/*.png/jpg` | 5–67 KB | Brand marquee | ✔ Acceptable size |
+| `icons/*.png` | 7–28 KB | Who-it's-for section | ✔ Acceptable size |
+
+**Fix plan:** Upload the 8 heavy files to ImageKit, replace local paths with `ik()` calls using `f-webp,q-75,w-800`. No build tools needed — ImageKit auto-serves WebP to supported browsers.
+
 ### 📱 Mobile
-- ✔ Responsive design — Tailwind mobile-first
-- ✔ Viewport meta set correctly in `app.blade.php`
-- ✔ Mobile navbar implemented (HomeNavbar component)
-- ❌ Mobile usability not verified in GSC yet
+- ✔ Responsive design — Tailwind mobile-first throughout
+- ✔ Viewport meta — `width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover`
+- ✔ Mobile navbar — `HomeNavbar` component with slide-out drawer
+- ✔ `apple-mobile-web-app-capable` + `apple-mobile-web-app-status-bar-style` added to blade
+- ✔ `crossorigin` added to font preconnect — fixes CORS warning on mobile browsers
+- ✔ Trust strip — reduced `px-14 h-24` to `px-6 h-14` on mobile, scales up on md+
+- ✔ ServiceCard — added `role="button"`, `tabIndex={0}`, keyboard `Enter` handler for accessibility
+- ✔ ServiceCard badge — removed `backdrop-blur` (GPU cost on mobile)
+- ✔ Chat buttons — `touch-manipulation`, `min-h-[44px]` already in place (ChatApp.tsx)
+- ✔ Chat widget — `touch-manipulation` on all interactive elements
+- ✔ `overscroll-contain` on scroll areas — prevents page bounce on iOS
+- ⚠️ `w-[320px]` review cards in marquee — fixed width, acceptable (inside overflow container)
+- ❌ Mobile usability not verified in GSC yet — requires deployment + GSC setup first
 
 ### 🔗 URL Structure
 - ✔ Clean URLs — `/blogs/{slug}`, `/cost-estimator`, `/chat`
 - ✔ Blog slugs are keyword-friendly (set in admin)
 - ✔ No query string URLs on public pages
-- ❌ No service-specific landing pages (e.g. `/construction-bangalore`)
+- ✔ Service landing pages created — `/services/{slug}` route with 9 pages:
+  - `/services/construction-bangalore`
+  - `/services/interior-design-bangalore`
+  - `/services/real-estate-bangalore`
+  - `/services/construction-mysore`
+  - `/services/interior-design-mysore`
+  - `/services/real-estate-mysore`
+  - `/services/construction-ballari`
+  - `/services/land-development-karnataka`
+  - `/services/event-management-bangalore`
+- ✔ All 9 service pages added to sitemap.xml with `priority: 0.9`
+- ✔ Each page has unique H1, title (under 60 chars), meta description, canonical, Service schema
+- ✔ Breadcrumb nav on each service page (Home → Services → Page)
+- ⚠️ Internal links from homepage to service pages — not yet added (add later)
 
 ### 🧭 Crawlability
 - ❌ No sitemap.xml — needs to be created

@@ -27,6 +27,7 @@ use Carbon\CarbonPeriod;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('home');
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+Route::get('/services/{slug}', [\App\Http\Controllers\ServiceLandingController::class, 'show'])->name('services.show');
 Route::get('/blogs', [BlogController::class, 'index'])->name('blogs.index');
 Route::get('/blogs/{slug}', [BlogController::class, 'show'])->name('blogs.show');
 

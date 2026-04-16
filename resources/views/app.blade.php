@@ -35,6 +35,8 @@
 
         <meta name="application-name" content="Area24One">
         <meta name="apple-mobile-web-app-title" content="Area24One">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <meta name="theme-color" content="#0f172a">
         <meta name="msapplication-TileColor" content="#0f172a">
 
@@ -44,7 +46,7 @@
         <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
         <link rel="manifest" href="/site.webmanifest">
 
-        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
         <link href="https://fonts.bunny.net/css?family=outfit:300,400,500,600,700,800|plus-jakarta-sans:400,500,600,700" rel="stylesheet" />
 
         @viteReactRefresh

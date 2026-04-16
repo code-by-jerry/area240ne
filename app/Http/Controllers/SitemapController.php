@@ -18,6 +18,15 @@ class SitemapController extends Controller
         $urls[] = ['loc' => url('/cost-estimator'), 'priority' => '0.7', 'changefreq' => 'monthly'];
         $urls[] = ['loc' => url('/chat'),           'priority' => '0.6', 'changefreq' => 'monthly'];
 
+        // Service landing pages
+        foreach (\App\Http\Controllers\ServiceLandingController::allSlugs() as $slug) {
+            $urls[] = [
+                'loc'        => url("/services/{$slug}"),
+                'priority'   => '0.9',
+                'changefreq' => 'monthly',
+            ];
+        }
+
         // Blog posts
         $blogs = Blog::published()
             ->orderByDesc('published_at')

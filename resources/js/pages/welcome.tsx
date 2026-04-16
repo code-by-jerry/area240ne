@@ -213,8 +213,7 @@ const CLIENT_REVIEWS = [
     },
 ] as const;
 
-/** Base path for brand logos (public/image/brands material/) */
-const BRANDS_IMAGE_BASE = '/image/brands%20material';
+const IK_BASE = 'https://ik.imagekit.io/area24onestorage';
 
 /** Add ImageKit WebP + quality transformation to any ImageKit URL */
 function ik(url: string, opts = 'f-webp,q-80') {
@@ -244,48 +243,51 @@ function MarqueeBrandCard({ brand }: { brand: MarqueeBrand }) {
     );
 }
 
-/** Brand logos from public/image/brands material/ — logo only, no name/category. */
-const MARQUEE_BRANDS: MarqueeBrand[] = [    { name: 'TATA TMT', logo: `${BRANDS_IMAGE_BASE}/tata-tiscon-logo.png` },
-    { name: 'JSW', logo: `${BRANDS_IMAGE_BASE}/jsw-steel.jpeg` },
-    { name: 'Ultratech', logo: `${BRANDS_IMAGE_BASE}/ultratech-cement.png` },
-    { name: 'ACC', logo: `${BRANDS_IMAGE_BASE}/ACC.svg` },
-    { name: 'Birla', logo: `${BRANDS_IMAGE_BASE}/birla-logo.jpg` },
-    { name: 'Dalmia', logo: `${BRANDS_IMAGE_BASE}/dalmia-cement.svg` },
-    { name: 'Zuari', logo: `${BRANDS_IMAGE_BASE}/Zuari%20cement.jpg` },
-    { name: 'Bharathi', logo: `${BRANDS_IMAGE_BASE}/bharathi-logo.png` },
-    { name: 'Kohler', logo: `${BRANDS_IMAGE_BASE}/kohler.svg` },
-    { name: 'Jaquar', logo: `${BRANDS_IMAGE_BASE}/jaquar.svg` },
-    { name: 'Parryware', logo: `${BRANDS_IMAGE_BASE}/parryware-brand.png` },
-    { name: 'Cera', logo: `${BRANDS_IMAGE_BASE}/cera-logo.gif` },
-    { name: 'Havells', logo: `${BRANDS_IMAGE_BASE}/Havells_Logo.svg` },
-    { name: 'Finolex', logo: `${BRANDS_IMAGE_BASE}/Finolex%20logo.png` },
-    { name: 'Legrand', logo: `${BRANDS_IMAGE_BASE}/legrand.webp` },
-    { name: 'Schneider', logo: `${BRANDS_IMAGE_BASE}/schneider.svg` },
-    { name: 'APL Apollo', logo: `${BRANDS_IMAGE_BASE}/apl_apollo.png` },
-    { name: 'Ashirwad', logo: `${BRANDS_IMAGE_BASE}/ashirvad-logo.png` },
-    { name: 'Jindal', logo: `${BRANDS_IMAGE_BASE}/jindal-steel.svg` },
-    { name: 'Sintex', logo: `${BRANDS_IMAGE_BASE}/sintex.png` },
-    { name: 'Sunvik TMT', logo: `${BRANDS_IMAGE_BASE}/Sunvik%20TMT.png` },
-    { name: 'Kamadhenu', logo: `${BRANDS_IMAGE_BASE}/Kamadhenu.png` },
-    { name: 'Orbit', logo: `${BRANDS_IMAGE_BASE}/orbit-logo.webp` },
-    { name: 'Indus', logo: `${BRANDS_IMAGE_BASE}/Indus-logo.svg` },
-    { name: 'Vguard', logo: `${BRANDS_IMAGE_BASE}/vguard-logo.jpg` },
+const IK = 'https://ik.imagekit.io/area24onestorage/brand-materials';
+
+/** Brand logos — served from ImageKit CDN with WebP transform */
+const MARQUEE_BRANDS: MarqueeBrand[] = [
+    { name: 'TATA TMT',    logo: ik(`${IK}/tata-tiscon-logo.png?updatedAt=1776316749749`,  'f-webp,q-80,w-160') },
+    { name: 'JSW',         logo: ik(`${IK}/jsw-steel.jpeg?updatedAt=1776316750207`,        'f-webp,q-80,w-160') },
+    { name: 'Ultratech',   logo: ik(`${IK}/ultratech-cement.png?updatedAt=1776316750206`,  'f-webp,q-80,w-160') },
+    { name: 'ACC',         logo: ik(`${IK}/ACC.svg?updatedAt=1776316749154`,               'f-webp,q-80,w-160') },
+    { name: 'Birla',       logo: ik(`${IK}/birla-logo.jpg?updatedAt=1776316750140`,        'f-webp,q-80,w-160') },
+    { name: 'Dalmia',      logo: ik(`${IK}/dalmia-cement.svg?updatedAt=1776316749740`,     'f-webp,q-80,w-160') },
+    { name: 'Zuari',       logo: ik(`${IK}/Zuari%20cement.jpg?updatedAt=1776316749689`,    'f-webp,q-80,w-160') },
+    { name: 'Bharathi',    logo: ik(`${IK}/bharathi-logo.png?updatedAt=1776316749683`,     'f-webp,q-80,w-160') },
+    { name: 'Kohler',      logo: ik(`${IK}/kohler.svg?updatedAt=1776316750305`,            'f-webp,q-80,w-160') },
+    { name: 'Jaquar',      logo: ik(`${IK}/jaquar.svg?updatedAt=1776316749809`,            'f-webp,q-80,w-160') },
+    { name: 'Parryware',   logo: ik(`${IK}/parryware-brand.png?updatedAt=1776316749806`,   'f-webp,q-80,w-160') },
+    { name: 'Cera',        logo: ik(`${IK}/cera-logo.gif?updatedAt=1776316749739`,         'f-webp,q-80,w-160') },
+    { name: 'Havells',     logo: ik(`${IK}/Havells_Logo.svg?updatedAt=1776316750243`,      'f-webp,q-80,w-160') },
+    { name: 'Finolex',     logo: ik(`${IK}/Finolex%20logo.png?updatedAt=1776316750271`,    'f-webp,q-80,w-160') },
+    { name: 'Legrand',     logo: ik(`${IK}/legrand.webp?updatedAt=1776316749809`,          'f-webp,q-80,w-160') },
+    { name: 'Schneider',   logo: ik(`${IK}/schneider.svg?updatedAt=1776316749825`,         'f-webp,q-80,w-160') },
+    { name: 'APL Apollo',  logo: ik(`${IK}/apl_apollo.png?updatedAt=1776316749034`,        'f-webp,q-80,w-160') },
+    { name: 'Ashirwad',    logo: ik(`${IK}/ashirvad-logo.png?updatedAt=1776316749679`,     'f-webp,q-80,w-160') },
+    { name: 'Jindal',      logo: ik(`${IK}/jindal-steel.svg?updatedAt=1776316749789`,      'f-webp,q-80,w-160') },
+    { name: 'Sintex',      logo: ik(`${IK}/sintex.png?updatedAt=1776316749608`,            'f-webp,q-80,w-160') },
+    { name: 'Sunvik TMT',  logo: ik(`${IK}/Sunvik%20TMT.png?updatedAt=1776316750209`,      'f-webp,q-80,w-160') },
+    { name: 'Kamadhenu',   logo: ik(`${IK}/Kamadhenu.png?updatedAt=1776316750205`,         'f-webp,q-80,w-160') },
+    { name: 'Orbit',       logo: ik(`${IK}/orbit-logo.webp?updatedAt=1776316749901`,       'f-webp,q-80,w-160') },
+    { name: 'Indus',       logo: ik(`${IK}/Indus-logo.svg?updatedAt=1776316749775`,        'f-webp,q-80,w-160') },
+    { name: 'Vguard',      logo: ik(`${IK}/vguard-logo.jpg?updatedAt=1776316749672`,       'f-webp,q-80,w-160') },
 ];
 
-// Reduced to 12 images (was 35) — repeat={2} gives 24 nodes total, smooth scroll
+// Gallery images — served from ImageKit CDN
 const GALLERY_IMAGES = [
-    '/image/storyset/2.1.svg',
-    '/image/storyset/3.1.svg',
-    '/image/storyset/3.3.svg',
-    '/image/storyset/3.5.svg',
-    '/image/storyset/4.1.svg',
-    '/image/storyset/4.3.svg',
-    '/image/storyset/5.2.svg',
-    '/image/storyset/6.0.svg',
-    '/image/storyset/7.2.svg',
-    '/image/storyset/7.4.svg',
-    '/image/storyset/8.2.svg',
-    '/image/storyset/9.2.svg',
+    ik('https://ik.imagekit.io/area24onestorage/story-set/2.1.svg?updatedAt=1776316798602',  'f-webp,q-80,w-224'),
+    ik('https://ik.imagekit.io/area24onestorage/story-set/3.1.svg?updatedAt=1776316799238',  'f-webp,q-80,w-224'),
+    ik('https://ik.imagekit.io/area24onestorage/story-set/3.3.svg?updatedAt=1776316799318',  'f-webp,q-80,w-224'),
+    ik('https://ik.imagekit.io/area24onestorage/story-set/3.5.svg?updatedAt=1776316799402',  'f-webp,q-80,w-224'),
+    ik('https://ik.imagekit.io/area24onestorage/story-set/4.1.svg?updatedAt=1776316799261',  'f-webp,q-80,w-224'),
+    ik('https://ik.imagekit.io/area24onestorage/story-set/4.3.svg?updatedAt=1776316799329',  'f-webp,q-80,w-224'),
+    ik('https://ik.imagekit.io/area24onestorage/story-set/5.2.svg?updatedAt=1776316799331',  'f-webp,q-80,w-224'),
+    ik('https://ik.imagekit.io/area24onestorage/story-set/6.0.svg?updatedAt=1776316799277',  'f-webp,q-80,w-224'),
+    ik('https://ik.imagekit.io/area24onestorage/story-set/7.2.svg?updatedAt=1776316799303',  'f-webp,q-80,w-224'),
+    ik('https://ik.imagekit.io/area24onestorage/story-set/7.4.svg?updatedAt=1776316799207',  'f-webp,q-80,w-224'),
+    ik('https://ik.imagekit.io/area24onestorage/story-set/8.2.svg?updatedAt=1776316799262',  'f-webp,q-80,w-224'),
+    ik('https://ik.imagekit.io/area24onestorage/story-set/9.2.svg?updatedAt=1776316799449',  'f-webp,q-80,w-224'),
 ];
 
 interface ServiceCardProps {
@@ -322,13 +324,16 @@ const ServiceCard = memo(({ service, index, onClick }: ServiceCardProps) => {
     return (
         <div
             onClick={onClick}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && onClick()}
             className="group relative flex cursor-pointer flex-col overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.3)] hover:border-[#C7A14A]/45 hover:shadow-[0_16px_40px_-12px_rgba(15,23,42,0.3)] dark:border-slate-800 dark:bg-slate-950/90 dark:hover:border-[#C7A14A]/45"
         >
                 <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#C7A14A]/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
                 <div className="relative overflow-hidden border-b border-slate-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(199,161,74,0.18),_transparent_45%),linear-gradient(180deg,_rgba(248,250,252,0.96),_rgba(241,245,249,0.92))] px-5 pb-5 pt-4 dark:border-slate-800 dark:bg-[radial-gradient(circle_at_top_left,_rgba(199,161,74,0.18),_transparent_42%),linear-gradient(180deg,_rgba(15,23,42,0.96),_rgba(2,6,23,0.98))]">
                     <div className="mb-3 flex items-start justify-between gap-3">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-3 py-1 text-[10px] font-semibold tracking-[0.22em] text-slate-500 uppercase shadow-sm backdrop-blur dark:border-slate-700/80 dark:bg-slate-900/75 dark:text-slate-300">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-3 py-1 text-[10px] font-semibold tracking-[0.22em] text-slate-500 uppercase shadow-sm dark:border-slate-700/80 dark:bg-slate-900/75 dark:text-slate-300">
                             <span className="text-[#C7A14A]">{service.step}</span>
                             Expertise
                         </div>
@@ -720,9 +725,9 @@ export default function Welcome({
                         >
                             {TRUST_ITEMS.map((item, i) => (
                                 <div key={i} className="flex items-center">
-                                    <div className="flex items-center gap-8 px-14">
+                                    <div className="flex items-center gap-4 px-6 md:gap-8 md:px-14">
                                         <div
-                                            className={`flex h-24 w-auto items-center justify-center opacity-90 transition-opacity hover:opacity-100 ${item.type === 'badge' ? 'text-white' : ''}`}
+                                            className={`flex h-14 w-auto items-center justify-center opacity-90 md:h-24 ${item.type === 'badge' ? 'text-white' : ''}`}
                                         >
                                             {item.type === 'badge' ? (
                                                 <item.icon className="h-10 w-10 stroke-[1.5]" />
