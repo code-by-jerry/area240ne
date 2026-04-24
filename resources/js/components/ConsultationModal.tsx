@@ -67,7 +67,7 @@ export function ConsultationModal({ isOpen, onClose, initialService }: Consultat
                     {/* Left — image, hidden on mobile */}
                     <div className="relative hidden md:block h-full min-h-[480px]">
                         <img
-                            src="/image/CTA-image.png"
+                            src="https://ik.imagekit.io/area24onestorage/assets/CTA-image.png"
                             alt=""
                             aria-hidden="true"
                             loading="lazy"

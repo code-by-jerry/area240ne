@@ -367,31 +367,55 @@ function StoriesSkeleton() {
     );
 }
 
-const FLOW_SLIDES = [
+const MOBILE_FLOW_SLIDES = [
     'https://ik.imagekit.io/area24onestorage/media-assets/ChatGPT%20Image%20Apr%2016,%202026,%2003_18_22%20PM.png',
     'https://ik.imagekit.io/area24onestorage/media-assets/ChatGPT%20Image%20Apr%2016,%202026,%2003_18_15%20PM.png',
     'https://ik.imagekit.io/area24onestorage/media-assets/ChatGPT%20Image%20Apr%2016,%202026,%2003_17_42%20PM.png',
     'https://ik.imagekit.io/area24onestorage/media-assets/ChatGPT%20Image%20Apr%2016,%202026,%2003_17_47%20PM.png',
     'https://ik.imagekit.io/area24onestorage/media-assets/ChatGPT%20Image%20Apr%2016,%202026,%2003_17_37%20PM.png',
     'https://ik.imagekit.io/area24onestorage/media-assets/ChatGPT%20Image%20Apr%2016,%202026,%2003_17_29%20PM.png',
-    
+];
+
+const WEB_FLOW_SLIDES = [
+    'https://ik.imagekit.io/area24onestorage/hero-slides/mobile/ChatGPT%20Image%20Apr%2024,%202026,%2001_09_25%20PM.png',
+    'https://ik.imagekit.io/area24onestorage/hero-slides/mobile/ChatGPT%20Image%20Apr%2024,%202026,%2001_19_01%20PM.png',
+    'https://ik.imagekit.io/area24onestorage/hero-slides/mobile/ChatGPT%20Image%20Apr%2024,%202026,%2001_19_56%20PM.png',
+    'https://ik.imagekit.io/area24onestorage/hero-slides/mobile/ChatGPT%20Image%20Apr%2024,%202026,%2001_17_57%20PM.png',
+    'https://ik.imagekit.io/area24onestorage/hero-slides/mobile/ChatGPT%20Image%20Apr%2024,%202026,%2001_18_04%20PM.png',
+    'https://ik.imagekit.io/area24onestorage/hero-slides/mobile/ChatGPT%20Image%20Apr%2024,%202026,%2001_17_49%20PM.png',
 ];
 
 function FlowBannerSlider() {
     const [current, setCurrent] = useState(0);
+    const [isWebViewport, setIsWebViewport] = useState(false);
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const slides = isWebViewport ? WEB_FLOW_SLIDES : MOBILE_FLOW_SLIDES;
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(min-width: 768px)');
+        const updateViewport = () => setIsWebViewport(mediaQuery.matches);
+
+        updateViewport();
+        mediaQuery.addEventListener('change', updateViewport);
+
+        return () => mediaQuery.removeEventListener('change', updateViewport);
+    }, []);
 
     const startTimer = () => {
         if (timerRef.current) clearInterval(timerRef.current);
         timerRef.current = setInterval(() => {
-            setCurrent(prev => (prev + 1) % FLOW_SLIDES.length);
+            setCurrent(prev => (prev + 1) % slides.length);
         }, 4000);
     };
 
     useEffect(() => {
+        setCurrent(0);
+    }, [isWebViewport]);
+
+    useEffect(() => {
         startTimer();
         return () => { if (timerRef.current) clearInterval(timerRef.current); };
-    }, []);
+    }, [isWebViewport]);
 
     const goTo = (i: number) => {
         setCurrent(i);
@@ -405,7 +429,7 @@ function FlowBannerSlider() {
                 className="flex transition-transform duration-700 ease-in-out"
                 style={{ transform: `translateX(-${current * 100}%)` }}
             >
-                {FLOW_SLIDES.map((src, i) => (
+                {slides.map((src, i) => (
                     <img
                         key={i}
                         src={src}
@@ -420,7 +444,7 @@ function FlowBannerSlider() {
 
             {/* Dot indicators */}
             <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-2">
-                {FLOW_SLIDES.map((_, i) => (
+                {slides.map((_, i) => (
                     <button
                         key={i}
                         onClick={() => goTo(i)}
@@ -624,7 +648,7 @@ export default function Welcome({
             {
                 id: 'development',
                 icon: <Hammer className="h-6 w-6" />,
-                logo: '/image/hero/Area24 developers  logo mockup.png',
+                logo: 'https://ik.imagekit.io/area24onestorage/assets/Area24%20developers%20%20logo%20mockup.png',
                 images: [
                     'https://images.pexels.com/photos/392031/pexels-photo-392031.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
                     'https://images.pexels.com/photos/1579356/pexels-photo-1579356.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop',
