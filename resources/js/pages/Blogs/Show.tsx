@@ -157,6 +157,29 @@ export default function BlogShow({
                             </div>
                         </section>
                     )}
+
+                    {/* Internal links to service pages — boosts internal linking + local SEO */}
+                    <section className="border-t border-slate-100 bg-slate-50 py-12">
+                        <div className="mx-auto max-w-5xl px-6 lg:px-8">
+                            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#C7A14A]">Our Services</p>
+                            <h2 className="mb-6 text-lg font-semibold text-slate-900">Explore Area24One Services in Bangalore & Karnataka</h2>
+                            <div className="flex flex-wrap gap-3">
+                                {[
+                                    { label: 'Construction in Bangalore', href: '/services/construction-bangalore' },
+                                    { label: 'Interior Design Bangalore', href: '/services/interior-design-bangalore' },
+                                    { label: 'Real Estate Bangalore', href: '/services/real-estate-bangalore' },
+                                    { label: 'Construction in Mysore', href: '/services/construction-mysore' },
+                                    { label: 'Land Development Karnataka', href: '/services/land-development-karnataka' },
+                                    { label: 'Event Management Bangalore', href: '/services/event-management-bangalore' },
+                                ].map(link => (
+                                    <Link key={link.href} href={link.href}
+                                        className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-[#C7A14A]/50 hover:text-[#C7A14A]">
+                                        {link.label}
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </PublicSiteLayout>
         </>

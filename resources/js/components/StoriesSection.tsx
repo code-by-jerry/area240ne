@@ -2,17 +2,17 @@ import { ChevronLeft, ChevronRight, Play, VolumeX, Volume2, X } from 'lucide-rea
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 const STORIES = [
-    { id: 1,  title: 'Dream Villa',        category: 'Construction', video: '/video/Dream Villa.mp4' },
-    { id: 2,  title: 'Modern Villa',        category: 'Construction', video: '/video/Modern villa.mp4' },
-    { id: 3,  title: 'Premium Villa',       category: 'Construction', video: '/video/premium villa.mp4' },
-    { id: 4,  title: 'Interior Designs',    category: 'Interiors',    video: '/video/interior designs.mp4' },
-    { id: 5,  title: 'Modern Interiors',    category: 'Interiors',    video: '/video/modern interiors.mp4' },
-    { id: 6,  title: 'Premium Interiors',   category: 'Interiors',    video: '/video/premium interiors.mp4' },
-    { id: 7,  title: 'Realty Area',         category: 'Real Estate',  video: '/video/Realty Area.mp4' },
-    { id: 8,  title: 'Plotted Development', category: 'Development',  video: '/video/plotted developement.mp4' },
-    { id: 9,  title: 'Plots',               category: 'Development',  video: '/video/plots.mp4' },
-    { id: 10, title: 'Dream Events',        category: 'Events',       video: '/video/dream events.mp4' },
-    { id: 11, title: 'Luxury Events',       category: 'Events',       video: '/video/luxury events.mp4' },
+    { id: 1, title: 'Dream Villa', category: 'Construction', video: '/video/Dream%20Villa.mp4' },
+    { id: 2, title: 'Modern Villa', category: 'Construction', video: '/video/Modern%20villa.mp4' },
+    { id: 3, title: 'Premium Villa', category: 'Construction', video: '/video/premium%20villa.mp4' },
+    { id: 4, title: 'Interior Designs', category: 'Interiors', video: '/video/interior%20designs.mp4' },
+    { id: 5, title: 'Modern Interiors', category: 'Interiors', video: '/video/modern%20interiors.mp4' },
+    { id: 6, title: 'Premium Interiors', category: 'Interiors', video: '/video/premium%20interiors.mp4' },
+    { id: 7, title: 'Realty Area', category: 'Real Estate', video: '/video/Realty%20Area.mp4' },
+    { id: 8, title: 'Plotted Development', category: 'Development', video: '/video/plotted%20developement.mp4' },
+    { id: 9, title: 'Plots', category: 'Development', video: '/video/plots.mp4' },
+    { id: 10, title: 'Dream Events', category: 'Events', video: '/video/dream%20events.mp4' },
+    { id: 11, title: 'Luxury Events', category: 'Events', video: '/video/luxury%20events.mp4' },
 ];
 
 const StoryCard = memo(({ story, onClick }: { story: typeof STORIES[0]; onClick: () => void }) => (
@@ -28,6 +28,8 @@ const StoryCard = memo(({ story, onClick }: { story: typeof STORIES[0]; onClick:
         <video
             src={story.video}
             preload="metadata"
+            autoPlay
+            loop
             muted
             playsInline
             className="h-full w-full object-cover opacity-85 transition-opacity duration-300 group-hover:opacity-100"

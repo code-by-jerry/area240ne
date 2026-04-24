@@ -27,7 +27,14 @@ class LeadController extends Controller
             'message' => ['nullable', 'string'],
         ]);
 
-        Lead::create($validated);
+        $lead = Lead::create($validated);
+
+        // Fire Brevo notification — non-blocking, won't fail the request
+        try {
+            (new \App\Services\BrevoService())->sendLeadNotification($lead->toArray());
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Brevo notification failed', ['error' => $e->getMessage()]);
+        }
 
         return response()->json(['success' => true]);
     }

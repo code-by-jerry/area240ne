@@ -50,4 +50,12 @@ return [
         'blog_images_folder' => env('IMAGEKIT_BLOG_IMAGES_FOLDER', '/blog-images'),
     ],
 
+    'brevo' => [
+        'api_key'      => env('BREVO_API_KEY'),
+        'sender_email' => env('BREVO_SENDER_EMAIL'),
+        'sender_name'  => env('BREVO_SENDER_NAME', 'Area24One'),
+        'to_email'     => env('BREVO_TO_EMAIL'),
+        'to_name'      => env('BREVO_TO_NAME', 'Area24One'),
+    ],
+
 ];

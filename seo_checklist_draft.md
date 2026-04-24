@@ -104,7 +104,7 @@
 - ✔ Cookies — `http_only: true`, `same_site: lax` set in session config
 - ⚠️ `SESSION_SECURE_COOKIE` not set in `.env` — must set to `true` in production `.env`
 - ⚠️ `APP_URL=http://localhost:8000` in dev `.env` — must be `https://area24one.com` in production
-- ❌ No `TrustProxies` middleware — needed if running behind Cloudflare or a load balancer to correctly detect HTTPS
+- ✔ `TrustProxies` — configured via `$middleware->trustProxies(at: '*')` in bootstrap/app.php — handles Cloudflare and load balancers
 
 ### 🧠 Advanced Technical
 - ✔ Canonical tags — set per page in WelcomeController, BlogController, ServiceLandingController
@@ -122,45 +122,59 @@
 ## 📝 3. ON-PAGE SEO
 
 ### 🏷️ Meta Tags
-- ✔ Unique title per page — homepage, blogs index, blog show all have distinct titles
+- ✔ Unique title per page — homepage, blogs index, blog show, service landing, CEO page all distinct
 - ✔ Meta description per page — all controllers pass description
-- ✔ Keywords meta — homepage and blog show pass keywords
-- ✔ OG tags — og:title, og:description, og:image, og:type all set
-- ✔ Twitter card tags — set on homepage
-- ⚠️ Blog index page missing Twitter card tags
-- ⚠️ Title length — homepage title is 72 chars (should be 50–60)
+- ✔ Keywords meta — homepage, blog show, CEO page pass keywords
+- ✔ OG tags — og:title, og:description, og:image, og:type, og:site_name all set on all public pages
+- ✔ Twitter card tags — set on all pages including blog index (was missing interface field — now fixed)
+- ✔ Title length — homepage `'Area24One | Construction, Interiors & Real Estate'` = 49 chars ✔
+- ✔ Blog index title = 57 chars ✔
+- ✔ `robots: index, follow` added to blog index
+- ✔ `og:site_name` added to blog index
 
 ### 📄 Headings
-- ✔ H1 on homepage — "One conversation. Five brands. Zero runaround."
-- ✔ H2 hierarchy used across sections
-- ⚠️ Blog pages — heading structure depends on content entered in admin
-- ❌ No audit tool run on heading order
+- ✔ H1 on homepage — promoted to `<h1>`: "One conversation. Five brands. Zero runaround."
+- ✔ H1 on blog index — "Ideas, guidance, and stories from the world of property."
+- ✔ H1 on blog show — blog title (dynamic from DB)
+- ✔ H1 on service landing pages — service + city (e.g. "Construction Services in Bangalore")
+- ✔ H1 on CEO page — "AARUN"
+- ✔ H2 hierarchy used across all sections on homepage
+- ✔ Fixed: "Materials & brands" section was using `<h3>` as a section heading — corrected to `<h2>`
+- ⚠️ Blog content headings — depend on what admin enters in the editor (H2/H3 inside blog body). No enforcement in admin — educate content editors to start with H2, not H1
+- ⚠️ FlowBannerSlider has no heading — purely visual, acceptable since it's a hero image slider
+- ✔ No heading level skips on any public page (H1 → H2 → H3 order maintained)
 
 ### 🔑 Content
 - ✔ Original content — all copy is custom
 - ✔ FAQ section with 6 questions — good for featured snippets
 - ✔ Location keywords — Bangalore, Mysore, Ballari, Karnataka mentioned
-- ⚠️ Homepage word count is low for SEO (mostly UI, not long-form)
-- ❌ No dedicated service pages with 500+ words each
+- ✔ 9 service landing pages with 400–600 words each — dedicated local SEO pages
+- ✔ 10 SEO blog posts seeded — targeting high-volume local keywords
+- ⚠️ Homepage word count is low for SEO (mostly UI, not long-form) — acceptable for a platform homepage
 
 ### 🖼️ Image SEO
 - ✔ Lazy loading on all images
-- ⚠️ ALT text — hero slides use `alt=""` (decorative, acceptable), service card images use service title
-- ❌ File names not SEO-friendly — `/image/atha.png` instead of `/image/atha-construction-logo.png`
-- ❌ Images not compressed to WebP
+- ✔ Decorative images use `alt=""` or `aria-hidden="true"` — correct
+- ✔ Service card images use service title as alt text
+- ✔ Blog seeder SEO titles fixed — all now under 60 chars
+- ✔ Blog seeder SEO descriptions fixed — all now 140–160 chars
+- ⚠️ Local image filenames not SEO-friendly (`atha.png` vs `atha-construction-logo.png`) — low priority, images moving to ImageKit
 
 ### 🔗 Internal Linking
 - ✔ Homepage links to `/chat`, `/cost-estimator`, `/blogs`
 - ✔ Blog index links to individual blog posts
-- ⚠️ No links from blog posts back to service pages
-- ❌ No anchor-text-rich internal linking strategy
+- ✔ Blog show pages now have service links section — 6 service landing page links on every blog post
+- ✔ CEO page links to `/chat` and `arunar.in`
+- ✔ Footer on all public pages links to `/about/ceo`
+- ⚠️ Homepage service cards don't link to service landing pages yet
 
 ### 📍 Local SEO
-- ✔ Cities mentioned — Bangalore, Mysore, Ballari, Karnataka
+- ✔ Cities mentioned — Bangalore, Mysore, Ballari, Karnataka throughout
 - ✔ Phone numbers in company profile
-- ❌ Google Business Profile — not linked in code
-- ❌ No location-specific landing pages
-- ❌ NAP (Name, Address, Phone) not in structured data footer
+- ✔ NAP added to Organization schema on homepage (`addressLocality`, `addressRegion`, `addressCountry`)
+- ✔ 9 service landing pages with city-specific content and `areaServed` schema
+- ❌ Google Business Profile — not linked in code (manual step)
+- ❌ Not listed in local directories (Justdial, Sulekha, IndiaMART) — manual step
 
 ---
 

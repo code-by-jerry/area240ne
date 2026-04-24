@@ -37,7 +37,7 @@ class CostEstimationController extends Controller
         $estimation = CostEstimation::create($validated);
 
         // Also create a Lead record so it shows up in the general Leads panel
-        Lead::create([
+        $lead = Lead::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'],
@@ -51,6 +51,13 @@ class CostEstimationController extends Controller
             ]),
             'lead_status' => 'new'
         ]);
+
+        // Brevo notification
+        try {
+            (new \App\Services\BrevoService())->sendLeadNotification($lead->toArray());
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Brevo notification failed', ['error' => $e->getMessage()]);
+        }
 
         return redirect()->route('cost-estimation.show', $estimation->uuid)->with('success', 'Cost estimation saved successfully!');
     }

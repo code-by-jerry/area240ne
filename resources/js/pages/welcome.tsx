@@ -471,6 +471,12 @@ export default function Welcome({
             description: seo.description,
             email: companyProfile?.email || undefined,
             telephone: companyProfile?.phone?.[0] || undefined,
+            address: {
+                '@type': 'PostalAddress',
+                addressLocality: 'Bangalore',
+                addressRegion: 'Karnataka',
+                addressCountry: 'IN',
+            },
             sameAs: sameAs.length > 0 ? sameAs : undefined,
         },
         {
@@ -735,10 +741,10 @@ export default function Welcome({
                                         </span>
                                         <div className="h-px w-6 bg-[#C7A14A]" />
                                     </div>
-                                    <h2 className="text-xl font-medium tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                                    <h1 className="text-xl font-medium tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                         One conversation.{' '}
                                         <span className="text-[#C7A14A]">Five brands. Zero runaround.</span>
-                                    </h2>
+                                    </h1>
                                     <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                                         Tell us once — vision, budget, timeline — we connect you to the right specialist.
                                     </p>
@@ -789,6 +795,7 @@ export default function Welcome({
                                         className="h-auto w-full"
                                     >
                                         <source src="/video/section.mp4" type="video/mp4" />
+                                        Your browser does not support the video tag.
                                     </video>
                                 </div>
                             </div>
@@ -1181,10 +1188,10 @@ export default function Welcome({
                                 </span>
                                 <div className="h-px w-6 bg-[#C7A14A]" />
                             </div>
-                            <h3 className="text-xl font-medium tracking-tight text-slate-900 sm:text-2xl">
+                            <h2 className="text-xl font-medium tracking-tight text-slate-900 sm:text-2xl">
                                 Trusted partners across our construction
                                 packages
-                            </h3>
+                            </h2>
                         </div>
 
                         {/* Clean Marquee */}

@@ -18,6 +18,7 @@ interface SeoProps {
     canonical?: string | null;
     image?: string | null;
     type?: string | null;
+    twitter_card?: string | null;
 }
 
 export default function BlogsIndex({
@@ -35,12 +36,14 @@ export default function BlogsIndex({
                 <title>{seo.title}</title>
                 <meta name="description" content={seo.description} />
                 {seo.canonical && <link rel="canonical" href={seo.canonical} />}
+                <meta name="robots" content="index, follow" />
                 <meta property="og:title" content={seo.title} />
                 <meta property="og:description" content={seo.description} />
                 <meta property="og:type" content={seo.type ?? 'website'} />
                 {seo.canonical && <meta property="og:url" content={seo.canonical} />}
                 {seo.image && <meta property="og:image" content={seo.image} />}
-                <meta name="twitter:card" content="summary_large_image" />
+                <meta property="og:site_name" content="Area24One" />
+                <meta name="twitter:card" content={seo.twitter_card ?? 'summary_large_image'} />
                 <meta name="twitter:title" content={seo.title} />
                 <meta name="twitter:description" content={seo.description} />
                 {seo.image && <meta name="twitter:image" content={seo.image} />}
