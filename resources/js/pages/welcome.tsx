@@ -123,6 +123,18 @@ const JOURNEY_STEPS = [
     },
 ] as const;
 
+const SERVICE_LANDING_LINKS = [
+    { label: 'Construction in Bangalore', href: '/services/construction-bangalore' },
+    { label: 'Interior Design in Bangalore', href: '/services/interior-design-bangalore' },
+    { label: 'Real Estate in Bangalore', href: '/services/real-estate-bangalore' },
+    { label: 'Construction in Mysore', href: '/services/construction-mysore' },
+    { label: 'Interior Design in Mysore', href: '/services/interior-design-mysore' },
+    { label: 'Real Estate in Mysore', href: '/services/real-estate-mysore' },
+    { label: 'Construction in Ballari', href: '/services/construction-ballari' },
+    { label: 'Land Development in Karnataka', href: '/services/land-development-karnataka' },
+    { label: 'Event Management in Bangalore', href: '/services/event-management-bangalore' },
+] as const;
+
 const FAQ_ITEMS = [
     {
         q: 'What is Area 24 One?',
@@ -295,20 +307,17 @@ interface ServiceCardProps {
         title: string;
         desc: string;
         step: string;
+        href: string;
         url: string;
     };
-    onClick: () => void;
     isLast?: boolean;
 }
 
 // ServiceCard is defined below as a memoized component
 
-const ServiceCard = memo(({ service, onClick, isLast }: ServiceCardProps) => (
-    <div
-        onClick={onClick}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => e.key === 'Enter' && onClick()}
+const ServiceCard = memo(({ service, isLast }: ServiceCardProps) => (
+    <Link
+        href={service.href}
         className={`group flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 hover:border-[#C7A14A]/50 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:hover:border-[#C7A14A]/50${isLast ? ' col-span-2 lg:col-span-1' : ''}`}
     >
         {/* Image */}
@@ -340,7 +349,7 @@ const ServiceCard = memo(({ service, onClick, isLast }: ServiceCardProps) => (
 
         {/* Arrow */}
         <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition-colors group-hover:text-[#C7A14A] dark:text-slate-600" />
-    </div>
+    </Link>
 ));
 
 ServiceCard.displayName = 'ServiceCard';
@@ -501,6 +510,12 @@ export default function Welcome({
                 addressRegion: 'Karnataka',
                 addressCountry: 'IN',
             },
+            areaServed: [
+                { '@type': 'City', name: 'Bangalore' },
+                { '@type': 'City', name: 'Mysore' },
+                { '@type': 'City', name: 'Ballari' },
+                { '@type': 'AdministrativeArea', name: 'Karnataka' },
+            ],
             sameAs: sameAs.length > 0 ? sameAs : undefined,
         },
         {
@@ -611,6 +626,7 @@ export default function Welcome({
                 desc: 'Specializing in high-end residential and commercial projects, we offer a seamless journey from architectural blueprints to turnkey construction solutions.',
                 accent: 'bg-brand-primary/10 text-brand-primary dark:text-[#C7A14A]',
                 step: '01',
+                href: '/services/construction-bangalore',
                 url: 'https://athaconstruction.in/',
             },
             {
@@ -627,6 +643,7 @@ export default function Welcome({
                 desc: 'Our award-winning designers craft bespoke interiors that blend opulence with functionality. We tailor every detail to your lifestyle.',
                 accent: 'bg-brand-primary/10 text-brand-primary dark:text-[#C7A14A]',
                 step: '02',
+                href: '/services/interior-design-bangalore',
                 url: 'https://nesthetixdesigns.com/',
             },
             {
@@ -643,6 +660,7 @@ export default function Welcome({
                 desc: 'Access exclusive listings and data-driven market insights. Our consultants provide strategic advice for discerning buyers, sellers, and investors.',
                 accent: 'bg-brand-primary/10 text-brand-primary dark:text-[#C7A14A]',
                 step: '03',
+                href: '/services/real-estate-bangalore',
                 url: 'https://area24developers.com/',
             },
             {
@@ -659,6 +677,7 @@ export default function Welcome({
                 desc: 'We conceptualize and execute landmark residential and commercial developments. Our focus is on creating sustainable communities.',
                 accent: 'bg-brand-primary/10 text-brand-primary dark:text-[#C7A14A]',
                 step: '04',
+                href: '/services/land-development-karnataka',
                 url: 'https://area24developers.com/',
             },
             {
@@ -675,6 +694,7 @@ export default function Welcome({
                 desc: 'From corporate galas to immersive brand activations, we produce extraordinary events. Our team handles everything from conceptual design to execution.',
                 accent: 'bg-brand-primary/10 text-brand-primary dark:text-[#C7A14A]',
                 step: '05',
+                href: '/services/event-management-bangalore',
                 url: 'https://thestage365.com/',
             },
         ],
@@ -706,9 +726,12 @@ export default function Welcome({
                 <HomeNavbar auth={auth as any} onConsultClick={() => openModal()} />
 
                 {/* Hero — Flow Banner Slider */}
-                <div className="pt-14">
+                <section className="pt-14" aria-labelledby="hero-flow-heading">
+                    <h2 id="hero-flow-heading" className="sr-only">
+                        Area24One visual introduction
+                    </h2>
                     <FlowBannerSlider />
-                </div>
+                </section>
 
                 {/* Trust/Authority Strip */}
                 <section className="relative overflow-hidden bg-black py-2">
@@ -846,7 +869,7 @@ export default function Welcome({
                                 <span className="text-[#C7A14A]">One platform.</span>
                             </h2>
                             <p className="mx-auto mt-2 max-w-xl text-sm text-slate-500 dark:text-slate-400">
-                                Construction, interiors, real estate, development, and events — start a consultation from any card.
+                                Explore construction services in Bangalore and Mysore, interior design in Bangalore and Mysore, real estate consulting in Bangalore, land development in Karnataka, and event management in Bangalore from one decision platform.
                             </p>
                         </div>
 
@@ -855,7 +878,6 @@ export default function Welcome({
                                 <ServiceCard
                                     key={service.id}
                                     service={service}
-                                    onClick={() => openModal(service.id)}
                                     isLast={i === services.length - 1}
                                 />
                             ))}
@@ -877,6 +899,29 @@ export default function Welcome({
                                 Open chat
                                 <ArrowRight className="h-4 w-4" />
                             </Link>
+                        </div>
+
+                        <div className="mt-8 rounded-2xl border border-slate-200 bg-white/80 p-5 dark:border-slate-800 dark:bg-slate-900/70">
+                            <div className="text-center">
+                                <p className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A] uppercase">
+                                    Explore Service Pages
+                                </p>
+                                <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                                    Browse dedicated landing pages for each major service and location.
+                                </p>
+                            </div>
+
+                            <div className="mt-4 flex flex-wrap justify-center gap-2">
+                                {SERVICE_LANDING_LINKS.map((item) => (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        className="inline-flex items-center rounded-full border border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 transition-colors hover:border-[#C7A14A] hover:text-brand-primary dark:border-slate-700 dark:text-slate-300 dark:hover:border-[#C7A14A] dark:hover:text-white"
+                                    >
+                                        {item.label}
+                                    </Link>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -1401,7 +1446,7 @@ export default function Welcome({
                             {CLIENT_REVIEWS.map((review, i) => (
                                 <div
                                     key={i}
-                                    className="mx-6 w-[320px] shrink-0 sm:mx-8 sm:w-[380px] lg:mx-10 lg:w-[420px]"
+                                    className="mx-4 w-[min(320px,calc(100vw-2rem))] shrink-0 sm:mx-8 sm:w-[380px] lg:mx-10 lg:w-[420px]"
                                 >
                                     <div className="border-l-2 border-[#C7A14A]/30 pl-5">
                                         {/* Rating Stars */}
@@ -1461,6 +1506,9 @@ export default function Welcome({
                             <h2 className="text-xl font-medium tracking-tight text-slate-900 dark:text-white">
                                 Frequently asked questions
                             </h2>
+                            <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                                Answers for clients comparing house construction, interior design, real estate services, land development, and event management across Bangalore, Mysore, Ballari, and Karnataka.
+                            </p>
                         </div>
 
                         {/* Compact Accordion */}
@@ -1511,6 +1559,63 @@ export default function Welcome({
                                 Start a conversation
                                 <ArrowRight className="h-3.5 w-3.5" />
                             </Link>
+                        </div>
+                    </div>
+                </section>
+
+                {/* SEO Content Section */}
+                <section className="bg-white py-16 section-offscreen dark:bg-brand-dark">
+                    <div className="mx-auto max-w-5xl px-6 lg:px-8">
+                        <div className="mx-auto max-w-3xl text-center">
+                            <div className="mb-3 inline-flex items-center gap-2">
+                                <div className="h-px w-6 bg-[#C7A14A]" />
+                                <span className="text-[10px] font-semibold tracking-[0.2em] text-[#C7A14A] uppercase">
+                                    Service Coverage
+                                </span>
+                                <div className="h-px w-6 bg-[#C7A14A]" />
+                            </div>
+                            <h2 className="text-xl font-medium tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                                Construction, interiors, real estate, land development, and events across Karnataka
+                            </h2>
+                            <p className="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                                Area24One is designed for people who need clarity before they commit time, money, or the wrong partner. Whether you are planning a home in Bangalore, a villa in Mysore, a project in Ballari, or a land opportunity anywhere in Karnataka, the platform helps you move from confusion to the right next step.
+                            </p>
+                            <p className="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                                Instead of searching separately for a construction company, interior designer, real estate consultant, land development team, and event specialist, you can begin with one guided conversation. From there, Area24One matches you to the right expert brand based on your goals, budget, location, and timeline.
+                            </p>
+                        </div>
+
+                        <div className="mt-8 grid gap-6 md:grid-cols-3">
+                            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-900/60">
+                                <h3 className="text-base font-semibold text-slate-900 dark:text-white">
+                                    Bangalore
+                                </h3>
+                                <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                                    Support for construction, interior design, real estate consulting, and event planning in one of Karnataka&apos;s fastest-moving markets.
+                                </p>
+                            </div>
+                            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-900/60">
+                                <h3 className="text-base font-semibold text-slate-900 dark:text-white">
+                                    Mysore
+                                </h3>
+                                <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                                    Ideal for villa construction, luxury interiors, and property decisions where local context, approvals, and execution quality matter.
+                                </p>
+                            </div>
+                            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-900/60">
+                                <h3 className="text-base font-semibold text-slate-900 dark:text-white">
+                                    Ballari & Karnataka
+                                </h3>
+                                <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                                    Coverage for residential and commercial construction in Ballari plus strategic land development and investment opportunities across Karnataka.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="mx-auto mt-8 max-w-3xl">
+                            <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                                This makes the homepage more than a visual entry point. It becomes a useful summary of what Area24One offers, where it operates, and how its multi-brand model helps clients make better decisions across property, design, development, and events.
+                            </p>
                         </div>
                     </div>
                 </section>
@@ -1580,7 +1685,7 @@ export default function Welcome({
                                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-transparent p-1 transition-transform duration-500 hover:rotate-6 dark:bg-transparent">
                                     <img
                                         src="/image/main logo (white).png"
-                                        alt="Logo"
+                                        alt="Area24One logo"
                                         className="h-full w-full object-contain"
                                     />
                                 </div>

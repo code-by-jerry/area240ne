@@ -97,6 +97,7 @@ const SERVICE_CONTENT: Record<string, {
 
 export default function ServiceLanding({ slug, service, seo }: Props) {
     const content = SERVICE_CONTENT[service.service] ?? SERVICE_CONTENT['Construction'];
+    const areaServedType = service.location === 'Karnataka' ? 'AdministrativeArea' : 'City';
 
     const schema = {
         '@context': 'https://schema.org',
@@ -110,7 +111,7 @@ export default function ServiceLanding({ slug, service, seo }: Props) {
             telephone: content.phone,
         },
         areaServed: {
-            '@type': 'City',
+            '@type': areaServedType,
             name: service.location,
         },
         url: seo.canonical,
@@ -137,6 +138,12 @@ export default function ServiceLanding({ slug, service, seo }: Props) {
                 <meta property="og:description" content={seo.description} />
                 <meta property="og:url" content={seo.canonical} />
                 <meta property="og:type" content="website" />
+                <meta property="og:image" content={seo.image} />
+                <meta property="og:site_name" content="Area24One" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={seo.title} />
+                <meta name="twitter:description" content={seo.description} />
+                <meta name="twitter:image" content={seo.image} />
                 <meta name="robots" content="index, follow" />
                 <script type="application/ld+json">{JSON.stringify(schema)}</script>
                 <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>

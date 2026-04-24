@@ -34,6 +34,10 @@ export default function BlogShow({
     relatedBlogs: Blog[];
     seo: SeoProps;
 }) {
+    const normalizedBlogContent = blog.content
+        .replace(/<h1(\b[^>]*)>/gi, '<h2$1>')
+        .replace(/<\/h1>/gi, '</h2>');
+
     const breadcrumbSchema = seo.breadcrumbs ? {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
@@ -108,14 +112,14 @@ export default function BlogShow({
                             )}
                             {blog.featured_image_url && (
                                 <div className="mt-8 overflow-hidden rounded-[1.75rem] border border-slate-200">
-                                    <img src={blog.featured_image_url} alt={blog.title} className="h-full max-h-[480px] w-full object-cover" />
+                                    <img src={blog.featured_image_url} alt={blog.title} loading="lazy" decoding="async" className="h-full max-h-[480px] w-full object-cover" />
                                 </div>
                             )}
                         </header>
 
                         <div
                             className="blog-content mt-10 rounded-[2rem] border border-slate-200 bg-white p-8 shadow-[0_20px_80px_-50px_rgba(15,23,42,0.28)] sm:p-10 lg:p-12"
-                            dangerouslySetInnerHTML={{ __html: blog.content }}
+                            dangerouslySetInnerHTML={{ __html: normalizedBlogContent }}
                         />
                     </article>
 
@@ -137,7 +141,7 @@ export default function BlogShow({
                                         >
                                             <div className="h-44 bg-slate-200">
                                                 {item.featured_image_url ? (
-                                                    <img src={item.featured_image_url} alt={item.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
+                                                    <img src={item.featured_image_url} alt={item.title} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
                                                 ) : (
                                                     <div className="flex h-full items-center justify-center bg-[radial-gradient(circle_at_top,#f8e7b7,transparent_40%),linear-gradient(135deg,#0f172a,#334155)] text-xs uppercase tracking-[0.3em] text-white/70">
                                                         Area24One

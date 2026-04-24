@@ -28,12 +28,12 @@ export function PublicSiteLayout({ children }: PropsWithChildren) {
                             <div className="flex h-12 w-12 items-center justify-center p-0 transition-transform duration-300 group-hover:scale-[1.02] md:h-14 md:w-14">
                                 <img
                                     src="/image/main logo.png"
-                                    alt="Area24One"
+                                    alt="Area24One logo"
                                     className="hidden h-full w-full object-contain md:block"
                                 />
                                 <img
                                     src="/image/main logo (white).png"
-                                    alt="Area24One"
+                                    alt="Area24One logo"
                                     className="h-full w-full object-contain md:hidden"
                                 />
                             </div>
@@ -183,7 +183,7 @@ export function PublicSiteLayout({ children }: PropsWithChildren) {
                             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-transparent p-1 transition-transform duration-500 hover:rotate-6 dark:bg-transparent">
                                 <img
                                     src="/image/main logo (white).png"
-                                    alt="Logo"
+                                    alt="Area24One logo"
                                     className="h-full w-full object-contain"
                                 />
                             </div>
@@ -194,6 +194,10 @@ export function PublicSiteLayout({ children }: PropsWithChildren) {
                         <p className="text-xs font-medium text-slate-500">
                             © 2025 Area24One. All rights reserved. Designed for Premium Consultation.
                         </p>
+                        <div className="text-center text-[11px] font-medium text-slate-500 md:text-left">
+                            <p>Bangalore, Karnataka, India</p>
+                            <p>Call: <a href="tel:+919916047222" className="transition-colors hover:text-black dark:hover:text-white">+91 99160 47222</a></p>
+                        </div>
                         <div className="flex items-center gap-6">
                             <Link
                                 href="/about/ceo"

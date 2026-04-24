@@ -226,7 +226,7 @@ export default function ChatWidget() {
                             <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-[10px] font-bold text-brand-primary">AI</div>
                             <span className="font-semibold text-sm sm:text-base">Area 24 Consultant</span>
                         </div>
-                        <button type="button" onClick={() => setIsOpen(false)} className="touch-manipulation p-2 -m-2 rounded-lg hover:bg-white/20 active:bg-white/30" aria-label="Close">
+                        <button type="button" onClick={() => setIsOpen(false)} className="touch-manipulation min-h-[44px] min-w-[44px] p-2 -m-2 rounded-lg hover:bg-white/20 active:bg-white/30" aria-label="Close">
                             <X className="w-5 h-5 sm:w-4 sm:h-4" />
                         </button>
                     </div>
@@ -250,7 +250,7 @@ export default function ChatWidget() {
                                                 key={oi}
                                                 type="button"
                                                 onClick={() => handleSend(undefined, opt)}
-                                                className="rounded-xl border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium shadow-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+                                                className="min-h-[44px] rounded-xl border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium shadow-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700"
                                             >
                                                 {opt}
                                             </button>
@@ -282,7 +282,7 @@ export default function ChatWidget() {
                         <button
                             type="submit"
                             disabled={loading || !input.trim()}
-                            className="bg-brand-primary text-white p-3 rounded-full hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation shrink-0 sm:p-2"
+                            className="min-h-[44px] min-w-[44px] bg-brand-primary text-white p-3 rounded-full hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation shrink-0 sm:p-2"
                             aria-label="Send"
                         >
                             <Send className="w-5 h-5 sm:w-4 sm:h-4" />

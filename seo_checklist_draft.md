@@ -54,13 +54,13 @@
 - ✔ Mobile navbar — `HomeNavbar` component with slide-out drawer
 - ✔ `apple-mobile-web-app-capable` + `apple-mobile-web-app-status-bar-style` added to blade
 - ✔ `crossorigin` added to font preconnect — fixes CORS warning on mobile browsers
-- ✔ Trust strip — reduced `px-14 h-24` to `px-6 h-14` on mobile, scales up on md+
+- ✔ Trust strip — compact mobile marquee is in place with smaller spacing and `h-5` logo sizing
 - ✔ ServiceCard — added `role="button"`, `tabIndex={0}`, keyboard `Enter` handler for accessibility
 - ✔ ServiceCard badge — removed `backdrop-blur` (GPU cost on mobile)
-- ✔ Chat buttons — `touch-manipulation`, `min-h-[44px]` already in place (ChatApp.tsx)
-- ✔ Chat widget — `touch-manipulation` on all interactive elements
+- ✔ Chat controls — explicit `min-h-[44px]` / `min-w-[44px]` touch targets are now in place on key chat actions
+- ✔ Chat widget — `touch-manipulation` is present on close/send/toggle controls
 - ✔ `overscroll-contain` on scroll areas — prevents page bounce on iOS
-- ⚠️ `w-[320px]` review cards in marquee — fixed width, acceptable (inside overflow container)
+- ✔ Review cards in marquee — mobile width now scales with viewport instead of staying hard-fixed at `320px`
 - ❌ Mobile usability not verified in GSC yet — requires deployment + GSC setup first
 
 ### 🔗 URL Structure
@@ -80,7 +80,7 @@
 - ✔ All 9 service pages added to sitemap.xml with `priority: 0.9`
 - ✔ Each page has unique H1, title (under 60 chars), meta description, canonical, Service schema
 - ✔ Breadcrumb nav on each service page (Home → Services → Page)
-- ⚠️ Internal links from homepage to service pages — not yet added (add later)
+- ✔ Internal links from homepage to all 9 service landing pages are now in place
 
 ### 🧭 Crawlability
 - ✔ sitemap.xml created — `/sitemap.xml` route live, auto-generates XML
@@ -110,12 +110,12 @@
 - ✔ Canonical tags — set per page in WelcomeController, BlogController, ServiceLandingController
 - ✔ Schema.org structured data — Organization, WebSite, WebPage, FAQPage on homepage
 - ✔ Article schema — blog show page renders Article schema with headline, datePublished, dateModified, author
-- ✔ Service schema — all 9 service landing pages render Service schema with areaServed
+- ✔ Service schema — all 9 service landing pages render Service schema with `areaServed` (city pages use `City`; Karnataka page now uses `AdministrativeArea`)
 - ✔ Breadcrumb schema — added to blog show page (Home → Blogs → Post) and all service landing pages (Home → Services → Page)
 - ✔ OG article:published_time and article:modified_time — added to blog show page
 - ✔ Custom 404 page — `resources/js/pages/errors/404.tsx` with Home + Chat CTAs, registered in exception handler
-- ✔ Broken links audit — all internal hrefs checked, no broken links found (`/`, `/chat`, `/login`, `/blogs`, `/#expertise`)
-- ⚠️ External link audit (Pexels, ImageKit, social URLs) — not checked, low priority
+- ✔ Broken links audit — key internal hrefs checked in current source (`/`, `/chat`, `/login`, `/blogs`, `/#expertise`, `/services/*`) with no broken internal route references found
+- ⚠️ External link audit — code-level inventory checked for Pexels, ImageKit, brand/social URLs, but full live availability was not comprehensively verified from this environment
 
 ---
 
@@ -125,8 +125,8 @@
 - ✔ Unique title per page — homepage, blogs index, blog show, service landing, CEO page all distinct
 - ✔ Meta description per page — all controllers pass description
 - ✔ Keywords meta — homepage, blog show, CEO page pass keywords
-- ✔ OG tags — og:title, og:description, og:image, og:type, og:site_name all set on all public pages
-- ✔ Twitter card tags — set on all pages including blog index (was missing interface field — now fixed)
+- ✔ OG tags — `og:title`, `og:description`, `og:image`, `og:type`, `og:url`, and `og:site_name` are now set across public pages including service landing pages
+- ✔ Twitter card tags — homepage, blog pages, CEO page, and service landing pages now output Twitter card metadata
 - ✔ Title length — homepage `'Area24One | Construction, Interiors & Real Estate'` = 49 chars ✔
 - ✔ Blog index title = 57 chars ✔
 - ✔ `robots: index, follow` added to blog index
@@ -140,8 +140,8 @@
 - ✔ H1 on CEO page — "AARUN"
 - ✔ H2 hierarchy used across all sections on homepage
 - ✔ Fixed: "Materials & brands" section was using `<h3>` as a section heading — corrected to `<h2>`
-- ⚠️ Blog content headings — depend on what admin enters in the editor (H2/H3 inside blog body). No enforcement in admin — educate content editors to start with H2, not H1
-- ⚠️ FlowBannerSlider has no heading — purely visual, acceptable since it's a hero image slider
+- ✔ Blog content headings — any `<h1>` inside blog body content is now normalized to `<h2>` on render, reducing heading conflicts from editor content
+- ✔ FlowBannerSlider now has an accessible hidden heading, so the hero media region is no longer heading-less
 - ✔ No heading level skips on any public page (H1 → H2 → H3 order maintained)
 
 ### 🔑 Content
@@ -150,14 +150,14 @@
 - ✔ Location keywords — Bangalore, Mysore, Ballari, Karnataka mentioned
 - ✔ 9 service landing pages with 400–600 words each — dedicated local SEO pages
 - ✔ 10 SEO blog posts seeded — targeting high-volume local keywords
-- ⚠️ Homepage word count is low for SEO (mostly UI, not long-form) — acceptable for a platform homepage
+- ✔ Homepage content depth improved — dedicated descriptive copy now reinforces service coverage, locations, and decision-support value without turning the page into long-form content
 
 ### 🖼️ Image SEO
-- ✔ Lazy loading on all images
+- ⚠️ Most non-critical public images now use lazy loading; a few intentionally eager or unannotated images still remain on high-priority views
 - ✔ Decorative images use `alt=""` or `aria-hidden="true"` — correct
 - ✔ Service card images use service title as alt text
-- ✔ Blog seeder SEO titles fixed — all now under 60 chars
-- ✔ Blog seeder SEO descriptions fixed — all now 140–160 chars
+- ✔ Blog seeder SEO titles fixed — all seeded SEO titles are now within 46–59 characters
+- ✔ Blog seeder SEO descriptions fixed — all seeded SEO descriptions are now within 141–160 characters
 - ⚠️ Local image filenames not SEO-friendly (`atha.png` vs `atha-construction-logo.png`) — low priority, images moving to ImageKit
 
 ### 🔗 Internal Linking
@@ -166,21 +166,22 @@
 - ✔ Blog show pages now have service links section — 6 service landing page links on every blog post
 - ✔ CEO page links to `/chat` and `arunar.in`
 - ✔ Footer on all public pages links to `/about/ceo`
-- ⚠️ Homepage service cards don't link to service landing pages yet
+- ✔ Homepage service cards now link directly to internal service landing pages
 
 ### 📍 Local SEO
 - ✔ Cities mentioned — Bangalore, Mysore, Ballari, Karnataka throughout
 - ✔ Phone numbers in company profile
-- ✔ NAP added to Organization schema on homepage (`addressLocality`, `addressRegion`, `addressCountry`)
+- ✔ NAP added to homepage schema and reinforced in the public footer (`addressLocality`, `addressRegion`, `addressCountry`, visible phone/location)
 - ✔ 9 service landing pages with city-specific content and `areaServed` schema
+- ✔ Homepage organization schema now explicitly lists Bangalore, Mysore, Ballari, and Karnataka in `areaServed`
 - ❌ Google Business Profile — not linked in code (manual step)
 - ❌ Not listed in local directories (Justdial, Sulekha, IndiaMART) — manual step
 
 ---
 
 ## 📊 4. GOOGLE SEARCH CONSOLE
-- ❌ Property not added yet
-- ❌ Sitemap not submitted
+- ✔ Property added — `area24one.com` is already present in Google Search Console
+- ⚠️ Sitemap submitted — `https://area24one.com/sitemap.xml` was submitted, but the earlier GSC status showed `Couldn't fetch`; re-submit and verify current status after refresh
 - ❌ Core Web Vitals not tracked
 - ❌ Manual actions status unknown
 
@@ -192,13 +193,13 @@
 - ✔ Blog section exists — `/blogs` with full index + show pages
 - ✔ Blog admin — create, edit, publish, feature controls exist
 - ✔ SEO fields per blog — seo_title, seo_description, seo_keywords, canonical_url
-- ⚠️ No blog posts published yet (or very few)
-- ❌ No content calendar / weekly publishing cadence
+- ✔ 10 seeded blog posts exist in `BlogSeeder`, and the seeder assigns `published_at` dates automatically when seeded; live count still depends on deployed DB state
+- ✔ Content calendar drafted — see `content_calendar_draft.md` for an 8-week publishing cadence
 
 ### 🔍 Keywords
-- ⚠️ Homepage targets broad terms — needs tighter keyword focus per section
-- ❌ No keyword research document
-- ❌ No long-tail keyword targeting per page
+- ⚠️ Homepage remains broad by design as a multi-service platform, but section copy now reinforces construction, interior design, real estate, land development, and event management keywords with city/state modifiers
+- ✔ Keyword research document drafted — see `keyword_research_draft.md`
+- ✔ Long-tail keyword targeting mapped per service page and seeded blog in `keyword_research_draft.md`
 
 ### 🔗 Backlinks
 - ❌ Google Business Profile not created
@@ -207,24 +208,24 @@
 
 ---
 
-## � PRIORITY ACTION LIST
+## ✅ PRIORITY ACTION LIST
 
-### Do These First (High Impact)
-1. ❌ **Create sitemap.xml** — add `spatie/laravel-sitemap` package, auto-generate for `/`, `/blogs`, `/blogs/{slug}`, `/cost-estimator`
-2. ❌ **Update robots.txt** — add `Sitemap: https://area24one.com/sitemap.xml`
-3. ❌ **Connect Google Search Console** — verify domain, submit sitemap
-4. ❌ **Fix homepage title** — shorten from 72 chars to under 60
-5. ❌ **Create custom 404 page**
+### Completed Foundation Work
+1. ✔ **Sitemap is live** — `/sitemap.xml` route exists and auto-generates sitemap XML
+2. ✔ **robots.txt updated** — includes `Sitemap: https://area24one.com/sitemap.xml`
+3. ✔ **Homepage title fixed** — `Area24One | Construction, Interiors & Real Estate` is under 60 characters
+4. ✔ **Custom 404 page created** — `resources/js/pages/errors/404.tsx`
+5. ✔ **Core technical SEO completed** — breadcrumbs, Twitter tags, service landing pages, and footer NAP are now in place
 
-### Do These Next (Medium Impact)
-6. ⚠️ **Add breadcrumb schema** — especially on blog show pages
-7. ⚠️ **Add Twitter card to blog index**
-8. ⚠️ **Create service landing pages** — `/construction-bangalore`, `/interior-design-bangalore` etc.
-9. ⚠️ **Add NAP to footer** in structured data
-10. ⚠️ **Convert images to WebP** — use Vite plugin or ImageKit transformation params
+### Do These Next (Highest Remaining Impact)
+6. ⚠️ **Re-submit sitemap in Google Search Console** — `https://area24one.com/sitemap.xml` is live and fetchable now (`200`, valid `<urlset>`, 24 discovered URLs), but GSC should be refreshed because the earlier status showed `Couldn't fetch`
+7. ⚠️ **Verify live blog index after deployment / seeding** — 10 published seeded posts exist in `BlogSeeder` and `DatabaseSeeder` calls that seeder, but production visibility still depends on the deployed database state
+8. ⚠️ **Clean up verified-unused heavy local images** — current source already uses the ImageKit `CTA-image.png` URL and no longer references the old heavy local hero/build assets, so the remaining work is safe file cleanup in `/public/image`
+9. ⚠️ **Track Core Web Vitals in GSC** — code-side readiness is in place; wait for Google Search Console to collect real mobile and desktop field data after deployment
+10. ⚠️ **Review external URLs in production** — code-level inventory has been checked for social, ImageKit, and third-party links, but a final browser-level live spot-check is still recommended after deployment
 
 ### Do These Later (Growth)
 11. ❌ Google Business Profile
 12. ❌ Local directory listings
-13. ❌ Publish 2 blog posts/week targeting local + service keywords
-14. ❌ Internal linking from blogs → service pages
+13. ⚠️ Publish on a weekly cadence using `content_calendar_draft.md`
+14. ⚠️ Expand keyword research with search volume / difficulty from external SEO tools

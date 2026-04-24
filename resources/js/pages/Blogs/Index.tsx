@@ -103,7 +103,7 @@ export default function BlogsIndex({
 
                                 <div className="min-h-[280px] bg-slate-200 lg:min-h-full">
                                     {featuredBlog.featured_image_url ? (
-                                        <img src={featuredBlog.featured_image_url} alt={featuredBlog.title} className="h-full w-full object-cover" />
+                                        <img src={featuredBlog.featured_image_url} alt={featuredBlog.title} loading="lazy" decoding="async" className="h-full w-full object-cover" />
                                     ) : (
                                         <div className="flex h-full items-center justify-center bg-[radial-gradient(circle_at_top,#f8e7b7,transparent_45%),linear-gradient(135deg,#111827,#334155)] text-sm uppercase tracking-[0.3em] text-white/70">
                                             Area24One
@@ -146,7 +146,7 @@ export default function BlogsIndex({
                                 >
                                     <div className="h-52 bg-slate-200">
                                         {blog.featured_image_url ? (
-                                            <img src={blog.featured_image_url} alt={blog.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
+                                            <img src={blog.featured_image_url} alt={blog.title} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
                                         ) : (
                                             <div className="flex h-full items-center justify-center bg-[radial-gradient(circle_at_top,#f8e7b7,transparent_40%),linear-gradient(135deg,#0f172a,#334155)] text-xs uppercase tracking-[0.3em] text-white/70">
                                                 Area24One
