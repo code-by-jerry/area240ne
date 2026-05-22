@@ -69,6 +69,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Maintenance Override
+    |--------------------------------------------------------------------------
+    |
+    | These values support turning on a maintenance override mode based on a
+    | target timestamp and timezone. Legacy env names are also supported.
+    |
+    */
+
+    'mo_enabled' => env('MO_ENABLED', env('MAINTENANCE_OVERRIDE_ENABLED', false)),
+    'mo_target' => env('MO_TARGET', env('MAINTENANCE_OVERRIDE_TARGET', '2026-05-22 11:30:00')),
+    'mo_timezone' => env('MO_TIMEZONE', env('MAINTENANCE_OVERRIDE_TIMEZONE', 'UTC')),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------
     |
